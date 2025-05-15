@@ -6,7 +6,6 @@ import { apiRequest } from '@/lib/queryClient';
 import AppLayout from '@/components/layout/AppLayout';
 import NodePalette from './NodePalette';
 import FlowCanvas from './FlowCanvas';
-import PropertiesPanel from './PropertiesPanel';
 import { FlowNode, FlowEdge, Flow } from '@shared/schema';
 import { useFlowBuilder } from '@/hooks/use-flow-builder';
 
@@ -18,7 +17,6 @@ interface FlowBuilderProps {
 export default function FlowBuilder({ flow, flowId }: FlowBuilderProps) {
   const { toast } = useToast();
   const { nodes, edges, setNodes, setEdges, selectedNode, setSelectedNode, getSerializableFlow } = useFlowBuilder();
-  const [propertiesPanelOpen, setPropertiesPanelOpen] = useState(true);
   
   // Initialize flow data
   useEffect(() => {
@@ -159,16 +157,6 @@ export default function FlowBuilder({ flow, flowId }: FlowBuilderProps) {
           onNodeSelect={setSelectedNode}
           isSaving={isSaving}
         />
-        
-        {/* Properties Panel */}
-        {selectedNode && (
-          <PropertiesPanel
-            node={selectedNode}
-            onClose={() => setSelectedNode(null)}
-            open={propertiesPanelOpen}
-            onToggle={() => setPropertiesPanelOpen(!propertiesPanelOpen)}
-          />
-        )}
       </div>
     </AppLayout>
   );
