@@ -437,4 +437,301 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { db, pool } from './db';
+import { eq, and } from 'drizzle-orm';
+import session from 'express-session';
+import connectPg from 'connect-pg-simple';
+import { 
+  users, 
+  plans, 
+  tenants, 
+  flows, 
+  whatsappIntegrations,
+  contacts
+} from '@shared/schema';
+
+const PostgresSessionStore = connectPg(session);
+
+export class DatabaseStorage implements IStorage {
+  sessionStore: session.Store;
+
+  constructor() {
+    this.sessionStore = new PostgresSessionStore({ 
+      pool, 
+      createTableIfMissing: true
+    });
+  }
+
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+
+  async updateUser(id: number, data: Partial<User>): Promise<User | undefined> {
+    const [user] = await db.update(users)
+      .set(data)
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateUserStripeInfo(id: number, data: { stripeCustomerId: string, stripeSubscriptionId: string }): Promise<User | undefined> {
+    const [user] = await db.update(users)
+      .set(data)
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  // Plan operations
+  async getPlans(): Promise<Plan[]> {
+    return db.select().from(plans).orderBy(plans.price);
+  }
+
+  async getPlan(id: number): Promise<Plan | undefined> {
+    const [plan] = await db.select().from(plans).where(eq(plans.id, id));
+    return plan;
+  }
+
+  async createPlan(plan: InsertPlan): Promise<Plan> {
+    const [newPlan] = await db.insert(plans).values(plan).returning();
+    return newPlan;
+  }
+
+  async updatePlan(id: number, data: Partial<Plan>): Promise<Plan | undefined> {
+    const [plan] = await db.update(plans)
+      .set(data)
+      .where(eq(plans.id, id))
+      .returning();
+    return plan;
+  }
+
+  // Tenant operations
+  async getTenant(id: number): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.id, id));
+    return tenant;
+  }
+
+  async getTenantByUserId(userId: number): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.userId, userId));
+    return tenant;
+  }
+
+  async getTenantBySubdomain(subdomain: string): Promise<Tenant | undefined> {
+    const [tenant] = await db.select().from(tenants).where(eq(tenants.subdomain, subdomain));
+    return tenant;
+  }
+
+  async createTenant(tenant: InsertTenant): Promise<Tenant> {
+    const [newTenant] = await db.insert(tenants).values(tenant).returning();
+    return newTenant;
+  }
+
+  async updateTenant(id: number, data: Partial<Tenant>): Promise<Tenant | undefined> {
+    const [tenant] = await db.update(tenants)
+      .set(data)
+      .where(eq(tenants.id, id))
+      .returning();
+    return tenant;
+  }
+
+  // Flow operations
+  async getFlows(tenantId: number): Promise<Flow[]> {
+    return db.select().from(flows).where(eq(flows.tenantId, tenantId));
+  }
+
+  async getFlow(id: number, tenantId: number): Promise<Flow | undefined> {
+    const [flow] = await db.select().from(flows).where(
+      and(
+        eq(flows.id, id),
+        eq(flows.tenantId, tenantId)
+      )
+    );
+    return flow;
+  }
+
+  async createFlow(flow: InsertFlow): Promise<Flow> {
+    const [newFlow] = await db.insert(flows).values(flow).returning();
+    return newFlow;
+  }
+
+  async updateFlow(id: number, tenantId: number, data: Partial<Flow>): Promise<Flow | undefined> {
+    const [flow] = await db.update(flows)
+      .set(data)
+      .where(
+        and(
+          eq(flows.id, id),
+          eq(flows.tenantId, tenantId)
+        )
+      )
+      .returning();
+    return flow;
+  }
+
+  async deleteFlow(id: number, tenantId: number): Promise<boolean> {
+    const result = await db.delete(flows).where(
+      and(
+        eq(flows.id, id),
+        eq(flows.tenantId, tenantId)
+      )
+    );
+    return !!result;
+  }
+
+  async updateFlowStatus(id: number, tenantId: number, status: 'draft' | 'published'): Promise<Flow | undefined> {
+    const [flow] = await db.update(flows)
+      .set({ status })
+      .where(
+        and(
+          eq(flows.id, id),
+          eq(flows.tenantId, tenantId)
+        )
+      )
+      .returning();
+    return flow;
+  }
+
+  async updateFlowNodes(id: number, tenantId: number, flowNodes: FlowNode[]): Promise<Flow | undefined> {
+    const [flow] = await db.update(flows)
+      .set({ nodes: flowNodes })
+      .where(
+        and(
+          eq(flows.id, id),
+          eq(flows.tenantId, tenantId)
+        )
+      )
+      .returning();
+    return flow;
+  }
+
+  async updateFlowEdges(id: number, tenantId: number, flowEdges: FlowEdge[]): Promise<Flow | undefined> {
+    const [flow] = await db.update(flows)
+      .set({ edges: flowEdges })
+      .where(
+        and(
+          eq(flows.id, id),
+          eq(flows.tenantId, tenantId)
+        )
+      )
+      .returning();
+    return flow;
+  }
+
+  // WhatsApp integration operations
+  async getWhatsappIntegrations(tenantId: number): Promise<WhatsappIntegration[]> {
+    return db.select().from(whatsappIntegrations).where(eq(whatsappIntegrations.tenantId, tenantId));
+  }
+
+  async getWhatsappIntegration(id: number, tenantId: number): Promise<WhatsappIntegration | undefined> {
+    const [integration] = await db.select().from(whatsappIntegrations).where(
+      and(
+        eq(whatsappIntegrations.id, id),
+        eq(whatsappIntegrations.tenantId, tenantId)
+      )
+    );
+    return integration;
+  }
+
+  async createWhatsappIntegration(integration: InsertWhatsappIntegration): Promise<WhatsappIntegration> {
+    const [newIntegration] = await db.insert(whatsappIntegrations).values(integration).returning();
+    return newIntegration;
+  }
+
+  async updateWhatsappIntegration(id: number, tenantId: number, data: Partial<WhatsappIntegration>): Promise<WhatsappIntegration | undefined> {
+    const [integration] = await db.update(whatsappIntegrations)
+      .set(data)
+      .where(
+        and(
+          eq(whatsappIntegrations.id, id),
+          eq(whatsappIntegrations.tenantId, tenantId)
+        )
+      )
+      .returning();
+    return integration;
+  }
+
+  async deleteWhatsappIntegration(id: number, tenantId: number): Promise<boolean> {
+    const result = await db.delete(whatsappIntegrations).where(
+      and(
+        eq(whatsappIntegrations.id, id),
+        eq(whatsappIntegrations.tenantId, tenantId)
+      )
+    );
+    return !!result;
+  }
+
+  // Contact operations
+  async getContacts(tenantId: number): Promise<Contact[]> {
+    return db.select().from(contacts).where(eq(contacts.tenantId, tenantId));
+  }
+
+  async getContact(id: number, tenantId: number): Promise<Contact | undefined> {
+    const [contact] = await db.select().from(contacts).where(
+      and(
+        eq(contacts.id, id),
+        eq(contacts.tenantId, tenantId)
+      )
+    );
+    return contact;
+  }
+
+  async getContactByPhoneNumber(phoneNumber: string, tenantId: number): Promise<Contact | undefined> {
+    const [contact] = await db.select().from(contacts).where(
+      and(
+        eq(contacts.phoneNumber, phoneNumber),
+        eq(contacts.tenantId, tenantId)
+      )
+    );
+    return contact;
+  }
+
+  async createContact(contact: InsertContact): Promise<Contact> {
+    const [newContact] = await db.insert(contacts).values(contact).returning();
+    return newContact;
+  }
+
+  async updateContact(id: number, tenantId: number, data: Partial<Contact>): Promise<Contact | undefined> {
+    const [contact] = await db.update(contacts)
+      .set(data)
+      .where(
+        and(
+          eq(contacts.id, id),
+          eq(contacts.tenantId, tenantId)
+        )
+      )
+      .returning();
+    return contact;
+  }
+
+  async updateContactVariables(id: number, tenantId: number, variables: Record<string, string>): Promise<Contact | undefined> {
+    const [contact] = await db.update(contacts)
+      .set({ variables })
+      .where(
+        and(
+          eq(contacts.id, id),
+          eq(contacts.tenantId, tenantId)
+        )
+      )
+      .returning();
+    return contact;
+  }
+}
+
+// Use DatabaseStorage instead of MemStorage
+export const storage = new DatabaseStorage();
