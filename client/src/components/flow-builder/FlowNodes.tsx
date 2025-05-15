@@ -1,9 +1,41 @@
-import { memo } from 'react';
-import { Handle, Position } from 'reactflow';
+import { memo, useCallback } from 'react';
+import { Handle, Position, useReactFlow, useUpdateNodeInternals } from 'reactflow';
 import { Card } from '@/components/ui/node-card';
 import { nodeTypes } from './FlowNodeTypes';
+import { FlowNode } from '@shared/schema';
+import { NodePopover } from './NodePopover';
+import { MessageCircle, ArrowRightLeft, Hourglass, Variable, AlertTriangle } from 'lucide-react';
+
+// Function to create a new node connected to the current one
+const createConnectedNode = (
+  nodeId: string, 
+  nodeType: string, 
+  position: { x: number, y: number }
+) => {
+  const newNode: FlowNode = {
+    id: `${nodeType}-${Date.now()}`,
+    type: nodeType as any,
+    position: { 
+      x: position.x, 
+      y: position.y + 200 // Position below the current node
+    },
+    data: {}
+  };
+  
+  const edge = {
+    id: `edge-${nodeId}-${newNode.id}`,
+    source: nodeId,
+    target: newNode.id,
+  };
+  
+  return { node: newNode, edge };
+};
 
 const BaseNode = ({ data, id, type, selected }: any) => {
+  // Get React Flow instance to add nodes
+  const reactFlowInstance = useReactFlow();
+  const updateNodeInternals = useUpdateNodeInternals();
+  
   // Find the node type configuration
   const nodeType = nodeTypes.find(t => t.type === type);
   
@@ -25,6 +57,119 @@ const BaseNode = ({ data, id, type, selected }: any) => {
   // Display node description if set, otherwise use the default
   const displayDescription = data?.description || nodeType.description;
   
+  // Handle updating node data
+  const handleUpdateNode = useCallback((nodeId: string, newData: Record<string, any>) => {
+    reactFlowInstance.setNodes(nodes => 
+      nodes.map(node => {
+        if (node.id === nodeId) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              ...newData
+            }
+          };
+        }
+        return node;
+      })
+    );
+    
+    // If buttons were added or removed, need to update node internals for handles
+    if (type === 'quickReplies' && 'buttons' in newData) {
+      updateNodeInternals(nodeId);
+    }
+  }, [reactFlowInstance, updateNodeInternals, type]);
+  
+  // Handle adding a block after this node
+  const handleAddBlock = useCallback(() => {
+    const currentNode = reactFlowInstance.getNode(id);
+    if (!currentNode) return;
+    
+    const { node: newNode, edge } = createConnectedNode(
+      id, 
+      'textMessage', 
+      currentNode.position
+    );
+    
+    reactFlowInstance.addNodes(newNode);
+    reactFlowInstance.addEdges(edge);
+  }, [reactFlowInstance, id]);
+  
+  // Define node-specific actions
+  const getNodeActions = () => {
+    const actions = [];
+    
+    if (['startTrigger', 'textMessage', 'condition', 'waitResponse'].includes(type)) {
+      actions.push({
+        label: 'Adicionar Mensagem',
+        icon: <MessageCircle className="h-4 w-4" />,
+        onClick: () => {
+          const currentNode = reactFlowInstance.getNode(id);
+          if (!currentNode) return;
+          
+          const { node: newNode, edge } = createConnectedNode(
+            id, 
+            'textMessage', 
+            currentNode.position
+          );
+          
+          reactFlowInstance.addNodes(newNode);
+          reactFlowInstance.addEdges(edge);
+        }
+      });
+    }
+    
+    if (['startTrigger', 'textMessage', 'waitResponse'].includes(type)) {
+      actions.push({
+        label: 'Adicionar Condição',
+        icon: <ArrowRightLeft className="h-4 w-4" />,
+        onClick: () => {
+          const currentNode = reactFlowInstance.getNode(id);
+          if (!currentNode) return;
+          
+          const { node: newNode, edge } = createConnectedNode(
+            id, 
+            'condition', 
+            currentNode.position
+          );
+          
+          reactFlowInstance.addNodes(newNode);
+          reactFlowInstance.addEdges(edge);
+        }
+      });
+    }
+    
+    if (['startTrigger', 'textMessage', 'quickReplies'].includes(type)) {
+      actions.push({
+        label: 'Aguardar Resposta',
+        icon: <Hourglass className="h-4 w-4" />,
+        onClick: () => {
+          const currentNode = reactFlowInstance.getNode(id);
+          if (!currentNode) return;
+          
+          const { node: newNode, edge } = createConnectedNode(
+            id, 
+            'waitResponse', 
+            currentNode.position
+          );
+          
+          reactFlowInstance.addNodes(newNode);
+          reactFlowInstance.addEdges(edge);
+        }
+      });
+    }
+    
+    return actions;
+  };
+  
+  // Create the node object for the current node type
+  const node: FlowNode = {
+    id,
+    type: type as any,
+    position: { x: 0, y: 0 }, // Not used here, but required by the type
+    data: data || {}
+  };
+  
   return (
     <Card 
       title={displayName}
@@ -32,7 +177,18 @@ const BaseNode = ({ data, id, type, selected }: any) => {
       icon={nodeType.icon}
       color={nodeType.iconBg}
       selected={selected}
+      actions={selected ? getNodeActions() : []}
+      onAddBlock={selected ? handleAddBlock : undefined}
     >
+      {/* Add the NodePopover for editing */}
+      {selected && (
+        <NodePopover 
+          node={node} 
+          onUpdate={handleUpdateNode}
+          onAddBlock={handleAddBlock}
+        />
+      )}
+      
       {/* Input handle */}
       {type !== 'startTrigger' && (
         <Handle 
