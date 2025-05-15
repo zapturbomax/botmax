@@ -161,6 +161,8 @@ const BaseNode = ({ data, id, type, selected }: any) => {
             node={node} 
             onUpdate={handleUpdateNode}
             onAddBlock={handleAddBlock}
+            onDelete={handleDeleteNode}
+            onDuplicate={handleDuplicateNode}
           />
         )}
         

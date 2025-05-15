@@ -1,14 +1,6 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { ReactNode, useState } from "react";
-import { Copy, MoreVertical, Edit, Trash2 } from "lucide-react";
-import { Button } from "./button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ReactNode } from "react";
 
 const cardVariants = cva(
   "bg-white dark:bg-gray-800 rounded-lg shadow-md border transition-all duration-200 relative min-w-[240px] overflow-visible",
@@ -50,8 +42,17 @@ export function Card({
   onDuplicate,
   onAddBlock,
 }: CardProps) {
+  const handleDoubleClick = () => {
+    if (onEdit) {
+      onEdit();
+    }
+  };
+
   return (
-    <div className={cn(cardVariants({ selected }))}>
+    <div 
+      className={cn(cardVariants({ selected }))}
+      onDoubleClick={handleDoubleClick}
+    >
       <div className="p-4">
         <div className="flex items-center space-x-3 mb-1">
           {icon && (
@@ -68,43 +69,7 @@ export function Card({
             )}
           </div>
           
-          {/* Menu de opções (três pontos) */}
-          {selected && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 w-6 p-0 rounded-full"
-                >
-                  <MoreVertical className="h-3.5 w-3.5 text-gray-500" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-32 py-1">
-                {onEdit && (
-                  <DropdownMenuItem onClick={onEdit} className="py-0.5 px-2 text-xs">
-                    <Edit className="mr-1.5 h-3 w-3" />
-                    <span>Editar</span>
-                  </DropdownMenuItem>
-                )}
-                {onDuplicate && (
-                  <DropdownMenuItem onClick={onDuplicate} className="py-0.5 px-2 text-xs">
-                    <Copy className="mr-1.5 h-3 w-3" />
-                    <span>Duplicar</span>
-                  </DropdownMenuItem>
-                )}
-                {onDelete && (
-                  <DropdownMenuItem 
-                    className="text-red-500 focus:text-red-500 py-0.5 px-2 text-xs" 
-                    onClick={onDelete}
-                  >
-                    <Trash2 className="mr-1.5 h-3 w-3" />
-                    <span>Excluir</span>
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          {/* Removido o menu de opções para usar o botão existente */}
         </div>
         
         {children}
