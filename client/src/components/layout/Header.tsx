@@ -71,7 +71,7 @@ const Header: FC<HeaderProps> = ({ title, onMenuClick, showActions = false }) =>
           <AvatarFallback className="bg-[#5b5dcd] text-white">{getInitials()}</AvatarFallback>
           {/* Avatar image would go here if available */}
         </Avatar>
-        <div className="text-sm font-medium">Ashly Boldwin</div>
+        <div className="text-sm font-medium">{user?.fullName || user?.username || "User"}</div>
         <Button variant="ghost" size="icon" className="text-gray-500">
           <Bell className="h-5 w-5" />
         </Button>

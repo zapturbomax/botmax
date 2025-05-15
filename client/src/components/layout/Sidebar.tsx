@@ -1,13 +1,18 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
+  ChartGantt,
+  LayoutDashboard,
   MessageSquare,
   Users,
-  FileText,
-  Trash,
-  AlertCircle,
+  BarChartBig,
+  Settings2,
+  User,
+  CreditCard,
+  Eye
 } from "lucide-react";
 
 interface SidebarProps {
@@ -17,7 +22,12 @@ interface SidebarProps {
 
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const [location] = useLocation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
+  
+  const { data: plan } = useQuery({
+    queryKey: ['/api/subscription/current'],
+    enabled: !!user,
+  });
   
   return (
     <>
@@ -37,9 +47,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         {/* Brand Logo */}
         <div className="p-5 flex items-center">
           <div className="flex items-center space-x-2">
-            <div className="text-white text-3xl font-bold flex items-center">
-              <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
-                <path d="M10 19L19 10M19 10L28 19M19 10V28" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            <div className="text-white text-2xl font-bold flex items-center">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
+                <path d="M4 16L16 4L28 16M16 4V28" stroke="#a5a6f6" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               Attmosfire
             </div>
@@ -50,71 +60,128 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         <nav className="flex-1 overflow-y-auto px-4 py-2">
           <div className="space-y-1.5">
             <NavLink 
-              href="/all" 
-              icon={<FileText size={18} />} 
-              isActive={location === "/all"}
+              href="/dashboard" 
+              icon={<LayoutDashboard size={18} />} 
+              isActive={location === "/dashboard" || location === "/"}
             >
-              All
+              Dashboard
             </NavLink>
             <NavLink 
-              href="/assigned-to-me" 
-              icon={<FileText size={18} />} 
-              isActive={location === "/assigned-to-me"}
+              href="/flows" 
+              icon={<ChartGantt size={18} />} 
+              isActive={location.startsWith("/flows")}
             >
-              Assigned to Me
+              Flow Builder
             </NavLink>
             <NavLink 
-              href="/unassigned" 
-              icon={<FileText size={18} />} 
-              isActive={location === "/unassigned"}
-            >
-              Unassigned
-            </NavLink>
-            <NavLink 
-              href="/live-chat" 
+              href="/settings/whatsapp" 
               icon={<MessageSquare size={18} />} 
-              isActive={location === "/live-chat"}
+              isActive={location === "/settings/whatsapp"}
             >
-              Live Chat
+              WhatsApp Integration
             </NavLink>
             <NavLink 
-              href="/blocked" 
-              icon={<AlertCircle size={18} />} 
-              isActive={location === "/blocked"}
-              badge="PRO"
+              href="/conversations" 
+              icon={<MessageSquare size={18} />} 
+              isActive={location === "/conversations"}
             >
-              Blocked
+              Conversations
             </NavLink>
             <NavLink 
-              href="/trash" 
-              icon={<Trash size={18} />} 
-              isActive={location === "/trash"}
+              href="/contacts" 
+              icon={<Users size={18} />} 
+              isActive={location === "/contacts"}
             >
-              Trash
+              Contacts
             </NavLink>
+            <NavLink 
+              href="/analytics" 
+              icon={<BarChartBig size={18} />} 
+              isActive={location === "/analytics"}
+              badge={plan?.name === "Free" ? "PRO" : undefined}
+            >
+              Analytics
+            </NavLink>
+          </div>
+          
+          <div className="mt-8">
+            <h3 className="px-3 text-xs text-gray-400 uppercase tracking-wider mb-2">
+              Settings
+            </h3>
+            <div className="space-y-1.5">
+              <NavLink 
+                href="/settings/general" 
+                icon={<Settings2 size={18} />} 
+                isActive={location === "/settings/general"}
+              >
+                General
+              </NavLink>
+              <NavLink 
+                href="/settings/account" 
+                icon={<User size={18} />} 
+                isActive={location === "/settings/account"}
+              >
+                Account
+              </NavLink>
+              <NavLink 
+                href="/settings/billing" 
+                icon={<CreditCard size={18} />} 
+                isActive={location === "/settings/billing"}
+              >
+                Billing
+              </NavLink>
+            </div>
           </div>
         </nav>
         
         {/* Pro Plan Section */}
         <div className="px-4 py-5 mt-auto mb-5">
-          <div className="bg-[#5b5dcd] rounded-lg p-4 text-white">
-            <div className="flex items-center mb-4">
+          <div className="bg-[#5b5dcd] rounded-lg p-4 text-white relative overflow-hidden">
+            {/* Background icons */}
+            <div className="absolute right-2 top-2 opacity-20">
+              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 16L16 4L28 16M16 4V28" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div className="absolute right-10 bottom-6 opacity-20">
+              <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 16L16 4L28 16M16 4V28" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            
+            <div className="flex items-center">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold">Pro Plan</h3>
+                <h3 className="text-lg font-semibold">
+                  {plan?.name || "Pro"} Plan
+                </h3>
                 <div className="text-2xl font-bold flex items-center mt-1">
-                  $189<span className="text-sm ml-1 opacity-80">/month</span>
+                  ${plan?.price || 189}<span className="text-sm ml-1 opacity-80">/month</span>
                 </div>
               </div>
             </div>
-            <p className="text-xs opacity-80 mb-4">
-              Open a lot of cool features with our Premium Pro Plan
+            <p className="text-xs opacity-80 my-3">
+              {plan?.name === "Pro" 
+                ? "You're enjoying all our premium features"
+                : "Open a lot of cool features with our Premium Pro Plan"}
             </p>
             <Button 
               variant="secondary"
-              className="w-full bg-[#6a6cf1] text-white hover:bg-[#7b7df4] border-none"
+              className="w-full bg-[#2b2b36] text-white hover:bg-[#35353f] border-none flex items-center justify-center"
               size="sm"
             >
-              Get Pro Plan
+              {plan?.name === "Pro" ? (
+                <>
+                  <Eye size={14} className="mr-1.5" />
+                  View Plan
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1.5">
+                    <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V12M9 15V12M12 15V10M15 15V8M17.5858 1.58579C18.3668 0.804738 19.6332 0.804738 20.4142 1.58579C21.1953 2.36683 21.1953 3.63316 20.4142 4.41421L12.8284 12H9V8.17157L16.5858 0.585786C17.3668 -0.195262 18.6332 -0.195262 19.4142 0.585786C20.1953 1.36683 20.1953 2.63316 19.4142 3.41421L11.8284 11H8V7.17157L17.5858 1.58579Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  Get Pro Plan
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -137,7 +204,7 @@ function NavLink({ href, icon, children, isActive = false, badge }: NavLinkProps
       <div className={cn(
         "sidebar-item flex items-center px-3 py-3 text-sm font-medium rounded-md cursor-pointer",
         isActive 
-          ? "bg-[#35353f] text-white" 
+          ? "bg-[#35353f] text-white border-l-2 border-[#a5a6f6]" 
           : "text-gray-400 hover:bg-[#35353f] hover:text-white"
       )}>
         <span className="mr-3 text-lg">
