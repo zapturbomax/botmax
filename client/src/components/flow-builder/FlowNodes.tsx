@@ -105,6 +105,25 @@ const BaseNode = ({ data, id, type, selected }: any) => {
     setAddNodeMenuOpen(true);
   }, []);
   
+  // Função para duplicar o nó
+  const handleDuplicateNode = useCallback(() => {
+    const currentNode = reactFlowInstance.getNode(id);
+    if (!currentNode) return;
+    
+    // Criar um novo nó com as mesmas propriedades
+    const duplicatedNode: FlowNode = {
+      id: `${type}-${Date.now()}`,
+      type: type as any,
+      position: { 
+        x: currentNode.position.x + 50, 
+        y: currentNode.position.y + 50 
+      },
+      data: { ...data } // Copia todos os dados
+    };
+    
+    reactFlowInstance.addNodes(duplicatedNode);
+  }, [reactFlowInstance, id, type, data]);
+  
   // Função para excluir o nó
   const handleDeleteNode = useCallback(() => {
     reactFlowInstance.deleteElements({ nodes: [{ id }] });
@@ -112,8 +131,7 @@ const BaseNode = ({ data, id, type, selected }: any) => {
 
   // Função para editar o nó
   const handleEditNode = useCallback(() => {
-    // Usamos o mesmo comportamento de onUpdate, apenas abrindo o popover de edição
-    // que já está sendo renderizado quando o nó está selecionado
+    // Comportamento padrão já mostra o popover de edição
   }, []);
   
   // Create the node object for the current node type
@@ -134,6 +152,7 @@ const BaseNode = ({ data, id, type, selected }: any) => {
         selected={selected}
         onEdit={selected ? handleEditNode : undefined}
         onDelete={selected ? handleDeleteNode : undefined}
+        onDuplicate={selected ? handleDuplicateNode : undefined}
         onAddBlock={selected ? handleAddBlock : undefined}
       >
         {/* Add the NodePopover for editing */}
