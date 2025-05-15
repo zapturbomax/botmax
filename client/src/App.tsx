@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./lib/auth";
+import { ProtectedRoute } from "./lib/protected-route";
 
 // Pages
 import NotFound from "@/pages/not-found";
@@ -31,14 +32,14 @@ function Router() {
       <Route path="/forgot-password" component={ForgotPassword} />
       
       {/* Protected Routes */}
-      <Route path="/dashboard" component={Dashboard} />
-      <Route path="/flows" component={Flows} />
-      <Route path="/flows/new" component={NewFlow} />
-      <Route path="/flows/:id" component={FlowBuilder} />
-      <Route path="/settings/general" component={GeneralSettings} />
-      <Route path="/settings/account" component={AccountSettings} />
-      <Route path="/settings/billing" component={BillingSettings} />
-      <Route path="/settings/whatsapp" component={WhatsAppSettings} />
+      <ProtectedRoute path="/dashboard" component={Dashboard} />
+      <ProtectedRoute path="/flows" component={Flows} />
+      <ProtectedRoute path="/flows/new" component={NewFlow} />
+      <ProtectedRoute path="/flows/:id" component={FlowBuilder} />
+      <ProtectedRoute path="/settings/general" component={GeneralSettings} />
+      <ProtectedRoute path="/settings/account" component={AccountSettings} />
+      <ProtectedRoute path="/settings/billing" component={BillingSettings} />
+      <ProtectedRoute path="/settings/whatsapp" component={WhatsAppSettings} />
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
