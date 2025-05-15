@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./lib/auth";
 import { ProtectedRoute } from "./lib/protected-route";
+import { useAuth } from "@/hooks/use-auth";
 
 // Pages
 import NotFound from "@/pages/not-found";
@@ -26,7 +27,6 @@ function Router() {
   return (
     <Switch>
       {/* Public Routes */}
-      <Route path="/" component={Home} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
@@ -40,6 +40,11 @@ function Router() {
       <ProtectedRoute path="/settings/account" component={AccountSettings} />
       <ProtectedRoute path="/settings/billing" component={BillingSettings} />
       <ProtectedRoute path="/settings/whatsapp" component={WhatsAppSettings} />
+      
+      {/* Home Page / Redirect */}
+      <Route path="/">
+        {() => <Home />}
+      </Route>
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
