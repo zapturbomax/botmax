@@ -74,9 +74,6 @@ export const createFlow = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
-    // Validate input
-    const validatedData = insertFlowSchema.parse(req.body);
-    
     // Get tenant's flows to check against plan limit
     const tenant = await storage.getTenant(tenantId);
     if (!tenant) {
@@ -99,11 +96,20 @@ export const createFlow = async (req: Request, res: Response) => {
       });
     }
     
+    // Prepare flow data with tenantId automatically added
+    const flowData = {
+      ...req.body,
+      tenantId,
+      status: req.body.status || 'draft',
+      nodes: req.body.nodes || null,
+      edges: req.body.edges || null
+    };
+    
+    // Validate the combined data
+    const validatedData = insertFlowSchema.parse(flowData);
+    
     // Create flow
-    const flow = await storage.createFlow({
-      ...validatedData,
-      tenantId
-    });
+    const flow = await storage.createFlow(validatedData);
     
     res.status(201).json(flow);
   } catch (error) {

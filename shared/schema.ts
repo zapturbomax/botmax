@@ -101,13 +101,19 @@ export const insertTenantSchema = createInsertSchema(tenants).omit({
   updatedAt: true,
 });
 
-export const insertFlowSchema = createInsertSchema(flows).omit({
+// Fluxo base, para validação interna
+const baseFlowSchema = createInsertSchema(flows).omit({
   id: true,
-  status: true,
   createdAt: true,
   updatedAt: true,
-  nodes: true,
-  edges: true,
+});
+
+// Schema para inserção com campos opcionais para facilitar a criação pelo cliente
+export const insertFlowSchema = baseFlowSchema.extend({
+  status: z.enum(['draft', 'published']).default('draft').optional(),
+  nodes: z.array(z.any()).nullable().default(null).optional(),
+  edges: z.array(z.any()).nullable().default(null).optional(),
+  tenantId: z.number().optional(), // Será adicionado automaticamente pelo controller
 });
 
 export const insertWhatsappIntegrationSchema = createInsertSchema(whatsappIntegrations).omit({
