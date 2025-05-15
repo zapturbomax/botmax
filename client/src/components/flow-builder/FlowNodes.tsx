@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/node-card';
 import { nodeTypes } from './FlowNodeTypes';
 import { FlowNode, FlowNodeType } from '@shared/schema';
 import { NodePopover } from './NodePopover';
-import SuggestionMenu from './SuggestionMenu';
+import AddNodeMenu from './AddNodeMenu';
 import { MessageCircle, ArrowRightLeft, Hourglass, Variable, AlertTriangle } from 'lucide-react';
 
 // Function to create a new node connected to the current one
@@ -81,8 +81,8 @@ const BaseNode = ({ data, id, type, selected }: any) => {
     }
   }, [reactFlowInstance, updateNodeInternals, type]);
   
-  // Component state for the suggestion menu
-  const [showSuggestions, setShowSuggestions] = useState(false);
+  // Component state for the add node menu
+  const [addNodeMenuOpen, setAddNodeMenuOpen] = useState(false);
   
   // Handle adding a specific type of node
   const handleAddNodeType = useCallback((nodeType: FlowNodeType) => {
@@ -97,23 +97,23 @@ const BaseNode = ({ data, id, type, selected }: any) => {
     
     reactFlowInstance.addNodes(newNode);
     reactFlowInstance.addEdges(edge);
-    setShowSuggestions(false);
+    setAddNodeMenuOpen(false);
   }, [reactFlowInstance, id]);
   
-  // Handle toggling suggestion menu
-  const handleToggleSuggestions = useCallback(() => {
-    setShowSuggestions(prev => !prev);
+  // Handle adding a block after this node (opens the menu)
+  const handleAddBlock = useCallback(() => {
+    setAddNodeMenuOpen(true);
   }, []);
   
-  // Function to delete node
+  // Função para excluir o nó
   const handleDeleteNode = useCallback(() => {
     reactFlowInstance.deleteElements({ nodes: [{ id }] });
   }, [reactFlowInstance, id]);
 
-  // Function to edit node
+  // Função para editar o nó
   const handleEditNode = useCallback(() => {
-    // Using the same behavior as onUpdate, just opening edit popover
-    // already being rendered when node is selected
+    // Usamos o mesmo comportamento de onUpdate, apenas abrindo o popover de edição
+    // que já está sendo renderizado quando o nó está selecionado
   }, []);
   
   // Create the node object for the current node type
@@ -134,14 +134,14 @@ const BaseNode = ({ data, id, type, selected }: any) => {
         selected={selected}
         onEdit={selected ? handleEditNode : undefined}
         onDelete={selected ? handleDeleteNode : undefined}
-        onAddBlock={selected ? handleToggleSuggestions : undefined}
+        onAddBlock={selected ? handleAddBlock : undefined}
       >
-        {/* NodePopover for editing */}
+        {/* Add the NodePopover for editing */}
         {selected && (
           <NodePopover 
             node={node} 
             onUpdate={handleUpdateNode}
-            onAddBlock={handleToggleSuggestions}
+            onAddBlock={handleAddBlock}
           />
         )}
         
@@ -277,21 +277,20 @@ const BaseNode = ({ data, id, type, selected }: any) => {
         )}
       </Card>
       
-      {/* IA-powered Node suggestion menu */}
-      {selected && showSuggestions && (
-        <div className="absolute -bottom-36 left-1/2 transform -translate-x-1/2 z-50">
-          <SuggestionMenu 
-            parentNodeType={type}
-            onSelect={handleAddNodeType}
-          />
-        </div>
-      )}
+      {/* Node add menu - renderizado fora do card para evitar problemas de z-index/clipping */}
+      <AddNodeMenu 
+        open={addNodeMenuOpen}
+        onClose={() => setAddNodeMenuOpen(false)}
+        onSelect={handleAddNodeType}
+      />
     </>
   );
 };
 
+// Versão memorizada do nó base
 const MemoizedBaseNode = memo(BaseNode);
 
+// Exportando os componentes de nó
 export const nodeComponents = {
   startTrigger: MemoizedBaseNode,
   textMessage: MemoizedBaseNode,

@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
-import { Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "./button";
 
 const cardVariants = cva(
@@ -91,30 +91,17 @@ export function Card({
         {children}
       </div>
       
-      {/* Add block IA suggestion icon */}
+      {/* Add block button (shown below the node when selected) */}
       {selected && onAddBlock && (
         <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 z-10">
           <Button 
             size="sm" 
             variant="secondary"
-            className="h-11 w-11 rounded-full shadow-md border border-primary/30 bg-white hover:bg-primary/5 p-0 flex items-center justify-center"
+            className="h-8 rounded-full shadow-md border border-gray-200 dark:border-gray-700"
             onClick={onAddBlock}
           >
-            <svg 
-              className="h-7 w-7 text-primary" 
-              viewBox="0 0 24 24" 
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path 
-                d="M11.9991 3L14.9499 8.99268L21.5 9.90212L16.75 14.5149L17.9006 21L11.9991 17.9927L6.09843 21L7.24902 14.5149L2.5 9.90212L9.04834 8.99268L11.9991 3Z" 
-                stroke="currentColor" 
-                strokeWidth="1.5" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-                fill="rgba(168, 85, 247, 0.2)"
-              />
-            </svg>
+            <Plus className="h-4 w-4 mr-1" />
+            <span>Adicionar bloco</span>
           </Button>
         </div>
       )}
