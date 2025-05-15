@@ -22,6 +22,7 @@ import GeneralSettings from "@/pages/settings/general";
 import AccountSettings from "@/pages/settings/account";
 import BillingSettings from "@/pages/settings/billing";
 import WhatsAppSettings from "@/pages/settings/whatsapp";
+import Chat from "@/pages/chat";
 
 function Router() {
   return (
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
+      <Route path="/chat" component={Chat} />
       
       {/* Protected Routes */}
       <ProtectedRoute path="/dashboard" component={Dashboard} />
@@ -40,6 +42,12 @@ function Router() {
       <ProtectedRoute path="/settings/account" component={AccountSettings} />
       <ProtectedRoute path="/settings/billing" component={BillingSettings} />
       <ProtectedRoute path="/settings/whatsapp" component={WhatsAppSettings} />
+      <ProtectedRoute path="/all" component={Dashboard} />
+      <ProtectedRoute path="/assigned-to-me" component={Dashboard} />
+      <ProtectedRoute path="/unassigned" component={Dashboard} />
+      <ProtectedRoute path="/live-chat" component={Dashboard} />
+      <ProtectedRoute path="/blocked" component={Dashboard} />
+      <ProtectedRoute path="/trash" component={Dashboard} />
       
       {/* Home Page / Redirect */}
       <Route path="/">

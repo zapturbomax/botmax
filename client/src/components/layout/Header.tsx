@@ -69,7 +69,7 @@ const Header: FC<HeaderProps> = ({ title, onMenuClick, showActions = false }) =>
       <div className="flex items-center space-x-4">
         <Avatar className="h-10 w-10">
           <AvatarFallback className="bg-[#5b5dcd] text-white">{getInitials()}</AvatarFallback>
-          {user?.profileImage && <AvatarImage src={user.profileImage} />}
+          {/* Avatar image would go here if available */}
         </Avatar>
         <div className="text-sm font-medium">Ashly Boldwin</div>
         <Button variant="ghost" size="icon" className="text-gray-500">
