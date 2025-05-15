@@ -38,7 +38,7 @@ const Header: FC<HeaderProps> = ({ title, onMenuClick, showActions = false }) =>
   };
 
   return (
-    <header className="bg-[#f6f6fa] flex items-center justify-end py-3 px-4 border-b border-gray-200">
+    <header className="bg-[#f6f6fa] flex items-center justify-end py-3 px-4">
       <div className="p-[3px] pl-[10px] pr-[10px] bg-white rounded-full shadow-sm flex items-center gap-6">
         <div className="flex items-center gap-2">
           <Avatar className="h-10 w-10">

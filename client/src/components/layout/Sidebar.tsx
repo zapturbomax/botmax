@@ -42,7 +42,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       <aside className={cn(
         "fixed md:relative md:translate-x-0 z-50 md:z-0 inset-y-0 left-0 transform transition-transform duration-300 ease-in-out",
         open ? "translate-x-0" : "-translate-x-full",
-        "w-64 flex flex-col bg-[#1c1c24] text-white"
+        "w-64 flex flex-col bg-[#1c1c24] text-white my-2 ml-2 rounded-3xl shadow-md"
       )}>
         {/* Brand Logo */}
         <div className="p-5 flex items-center">

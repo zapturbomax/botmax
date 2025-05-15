@@ -27,31 +27,7 @@ export default function Dashboard() {
   return (
     <AppLayout title="Dashboard">
       <div className="container mx-auto p-4 md:p-6">
-        {/* Welcome section */}
-        <section className="mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    Welcome back, {user?.fullName || user?.username || 'User'}!
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-300 mt-1">
-                    Here's what's happening with your chatbots today.
-                  </p>
-                </div>
-                <div className="mt-4 md:mt-0">
-                  <Link href="/flows/new">
-                    <Button className="gap-2">
-                      <Plus size={16} />
-                      Create New Flow
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
+        {/* Stats section directly at the top */}
       
         {/* Stats section */}
         <section className="mb-8">
