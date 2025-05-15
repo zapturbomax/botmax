@@ -104,19 +104,8 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
   
   // Função para iniciar um novo fluxo
   const handleCreateStartNode = useCallback(() => {
-    const newNode = {
-      id: `node-${Date.now()}`,
-      type: 'startTrigger',
-      position: { x: 250, y: 100 },
-      data: { 
-        name: 'Início do Fluxo',
-        description: 'Ponto inicial do fluxo',
-        eventType: 'message'
-      }
-    };
-    
-    addNode(newNode);
-  }, [addNode]);
+    addStarterNode();
+  }, [addStarterNode]);
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
@@ -157,6 +146,7 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
           proOptions={{ hideAttribution: true }}
           snapToGrid
           snapGrid={[20, 20]}
+          onPaneClick={() => onNodeSelect(null)}
         >
           <Panel position="top-left" className="bg-white dark:bg-gray-800 shadow-md rounded-md p-1 flex gap-1">
             <Button 
