@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Button } from "./button";
 
 const cardVariants = cva(
@@ -91,20 +91,7 @@ export function Card({
         {children}
       </div>
       
-      {/* Add block button (shown below the node when selected) */}
-      {selected && onAddBlock && (
-        <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2 z-10">
-          <Button 
-            size="sm" 
-            variant="secondary"
-            className="h-8 rounded-full shadow-md border border-gray-200 dark:border-gray-700"
-            onClick={onAddBlock}
-          >
-            <Plus className="h-4 w-4 mr-1" />
-            <span>Adicionar bloco</span>
-          </Button>
-        </div>
-      )}
+      {/* Botão de adicionar bloco removido conforme solicitação */}
     </div>
   );
 }
