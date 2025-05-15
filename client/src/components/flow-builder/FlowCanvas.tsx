@@ -24,8 +24,24 @@ interface FlowCanvasProps {
 const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = false }: FlowCanvasProps) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const reactFlowInstance = useReactFlow();
-  const { nodes, edges, setNodes, setEdges, onConnect, onDrop, onNodeChange, onEdgesChange } = useFlowBuilder();
+  const { 
+    nodes, 
+    edges, 
+    setNodes, 
+    setEdges, 
+    onConnect, 
+    onDrop, 
+    onNodeChange, 
+    onEdgesChange, 
+    addStarterNode 
+  } = useFlowBuilder();
   const [zoom, setZoom] = useState(100);
+  const [showEmptyState, setShowEmptyState] = useState(false);
+  
+  // Verificar se o fluxo está vazio para mostrar mensagem de início
+  useEffect(() => {
+    setShowEmptyState(nodes.length === 0);
+  }, [nodes]);
   
   const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
@@ -86,6 +102,22 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
     setNodes([...nodes, ...newNodes]);
   }, [nodes, setNodes]);
   
+  // Função para iniciar um novo fluxo
+  const handleCreateStartNode = useCallback(() => {
+    const newNode = {
+      id: `node-${Date.now()}`,
+      type: 'startTrigger',
+      position: { x: 250, y: 100 },
+      data: { 
+        name: 'Início do Fluxo',
+        description: 'Ponto inicial do fluxo',
+        eventType: 'message'
+      }
+    };
+    
+    addNode(newNode);
+  }, [addNode]);
+
   return (
     <div className="flex-1 overflow-hidden flex flex-col">
       <FlowControls
@@ -95,6 +127,21 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
       />
       
       <div className="flex-1 flex" ref={reactFlowWrapper}>
+        {showEmptyState && (
+          <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+            <div className="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-8 rounded-lg shadow-lg max-w-md text-center pointer-events-auto">
+              <Play className="h-12 w-12 text-purple-500 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">Seu fluxo está vazio</h3>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Comece seu fluxo adicionando um nó inicial ou arraste componentes do painel lateral.
+              </p>
+              <Button onClick={handleCreateStartNode}>
+                Criar nó inicial
+              </Button>
+            </div>
+          </div>
+        )}
+        
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -106,7 +153,6 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
           onNodeClick={(_, node) => onNodeSelect(node)}
           nodeTypes={nodeComponents}
           className="canvas-bg"
-          onZoomChange={handleZoomChange}
           fitView
           proOptions={{ hideAttribution: true }}
           snapToGrid
