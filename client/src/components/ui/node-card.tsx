@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "./button";
 
 const cardVariants = cva(
@@ -19,12 +19,6 @@ const cardVariants = cva(
   }
 );
 
-interface CardAction {
-  label: string;
-  icon?: ReactNode;
-  onClick: () => void;
-}
-
 interface CardProps {
   title: string;
   description?: string;
@@ -32,7 +26,8 @@ interface CardProps {
   color?: string;
   selected?: boolean;
   children?: ReactNode;
-  actions?: CardAction[];
+  onEdit?: () => void;
+  onDelete?: () => void;
   onAddBlock?: () => void;
 }
 
@@ -43,7 +38,8 @@ export function Card({
   color,
   selected = false,
   children,
-  actions = [],
+  onEdit,
+  onDelete,
   onAddBlock,
 }: CardProps) {
   return (
@@ -63,27 +59,36 @@ export function Card({
               </p>
             )}
           </div>
+          
+          {/* Action buttons */}
+          {selected && (
+            <div className="flex gap-1">
+              {onEdit && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 w-7 p-0 rounded-full"
+                  onClick={onEdit}
+                >
+                  <Pencil className="h-3.5 w-3.5 text-gray-500" />
+                </Button>
+              )}
+              
+              {onDelete && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 w-7 p-0 rounded-full"
+                  onClick={onDelete}
+                >
+                  <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                </Button>
+              )}
+            </div>
+          )}
         </div>
         
         {children}
-        
-        {/* Inline actions shown when card is selected */}
-        {selected && actions.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-4">
-            {actions.map((action, i) => (
-              <Button 
-                key={i} 
-                size="sm" 
-                variant="ghost" 
-                className="h-8 px-2 text-xs"
-                onClick={action.onClick}
-              >
-                {action.icon && <span className="mr-1.5">{action.icon}</span>}
-                {action.label}
-              </Button>
-            ))}
-          </div>
-        )}
       </div>
       
       {/* Add block button (shown below the node when selected) */}

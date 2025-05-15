@@ -1,9 +1,10 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { Handle, Position, useReactFlow, useUpdateNodeInternals } from 'reactflow';
 import { Card } from '@/components/ui/node-card';
 import { nodeTypes } from './FlowNodeTypes';
-import { FlowNode } from '@shared/schema';
+import { FlowNode, FlowNodeType } from '@shared/schema';
 import { NodePopover } from './NodePopover';
+import AddNodeMenu from './AddNodeMenu';
 import { MessageCircle, ArrowRightLeft, Hourglass, Variable, AlertTriangle } from 'lucide-react';
 
 // Function to create a new node connected to the current one
@@ -80,87 +81,40 @@ const BaseNode = ({ data, id, type, selected }: any) => {
     }
   }, [reactFlowInstance, updateNodeInternals, type]);
   
-  // Handle adding a block after this node
-  const handleAddBlock = useCallback(() => {
+  // Component state for the add node menu
+  const [addNodeMenuOpen, setAddNodeMenuOpen] = useState(false);
+  
+  // Handle adding a specific type of node
+  const handleAddNodeType = useCallback((nodeType: FlowNodeType) => {
     const currentNode = reactFlowInstance.getNode(id);
     if (!currentNode) return;
     
     const { node: newNode, edge } = createConnectedNode(
       id, 
-      'textMessage', 
+      nodeType, 
       currentNode.position
     );
     
     reactFlowInstance.addNodes(newNode);
     reactFlowInstance.addEdges(edge);
+    setAddNodeMenuOpen(false);
   }, [reactFlowInstance, id]);
   
-  // Define node-specific actions
-  const getNodeActions = () => {
-    const actions = [];
-    
-    if (['startTrigger', 'textMessage', 'condition', 'waitResponse'].includes(type)) {
-      actions.push({
-        label: 'Adicionar Mensagem',
-        icon: <MessageCircle className="h-4 w-4" />,
-        onClick: () => {
-          const currentNode = reactFlowInstance.getNode(id);
-          if (!currentNode) return;
-          
-          const { node: newNode, edge } = createConnectedNode(
-            id, 
-            'textMessage', 
-            currentNode.position
-          );
-          
-          reactFlowInstance.addNodes(newNode);
-          reactFlowInstance.addEdges(edge);
-        }
-      });
-    }
-    
-    if (['startTrigger', 'textMessage', 'waitResponse'].includes(type)) {
-      actions.push({
-        label: 'Adicionar Condição',
-        icon: <ArrowRightLeft className="h-4 w-4" />,
-        onClick: () => {
-          const currentNode = reactFlowInstance.getNode(id);
-          if (!currentNode) return;
-          
-          const { node: newNode, edge } = createConnectedNode(
-            id, 
-            'condition', 
-            currentNode.position
-          );
-          
-          reactFlowInstance.addNodes(newNode);
-          reactFlowInstance.addEdges(edge);
-        }
-      });
-    }
-    
-    if (['startTrigger', 'textMessage', 'quickReplies'].includes(type)) {
-      actions.push({
-        label: 'Aguardar Resposta',
-        icon: <Hourglass className="h-4 w-4" />,
-        onClick: () => {
-          const currentNode = reactFlowInstance.getNode(id);
-          if (!currentNode) return;
-          
-          const { node: newNode, edge } = createConnectedNode(
-            id, 
-            'waitResponse', 
-            currentNode.position
-          );
-          
-          reactFlowInstance.addNodes(newNode);
-          reactFlowInstance.addEdges(edge);
-        }
-      });
-    }
-    
-    return actions;
-  };
+  // Handle adding a block after this node (opens the menu)
+  const handleAddBlock = useCallback(() => {
+    setAddNodeMenuOpen(true);
+  }, []);
+  
+  // Função para excluir o nó
+  const handleDeleteNode = useCallback(() => {
+    reactFlowInstance.deleteElements({ nodes: [{ id }] });
+  }, [reactFlowInstance, id]);
+
+  // Função para editar o nó
+  const handleEditNode = useCallback(() => {
+    // Usamos o mesmo comportamento de onUpdate, apenas abrindo o popover de edição
+    // que já está sendo renderizado quando o nó está selecionado
+  }, []);
   
   // Create the node object for the current node type
   const node: FlowNode = {
@@ -171,155 +125,165 @@ const BaseNode = ({ data, id, type, selected }: any) => {
   };
   
   return (
-    <Card 
-      title={displayName}
-      description={displayDescription}
-      icon={nodeType.icon}
-      color={nodeType.iconBg}
-      selected={selected}
-      actions={selected ? getNodeActions() : []}
-      onAddBlock={selected ? handleAddBlock : undefined}
-    >
-      {/* Add the NodePopover for editing */}
-      {selected && (
-        <NodePopover 
-          node={node} 
-          onUpdate={handleUpdateNode}
-          onAddBlock={handleAddBlock}
-        />
-      )}
-      
-      {/* Input handle */}
-      {type !== 'startTrigger' && (
-        <Handle 
-          type="target" 
-          position={Position.Top} 
-          className="w-3 h-3 bg-blue-500" 
-        />
-      )}
-      
-      {/* Render node type specific content */}
-      <div className="p-3 text-sm">
-        {type === 'textMessage' && data?.text && (
-          <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs overflow-auto max-h-20">
-            {data.text}
-          </div>
+    <>
+      <Card 
+        title={displayName}
+        description={displayDescription}
+        icon={nodeType.icon}
+        color={nodeType.iconBg}
+        selected={selected}
+        onEdit={selected ? handleEditNode : undefined}
+        onDelete={selected ? handleDeleteNode : undefined}
+        onAddBlock={selected ? handleAddBlock : undefined}
+      >
+        {/* Add the NodePopover for editing */}
+        {selected && (
+          <NodePopover 
+            node={node} 
+            onUpdate={handleUpdateNode}
+            onAddBlock={handleAddBlock}
+          />
         )}
         
-        {type === 'quickReplies' && (
-          <div className="space-y-1">
-            {data?.text && (
-              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs overflow-auto max-h-16">
-                {data.text}
+        {/* Input handle */}
+        {type !== 'startTrigger' && (
+          <Handle 
+            type="target" 
+            position={Position.Top} 
+            className="w-3 h-3 bg-blue-500" 
+          />
+        )}
+        
+        {/* Render node type specific content */}
+        <div className="p-3 text-sm">
+          {type === 'textMessage' && data?.text && (
+            <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs overflow-auto max-h-20">
+              {data.text}
+            </div>
+          )}
+          
+          {type === 'quickReplies' && (
+            <div className="space-y-1">
+              {data?.text && (
+                <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs overflow-auto max-h-16">
+                  {data.text}
+                </div>
+              )}
+              <div className="flex flex-wrap gap-1 mt-1">
+                {(data?.buttons || []).map((button: any, index: number) => (
+                  <span 
+                    key={button.id || index} 
+                    className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200"
+                  >
+                    {button.title}
+                  </span>
+                ))}
               </div>
-            )}
-            <div className="flex flex-wrap gap-1 mt-1">
-              {(data?.buttons || []).map((button: any, index: number) => (
-                <span 
-                  key={button.id || index} 
-                  className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200"
-                >
-                  {button.title}
-                </span>
-              ))}
             </div>
-          </div>
-        )}
-        
-        {type === 'condition' && data?.condition && (
-          <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs font-mono overflow-auto max-h-20">
-            {data.condition}
-          </div>
-        )}
-        
-        {type === 'waitResponse' && data?.variableName && (
-          <div>
-            <span className="text-xs text-gray-500">Variable: </span>
-            <code className="text-xs bg-gray-50 dark:bg-gray-700 px-1 rounded">{data.variableName}</code>
-          </div>
-        )}
-        
-        {type === 'setVariable' && data?.variableName && (
-          <div>
-            <div className="flex items-center text-xs">
-              <span className="text-gray-500">Set </span>
-              <code className="mx-1 bg-gray-50 dark:bg-gray-700 px-1 rounded">{data.variableName}</code>
-              <span className="text-gray-500"> to </span>
-              <code className="ml-1 bg-gray-50 dark:bg-gray-700 px-1 rounded">{data.value || '""'}</code>
+          )}
+          
+          {type === 'condition' && data?.condition && (
+            <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs font-mono overflow-auto max-h-20">
+              {data.condition}
             </div>
-          </div>
-        )}
-        
-        {type === 'delay' && (
-          <div className="text-xs text-gray-500">
-            Delay: {data?.delayHours || 0}h {data?.delayMinutes || 0}m
-          </div>
-        )}
-        
-        {type === 'httpRequest' && data?.url && (
-          <div className="text-xs overflow-hidden">
+          )}
+          
+          {type === 'waitResponse' && data?.variableName && (
+            <div>
+              <span className="text-xs text-gray-500">Variable: </span>
+              <code className="text-xs bg-gray-50 dark:bg-gray-700 px-1 rounded">{data.variableName}</code>
+            </div>
+          )}
+          
+          {type === 'setVariable' && data?.variableName && (
+            <div>
+              <div className="flex items-center text-xs">
+                <span className="text-gray-500">Set </span>
+                <code className="mx-1 bg-gray-50 dark:bg-gray-700 px-1 rounded">{data.variableName}</code>
+                <span className="text-gray-500"> to </span>
+                <code className="ml-1 bg-gray-50 dark:bg-gray-700 px-1 rounded">{data.value || '""'}</code>
+              </div>
+            </div>
+          )}
+          
+          {type === 'delay' && (
             <div className="text-xs text-gray-500">
-              {data.method || 'GET'} Request
+              Delay: {data?.delayHours || 0}h {data?.delayMinutes || 0}m
             </div>
-            <div className="truncate text-xs text-gray-400">
-              {data.url}
+          )}
+          
+          {type === 'httpRequest' && data?.url && (
+            <div className="text-xs overflow-hidden">
+              <div className="text-xs text-gray-500">
+                {data.method || 'GET'} Request
+              </div>
+              <div className="truncate text-xs text-gray-400">
+                {data.url}
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-      
-      {/* Output handles */}
-      {type === 'condition' ? (
-        <>
-          <Handle 
-            type="source" 
-            position={Position.Bottom} 
-            id="true" 
-            className="w-3 h-3 bg-green-500 -ml-4"
-          />
-          <Handle 
-            type="source" 
-            position={Position.Bottom} 
-            id="false" 
-            className="w-3 h-3 bg-red-500 ml-4"
-          />
-        </>
-      ) : type === 'httpRequest' ? (
-        <>
-          <Handle 
-            type="source" 
-            position={Position.Bottom} 
-            id="success" 
-            className="w-3 h-3 bg-green-500 -ml-4"
-          />
-          <Handle 
-            type="source" 
-            position={Position.Bottom} 
-            id="error" 
-            className="w-3 h-3 bg-red-500 ml-4"
-          />
-        </>
-      ) : type === 'quickReplies' ? (
-        <div className="flex justify-center">
-          {(data?.buttons || []).slice(0, 3).map((button: any, index: number) => (
+          )}
+        </div>
+        
+        {/* Output handles */}
+        {type === 'condition' ? (
+          <>
             <Handle 
-              key={button.id || index}
               type="source" 
               position={Position.Bottom} 
-              id={`button-${index}`} 
-              className="w-3 h-3 bg-green-500"
-              style={{ left: `${25 + (index * 25)}%` }}
+              id="true" 
+              className="w-3 h-3 bg-green-500 -ml-4"
             />
-          ))}
-        </div>
-      ) : (
-        <Handle 
-          type="source" 
-          position={Position.Bottom} 
-          className="w-3 h-3 bg-green-500" 
-        />
-      )}
-    </Card>
+            <Handle 
+              type="source" 
+              position={Position.Bottom} 
+              id="false" 
+              className="w-3 h-3 bg-red-500 ml-4"
+            />
+          </>
+        ) : type === 'httpRequest' ? (
+          <>
+            <Handle 
+              type="source" 
+              position={Position.Bottom} 
+              id="success" 
+              className="w-3 h-3 bg-green-500 -ml-4"
+            />
+            <Handle 
+              type="source" 
+              position={Position.Bottom} 
+              id="error" 
+              className="w-3 h-3 bg-red-500 ml-4"
+            />
+          </>
+        ) : type === 'quickReplies' ? (
+          <div className="flex justify-center">
+            {(data?.buttons || []).slice(0, 3).map((button: any, index: number) => (
+              <Handle 
+                key={button.id || index}
+                type="source" 
+                position={Position.Bottom} 
+                id={`button-${index}`} 
+                className="w-3 h-3 bg-green-500"
+                style={{ left: `${25 + (index * 25)}%` }}
+              />
+            ))}
+          </div>
+        ) : (
+          <Handle 
+            type="source" 
+            position={Position.Bottom} 
+            className="w-3 h-3 bg-green-500" 
+          />
+        )}
+      </Card>
+      
+      {/* Node suggestion menu - renderizado fora do card para evitar problemas de z-index/clipping */}
+      <AddNodeMenu 
+        open={addNodeMenuOpen}
+        onClose={() => setAddNodeMenuOpen(false)}
+        onSelect={handleAddNodeType}
+      />
+    </>
   );
 };
 
