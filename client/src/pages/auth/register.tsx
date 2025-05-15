@@ -86,9 +86,9 @@ export default function Register() {
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           Or{' '}
           <Link href="/login">
-            <a className="font-medium text-primary hover:text-primary-600">
+            <span className="font-medium text-primary hover:text-primary-600 cursor-pointer">
               sign in to your existing account
-            </a>
+            </span>
           </Link>
         </p>
       </div>
@@ -236,9 +236,9 @@ export default function Register() {
             <div className="text-sm text-center text-gray-600 dark:text-gray-400">
               Already have an account?{' '}
               <Link href="/login">
-                <a className="font-medium text-primary hover:text-primary-600">
+                <span className="font-medium text-primary hover:text-primary-600 cursor-pointer">
                   Sign in
-                </a>
+                </span>
               </Link>
             </div>
           </CardFooter>

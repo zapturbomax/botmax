@@ -80,9 +80,9 @@ export default function Login() {
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           Or{' '}
           <Link href="/register">
-            <a className="font-medium text-primary hover:text-primary-600">
+            <span className="font-medium text-primary hover:text-primary-600 cursor-pointer">
               create a new account
-            </a>
+            </span>
           </Link>
         </p>
       </div>
@@ -136,9 +136,9 @@ export default function Login() {
                       </FormControl>
                       <div className="flex justify-end">
                         <Link href="/forgot-password">
-                          <a className="text-sm text-primary hover:text-primary-600">
+                          <span className="text-sm text-primary hover:text-primary-600 cursor-pointer">
                             Forgot password?
-                          </a>
+                          </span>
                         </Link>
                       </div>
                       <FormMessage />
@@ -166,9 +166,9 @@ export default function Login() {
             <div className="text-sm text-center text-gray-600 dark:text-gray-400">
               Don't have an account?{' '}
               <Link href="/register">
-                <a className="font-medium text-primary hover:text-primary-600">
+                <span className="font-medium text-primary hover:text-primary-600 cursor-pointer">
                   Sign up
-                </a>
+                </span>
               </Link>
             </div>
           </CardFooter>
