@@ -18,7 +18,7 @@ export default function AppLayout({
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
   
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="h-screen flex overflow-hidden bg-[#f6f6fa]">
       {/* Sidebar */}
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
@@ -31,7 +31,7 @@ export default function AppLayout({
         />
         
         {/* Content Area */}
-        <div className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-900">
+        <div className="flex-1 overflow-auto bg-[#f6f6fa]">
           {children}
         </div>
       </main>

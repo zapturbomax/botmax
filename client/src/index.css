@@ -12,11 +12,13 @@
   --popover: 0 0% 100%;
   --popover-foreground: 240 10% 3.9%;
   
-  --primary: 207 90% 54%;
-  --primary-foreground: 211 100% 99%;
+  /* Attmosfire primary purple */
+  --primary: 260 83% 60%;
+  --primary-foreground: 0 0% 100%;
   
-  --secondary: 174 72% 50%;
-  --secondary-foreground: 240 5.9% 10%;
+  /* Secondary color for accents */
+  --secondary: 260 83% 75%;
+  --secondary-foreground: 0 0% 100%;
   
   --muted: 240 4.8% 95.9%;
   --muted-foreground: 240 3.8% 46.1%;
@@ -31,22 +33,24 @@
   --input: 240 5.9% 90%;
   --ring: 240 5.9% 10%;
   
-  --radius: 0.5rem;
+  --radius: 0.8rem;
   
+  /* Sidebar dark mode colors */
   --sidebar-background: 240 10% 3.9%;
   --sidebar-foreground: 0 0% 98%;
-  --sidebar-primary: 207 90% 54%;
-  --sidebar-primary-foreground: 211 100% 99%;
-  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-primary: 260 83% 60%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 260 83% 75%;
   --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-border: 240 3.7% 15.9%;
-  --sidebar-ring: 240 4.9% 83.9%;
+  --sidebar-border: 260 83% 70%;
+  --sidebar-ring: 260 83% 75%;
   
-  --chart-1: 207 90% 54%;
-  --chart-2: 174 72% 50%;
+  /* Chart colors */
+  --chart-1: 260 83% 60%;
+  --chart-2: 260 83% 75%;
   --chart-3: 350 89% 60%;
   --chart-4: 39 100% 50%;
-  --chart-5: 262 83% 58%;
+  --chart-5: 200 83% 58%;
 }
 
 .dark {

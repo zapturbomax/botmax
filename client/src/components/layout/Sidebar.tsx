@@ -1,19 +1,13 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
-  ChartGantt,
-  LayoutDashboard,
-  Settings,
-  LogOut,
   MessageSquare,
   Users,
-  BarChartBig,
-  CreditCard,
-  User,
-  Settings2
+  FileText,
+  Trash,
+  AlertCircle,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -24,15 +18,6 @@ interface SidebarProps {
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const [location] = useLocation();
   const { user, logout } = useAuth();
-  
-  // Get user initials for avatar
-  const getInitials = () => {
-    if (!user) return "?";
-    if (user.fullName) {
-      return user.fullName.split(" ").map(n => n[0]).join("").toUpperCase();
-    }
-    return user.username.substring(0, 2).toUpperCase();
-  };
   
   return (
     <>
@@ -47,116 +32,89 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
       <aside className={cn(
         "fixed md:relative md:translate-x-0 z-50 md:z-0 inset-y-0 left-0 transform transition-transform duration-300 ease-in-out",
         open ? "translate-x-0" : "-translate-x-full",
-        "w-64 flex flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border"
+        "w-64 flex flex-col bg-[#1c1c24] text-white"
       )}>
         {/* Brand Logo */}
-        <div className="p-4 flex items-center border-b border-sidebar-border">
+        <div className="p-5 flex items-center">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary text-primary-foreground rounded-md flex items-center justify-center">
-              <ChartGantt size={18} />
+            <div className="text-white text-3xl font-bold flex items-center">
+              <svg width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
+                <path d="M10 19L19 10M19 10L28 19M19 10V28" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Attmosfire
             </div>
-            <span className="text-xl font-semibold">FlowBot</span>
           </div>
         </div>
         
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto p-4">
-          <div className="space-y-1">
+        <nav className="flex-1 overflow-y-auto px-4 py-2">
+          <div className="space-y-1.5">
             <NavLink 
-              href="/dashboard" 
-              icon={<LayoutDashboard size={18} />} 
-              current={location}
+              href="/all" 
+              icon={<FileText size={18} />} 
+              isActive={location === "/all"}
             >
-              Dashboard
+              All
             </NavLink>
             <NavLink 
-              href="/flows" 
-              icon={<ChartGantt size={18} />} 
-              current={location}
+              href="/assigned-to-me" 
+              icon={<FileText size={18} />} 
+              isActive={location === "/assigned-to-me"}
             >
-              Flow Builder
+              Assigned to Me
             </NavLink>
             <NavLink 
-              href="/settings/whatsapp" 
+              href="/unassigned" 
+              icon={<FileText size={18} />} 
+              isActive={location === "/unassigned"}
+            >
+              Unassigned
+            </NavLink>
+            <NavLink 
+              href="/live-chat" 
               icon={<MessageSquare size={18} />} 
-              current={location}
+              isActive={location === "/live-chat"}
             >
-              WhatsApp Integration
+              Live Chat
             </NavLink>
             <NavLink 
-              href="/conversations" 
-              icon={<MessageSquare size={18} />} 
-              current={location}
+              href="/blocked" 
+              icon={<AlertCircle size={18} />} 
+              isActive={location === "/blocked"}
+              badge="PRO"
             >
-              Conversations
+              Blocked
             </NavLink>
             <NavLink 
-              href="/contacts" 
-              icon={<Users size={18} />} 
-              current={location}
+              href="/trash" 
+              icon={<Trash size={18} />} 
+              isActive={location === "/trash"}
             >
-              Contacts
+              Trash
             </NavLink>
-            <NavLink 
-              href="/analytics" 
-              icon={<BarChartBig size={18} />} 
-              current={location}
-            >
-              Analytics
-            </NavLink>
-          </div>
-          
-          <div className="mt-10">
-            <h3 className="px-3 text-xs font-semibold text-sidebar-foreground/60 uppercase tracking-wider">
-              Settings
-            </h3>
-            <div className="mt-2 space-y-1">
-              <NavLink 
-                href="/settings/general" 
-                icon={<Settings2 size={18} />} 
-                current={location}
-              >
-                General
-              </NavLink>
-              <NavLink 
-                href="/settings/account" 
-                icon={<User size={18} />} 
-                current={location}
-              >
-                Account
-              </NavLink>
-              <NavLink 
-                href="/settings/billing" 
-                icon={<CreditCard size={18} />} 
-                current={location}
-              >
-                Billing
-              </NavLink>
-            </div>
           </div>
         </nav>
         
-        {/* User Profile */}
-        <div className="border-t border-sidebar-border p-4">
-          <div className="flex items-center">
-            <Avatar className="h-8 w-8 bg-primary text-primary-foreground">
-              <AvatarFallback>{getInitials()}</AvatarFallback>
-            </Avatar>
-            <div className="ml-3 min-w-0 flex-1">
-              <div className="text-sm font-medium truncate">
-                {user?.fullName || user?.username || "User"}
-              </div>
-              <div className="text-xs text-sidebar-foreground/60 truncate">
-                {user?.email || "user@example.com"}
+        {/* Pro Plan Section */}
+        <div className="px-4 py-5 mt-auto mb-5">
+          <div className="bg-[#5b5dcd] rounded-lg p-4 text-white">
+            <div className="flex items-center mb-4">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold">Pro Plan</h3>
+                <div className="text-2xl font-bold flex items-center mt-1">
+                  $189<span className="text-sm ml-1 opacity-80">/month</span>
+                </div>
               </div>
             </div>
+            <p className="text-xs opacity-80 mb-4">
+              Open a lot of cool features with our Premium Pro Plan
+            </p>
             <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={logout}
-              className="text-sidebar-foreground/60 hover:text-sidebar-foreground"
+              variant="secondary"
+              className="w-full bg-[#6a6cf1] text-white hover:bg-[#7b7df4] border-none"
+              size="sm"
             >
-              <LogOut size={18} />
+              Get Pro Plan
             </Button>
           </div>
         </div>
@@ -169,25 +127,28 @@ interface NavLinkProps {
   href: string;
   icon: React.ReactNode;
   children: React.ReactNode;
-  current: string;
+  isActive?: boolean;
+  badge?: string;
 }
 
-function NavLink({ href, icon, children, current }: NavLinkProps) {
-  const isActive = current === href || current.startsWith(`${href}/`);
-  
+function NavLink({ href, icon, children, isActive = false, badge }: NavLinkProps) {
   return (
     <Link href={href}>
       <div className={cn(
-        "sidebar-item flex items-center px-3 py-2.5 text-sm font-medium rounded-md cursor-pointer",
-        isActive ? "active" : "text-sidebar-foreground/70 hover:text-sidebar-foreground"
+        "sidebar-item flex items-center px-3 py-3 text-sm font-medium rounded-md cursor-pointer",
+        isActive 
+          ? "bg-[#35353f] text-white" 
+          : "text-gray-400 hover:bg-[#35353f] hover:text-white"
       )}>
-        <span className={cn(
-          "mr-3 text-lg",
-          isActive ? "text-primary" : "text-sidebar-foreground/70"
-        )}>
+        <span className="mr-3 text-lg">
           {icon}
         </span>
-        {children}
+        <span>{children}</span>
+        {badge && (
+          <span className="ml-auto bg-[#5b5dcd] text-[10px] font-semibold px-2 py-1 rounded">
+            {badge}
+          </span>
+        )}
       </div>
     </Link>
   );
