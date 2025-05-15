@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from 'react';
+import { useRef, useCallback, useState, useEffect } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { nodeComponents } from './FlowNodes';
 import { useFlowBuilder } from '@/hooks/use-flow-builder';
 import FlowControls from './FlowControls';
-import { ZoomIn, ZoomOut, Focus, Trash, Copy } from 'lucide-react';
+import { ZoomIn, ZoomOut, Focus, Trash, Copy, Play } from 'lucide-react';
 
 interface FlowCanvasProps {
   onSaveDraft: () => void;

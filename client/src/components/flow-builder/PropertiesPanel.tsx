@@ -132,7 +132,7 @@ const PropertiesPanel = ({ node, onClose, open, onToggle }: PropertiesPanelProps
                     (localData.text || '') + " {{first_name}}"
                   )}
                 >
-                  {{first_name}}
+                  {"{{"+"first_name"+"}}"}
                 </Button>
                 <Button
                   variant="outline"
@@ -142,7 +142,7 @@ const PropertiesPanel = ({ node, onClose, open, onToggle }: PropertiesPanelProps
                     (localData.text || '') + " {{last_name}}"
                   )}
                 >
-                  {{last_name}}
+                  {"{{"+"last_name"+"}}"}
                 </Button>
                 <Button
                   variant="outline"
@@ -152,7 +152,7 @@ const PropertiesPanel = ({ node, onClose, open, onToggle }: PropertiesPanelProps
                     (localData.text || '') + " {{phone}}"
                   )}
                 >
-                  {{phone}}
+                  {"{{"+"phone"+"}}"}
                 </Button>
               </div>
             </div>
@@ -306,7 +306,7 @@ const PropertiesPanel = ({ node, onClose, open, onToggle }: PropertiesPanelProps
                 rows={3}
               />
               <p className="text-xs text-gray-500 mt-1">
-                Use JavaScript syntax. Example: <code>{{variable}} === 'value'</code>
+                Use JavaScript syntax. Example: <code>{"{{variable}} === 'value'"}</code>
               </p>
             </div>
           </>
