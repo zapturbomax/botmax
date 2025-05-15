@@ -47,10 +47,14 @@ export default function Login() {
         description: 'Welcome back!',
       });
       
-      // Get redirect from URL or go to dashboard
-      const urlParams = new URLSearchParams(window.location.search);
-      const redirect = urlParams.get('redirect') || '/dashboard';
-      setLocation(redirect);
+      // Add a short delay to ensure state is updated before redirecting
+      setTimeout(() => {
+        // Get redirect from URL or go to dashboard
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect') || '/dashboard';
+        console.log("Redirecting to:", redirect);
+        setLocation(redirect);
+      }, 500);
     },
     onError: (error) => {
       toast({
