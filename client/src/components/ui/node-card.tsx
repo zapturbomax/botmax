@@ -75,30 +75,30 @@ export function Card({
                 <Button 
                   size="sm"
                   variant="ghost"
-                  className="h-7 w-7 p-0 rounded-full"
+                  className="h-6 w-6 p-0 rounded-full"
                 >
-                  <MoreVertical className="h-4 w-4 text-gray-500" />
+                  <MoreVertical className="h-3.5 w-3.5 text-gray-500" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-32 py-1">
                 {onEdit && (
-                  <DropdownMenuItem onClick={onEdit}>
-                    <Edit className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={onEdit} className="py-0.5 px-2 text-xs">
+                    <Edit className="mr-1.5 h-3 w-3" />
                     <span>Editar</span>
                   </DropdownMenuItem>
                 )}
                 {onDuplicate && (
-                  <DropdownMenuItem onClick={onDuplicate}>
-                    <Copy className="mr-2 h-4 w-4" />
+                  <DropdownMenuItem onClick={onDuplicate} className="py-0.5 px-2 text-xs">
+                    <Copy className="mr-1.5 h-3 w-3" />
                     <span>Duplicar</span>
                   </DropdownMenuItem>
                 )}
                 {onDelete && (
                   <DropdownMenuItem 
-                    className="text-red-500 focus:text-red-500" 
+                    className="text-red-500 focus:text-red-500 py-0.5 px-2 text-xs" 
                     onClick={onDelete}
                   >
-                    <Trash2 className="mr-2 h-4 w-4" />
+                    <Trash2 className="mr-1.5 h-3 w-3" />
                     <span>Excluir</span>
                   </DropdownMenuItem>
                 )}
