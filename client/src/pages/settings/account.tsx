@@ -16,18 +16,22 @@ import { Eye, EyeOff } from 'lucide-react';
 
 // Profile form schema
 const profileFormSchema = z.object({
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  email: z.string().email('Invalid email address'),
-  fullName: z.string().min(2, 'Full name must be at least 2 characters').optional(),
+  username: z.string().min(3, 'Nome de usuário deve ter pelo menos 3 caracteres'),
+  email: z.string().email('Endereço de email inválido'),
+  fullName: z.string().min(2, 'Nome completo deve ter pelo menos 2 caracteres').optional(),
+  phone: z.string().optional().refine(val => !val || /^\+?[0-9]{10,15}$/.test(val), {
+    message: 'Número de telefone deve ser válido (somente dígitos, 10-15 caracteres)'
+  }),
+  avatar: z.string().optional(),
 });
 
 // Password form schema
 const passwordFormSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z.string().min(6, 'New password must be at least 6 characters'),
-  confirmPassword: z.string().min(6, 'Confirm password must be at least 6 characters'),
+  currentPassword: z.string().min(1, 'Senha atual é obrigatória'),
+  newPassword: z.string().min(6, 'Nova senha deve ter pelo menos 6 caracteres'),
+  confirmPassword: z.string().min(6, 'Confirmação de senha deve ter pelo menos 6 caracteres'),
 }).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "As senhas não coincidem",
   path: ['confirmPassword'],
 });
 
@@ -39,6 +43,17 @@ export default function AccountSettings() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
+  // Get user initials for avatar
+  const getInitials = () => {
+    if (!user?.fullName) return user?.username?.slice(0, 2).toUpperCase() || "?";
+    return user.fullName
+      .split(" ")
+      .map(name => name.charAt(0))
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+  
   // Initialize profile form
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
@@ -46,6 +61,8 @@ export default function AccountSettings() {
       username: user?.username || '',
       email: user?.email || '',
       fullName: user?.fullName || '',
+      phone: user?.phone || '',
+      avatar: user?.avatar || '',
     },
   });
   
@@ -143,12 +160,12 @@ export default function AccountSettings() {
                     name="username"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>Nome de Usuário</FormLabel>
                         <FormControl>
                           <Input 
                             {...field} 
                             disabled={!isEditingProfile} 
-                            placeholder="johnsmith" 
+                            placeholder="joaosilva" 
                           />
                         </FormControl>
                         <FormMessage />
@@ -166,7 +183,7 @@ export default function AccountSettings() {
                           <Input 
                             {...field} 
                             disabled={!isEditingProfile} 
-                            placeholder="john@example.com" 
+                            placeholder="joao@exemplo.com" 
                             type="email"
                           />
                         </FormControl>
@@ -180,14 +197,91 @@ export default function AccountSettings() {
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Full Name</FormLabel>
+                        <FormLabel>Nome Completo</FormLabel>
                         <FormControl>
                           <Input 
                             {...field} 
                             disabled={!isEditingProfile} 
-                            placeholder="John Smith" 
+                            placeholder="João Silva" 
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={profileForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>WhatsApp</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            disabled={!isEditingProfile} 
+                            placeholder="+5511999999999" 
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Número com código do país, ex: +5511999999999
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={profileForm.control}
+                    name="avatar"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Foto de Perfil</FormLabel>
+                        <div className="flex items-center gap-4">
+                          <div className="relative h-24 w-24 rounded-full overflow-hidden bg-gray-100">
+                            {field.value ? (
+                              <img 
+                                src={field.value} 
+                                alt="Avatar" 
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center bg-primary/10">
+                                <span className="text-3xl font-semibold text-primary">{getInitials()}</span>
+                              </div>
+                            )}
+                          </div>
+                          {isEditingProfile && (
+                            <div className="space-y-2">
+                              <Button 
+                                type="button" 
+                                variant="outline" 
+                                size="sm"
+                                className="w-full"
+                                onClick={() => {
+                                  // Aqui você pode implementar um upload de arquivo
+                                  const imageUrl = prompt("Digite a URL da imagem:");
+                                  if (imageUrl) {
+                                    field.onChange(imageUrl);
+                                  }
+                                }}
+                              >
+                                Carregar Foto
+                              </Button>
+                              {field.value && (
+                                <Button 
+                                  type="button" 
+                                  variant="outline" 
+                                  size="sm"
+                                  className="w-full text-destructive border-destructive"
+                                  onClick={() => field.onChange("")}
+                                >
+                                  Remover Foto
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </div>
                         <FormMessage />
                       </FormItem>
                     )}

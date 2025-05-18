@@ -63,7 +63,7 @@ const Header: FC<HeaderProps> = ({ title, onMenuClick, showActions = false }) =>
                   Editar Perfil
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => logout()} className="text-destructive cursor-pointer">
+              <DropdownMenuItem onSelect={() => logout()} className="text-destructive cursor-pointer">
                 Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
