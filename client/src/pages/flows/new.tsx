@@ -65,20 +65,20 @@ export default function NewFlow() {
   const templates = [
     {
       id: 'welcome',
-      name: 'Welcome Bot',
-      description: 'Greet new users and collect basic information',
+      name: 'Bot de Boas-vindas',
+      description: 'Receba novos usuários e colete informações básicas',
       icon: <ChartGantt className="h-6 w-6 text-blue-500" />,
     },
     {
       id: 'support',
-      name: 'Support Bot',
-      description: 'Handle common support requests and route to human agents when needed',
+      name: 'Bot de Suporte',
+      description: 'Atenda solicitações comuns e transfira para atendentes humanos quando necessário',
       icon: <ChartGantt className="h-6 w-6 text-green-500" />,
     },
     {
       id: 'sales',
-      name: 'Sales Bot',
-      description: 'Qualify leads and answer product questions',
+      name: 'Bot de Vendas',
+      description: 'Qualifique leads e responda perguntas sobre produtos',
       icon: <ChartGantt className="h-6 w-6 text-purple-500" />,
     },
   ];
