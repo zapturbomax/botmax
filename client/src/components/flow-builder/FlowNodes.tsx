@@ -93,11 +93,22 @@ const BaseNode = ({ data, id, type, selected }: any) => {
     handleUpdateNode(id, { description: newDescription });
   }, [handleUpdateNode, id]);
   
-  // Função para controlar o início/fim da edição
+  // Função para atualizar texto da mensagem diretamente
+  const handleTextChange = useCallback((newText: string) => {
+    handleUpdateNode(id, { text: newText });
+  }, [handleUpdateNode, id]);
+  
+  // Função para atualizar condição diretamente
+  const handleConditionChange = useCallback((newCondition: string) => {
+    handleUpdateNode(id, { condition: newCondition });
+  }, [handleUpdateNode, id]);
+  
+  // Função para controlar o início da edição ao clicar no nó
   const handleNodeClick = useCallback(() => {
     setIsEditing(true);
   }, []);
   
+  // Função para finalizar a edição ao perder o foco
   const handleBlur = useCallback(() => {
     setIsEditing(false);
   }, []);
@@ -171,6 +182,9 @@ const BaseNode = ({ data, id, type, selected }: any) => {
         icon={nodeType.icon}
         color={nodeType.iconBg}
         selected={selected}
+        isEditable={isEditing}
+        onTitleChange={handleTitleChange}
+        onDescriptionChange={handleDescriptionChange}
         onEdit={selected ? handleEditNode : undefined}
         onDelete={selected ? handleDeleteNode : undefined}
         onDuplicate={selected ? handleDuplicateNode : undefined}
