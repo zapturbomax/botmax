@@ -194,8 +194,8 @@ export function useFlowBuilder() {
         type: 'startTrigger',
         position: { x: 250, y: 50 },
         data: {
-          name: 'Start',
-          description: 'Entry point for the flow',
+          name: 'Início',
+          description: 'Ponto de entrada para o fluxo',
         },
       };
       

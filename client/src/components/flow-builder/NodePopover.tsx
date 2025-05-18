@@ -170,7 +170,7 @@ export function NodePopover({ node, onUpdate, onAddBlock, onDelete, onDuplicate 
                 rows={3}
               />
               <p className="text-xs text-gray-500 mt-1">
-                Use JavaScript syntax. Example: <code>{"{{variable}} === 'value'"}</code>
+                Use sintaxe JavaScript. Exemplo: <code>{"{{variable}} === 'value'"}</code>
               </p>
             </div>
           </>
