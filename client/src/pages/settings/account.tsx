@@ -132,7 +132,7 @@ export default function AccountSettings() {
   };
   
   return (
-    <AppLayout title="Account Settings">
+    <AppLayout title="Configurações da Conta">
       <div className="container max-w-4xl mx-auto p-4 md:p-6">
         <div className="space-y-6">
           <div>
@@ -293,16 +293,16 @@ export default function AccountSettings() {
                         {updateProfileMutation.isPending ? (
                           <span className="flex items-center">
                             <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                            Saving...
+                            Salvando...
                           </span>
-                        ) : 'Save Changes'}
+                        ) : 'Salvar Alterações'}
                       </Button>
                       <Button 
                         type="button" 
                         variant="outline" 
                         onClick={() => setIsEditingProfile(false)}
                       >
-                        Cancel
+                        Cancelar
                       </Button>
                     </div>
                   ) : (
@@ -310,7 +310,7 @@ export default function AccountSettings() {
                       type="button" 
                       onClick={() => setIsEditingProfile(true)}
                     >
-                      Edit Profile
+                      Editar Perfil
                     </Button>
                   )}
                 </form>
@@ -334,7 +334,7 @@ export default function AccountSettings() {
                     name="currentPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Current Password</FormLabel>
+                        <FormLabel>Senha Atual</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Input 
@@ -367,7 +367,7 @@ export default function AccountSettings() {
                     name="newPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>New Password</FormLabel>
+                        <FormLabel>Nova Senha</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Input 
@@ -391,7 +391,7 @@ export default function AccountSettings() {
                           </div>
                         </FormControl>
                         <FormDescription>
-                          Password must be at least 6 characters.
+                          A senha deve ter pelo menos 6 caracteres.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -403,7 +403,7 @@ export default function AccountSettings() {
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Confirm New Password</FormLabel>
+                        <FormLabel>Confirmar Nova Senha</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Input 
@@ -435,9 +435,9 @@ export default function AccountSettings() {
                     {changePasswordMutation.isPending ? (
                       <span className="flex items-center">
                         <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                        Changing Password...
+                        Alterando Senha...
                       </span>
-                    ) : 'Change Password'}
+                    ) : 'Alterar Senha'}
                   </Button>
                 </form>
               </Form>
