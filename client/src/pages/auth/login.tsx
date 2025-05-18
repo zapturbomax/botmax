@@ -79,13 +79,13 @@ export default function Login() {
           </div>
         </div>
         <h2 className="mt-5 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-          Log in to FlowBot
+          Entrar no BotMAX
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Or{' '}
+          Ou{' '}
           <Link href="/register">
             <span className="font-medium text-primary hover:text-primary-600 cursor-pointer">
-              create a new account
+              criar uma nova conta
             </span>
           </Link>
         </p>
@@ -103,7 +103,7 @@ export default function Login() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="you@example.com" {...field} />
+                        <Input placeholder="voce@exemplo.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -115,7 +115,7 @@ export default function Login() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Senha</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input 
