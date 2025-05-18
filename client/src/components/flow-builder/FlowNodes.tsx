@@ -329,17 +329,111 @@ const BaseNode = ({ data, id, type, selected }: any) => {
   );
 };
 
+// Importar os novos componentes de nó
+import { TextMessageNode } from './node-elements/TextMessageNode';
+import { ConditionNode } from './node-elements/ConditionNode';
+import { QuickRepliesNode } from './node-elements/QuickRepliesNode';
+
 // Versão memorizada do nó base
 const MemoizedBaseNode = memo(BaseNode);
+
+// Componentes específicos de nó com memo
+const MemoizedTextMessageNode = memo(TextMessageNode);
+const MemoizedConditionNode = memo(ConditionNode);
+const MemoizedQuickRepliesNode = memo(QuickRepliesNode);
 
 // Exportando os componentes de nó
 export const nodeComponents = {
   startTrigger: MemoizedBaseNode,
-  textMessage: MemoizedBaseNode,
+  textMessage: (props: any) => {
+    // Pegamos a função handleUpdateNode do BaseNode
+    const handleUpdate = (id: string, newData: Record<string, any>) => {
+      const reactFlowInstance = useReactFlow();
+      reactFlowInstance.setNodes(nodes => 
+        nodes.map(node => {
+          if (node.id === id) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                ...newData
+              }
+            };
+          }
+          return node;
+        })
+      );
+    };
+    
+    return (
+      <MemoizedTextMessageNode
+        id={props.id}
+        data={props.data}
+        selected={props.selected}
+        onUpdateNodeData={handleUpdate}
+      />
+    );
+  },
   mediaMessage: MemoizedBaseNode,
-  quickReplies: MemoizedBaseNode,
+  quickReplies: (props: any) => {
+    // Pegamos a função handleUpdateNode do BaseNode
+    const handleUpdate = (id: string, newData: Record<string, any>) => {
+      const reactFlowInstance = useReactFlow();
+      reactFlowInstance.setNodes(nodes => 
+        nodes.map(node => {
+          if (node.id === id) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                ...newData
+              }
+            };
+          }
+          return node;
+        })
+      );
+    };
+    
+    return (
+      <MemoizedQuickRepliesNode
+        id={props.id}
+        data={props.data}
+        selected={props.selected}
+        onUpdateNodeData={handleUpdate}
+      />
+    );
+  },
   listMessage: MemoizedBaseNode,
-  condition: MemoizedBaseNode,
+  condition: (props: any) => {
+    // Pegamos a função handleUpdateNode do BaseNode
+    const handleUpdate = (id: string, newData: Record<string, any>) => {
+      const reactFlowInstance = useReactFlow();
+      reactFlowInstance.setNodes(nodes => 
+        nodes.map(node => {
+          if (node.id === id) {
+            return {
+              ...node,
+              data: {
+                ...node.data,
+                ...newData
+              }
+            };
+          }
+          return node;
+        })
+      );
+    };
+    
+    return (
+      <MemoizedConditionNode
+        id={props.id}
+        data={props.data}
+        selected={props.selected}
+        onUpdateNodeData={handleUpdate}
+      />
+    );
+  },
   waitResponse: MemoizedBaseNode,
   delay: MemoizedBaseNode,
   httpRequest: MemoizedBaseNode,
