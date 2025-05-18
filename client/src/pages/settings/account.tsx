@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { AvatarUpload } from '@/components/ui/avatar-upload';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
@@ -237,51 +239,32 @@ export default function AccountSettings() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Foto de Perfil</FormLabel>
-                        <div className="flex items-center gap-4">
-                          <div className="relative h-24 w-24 rounded-full overflow-hidden bg-gray-100">
-                            {field.value ? (
-                              <img 
-                                src={field.value} 
-                                alt="Avatar" 
-                                className="h-full w-full object-cover"
+                        {isEditingProfile ? (
+                          <FormControl>
+                            <div className="mt-2">
+                              <AvatarUpload 
+                                initialImage={field.value} 
+                                onImageChange={(imageDataUrl) => field.onChange(imageDataUrl)}
+                                onImageRemove={() => field.onChange("")}
+                                getInitials={getInitials}
                               />
-                            ) : (
-                              <div className="h-full w-full flex items-center justify-center bg-primary/10">
-                                <span className="text-3xl font-semibold text-primary">{getInitials()}</span>
-                              </div>
-                            )}
-                          </div>
-                          {isEditingProfile && (
-                            <div className="space-y-2">
-                              <Button 
-                                type="button" 
-                                variant="outline" 
-                                size="sm"
-                                className="w-full"
-                                onClick={() => {
-                                  // Aqui você pode implementar um upload de arquivo
-                                  const imageUrl = prompt("Digite a URL da imagem:");
-                                  if (imageUrl) {
-                                    field.onChange(imageUrl);
-                                  }
-                                }}
-                              >
-                                Carregar Foto
-                              </Button>
-                              {field.value && (
-                                <Button 
-                                  type="button" 
-                                  variant="outline" 
-                                  size="sm"
-                                  className="w-full text-destructive border-destructive"
-                                  onClick={() => field.onChange("")}
-                                >
-                                  Remover Foto
-                                </Button>
-                              )}
                             </div>
-                          )}
-                        </div>
+                          </FormControl>
+                        ) : (
+                          <div className="mt-2">
+                            <div className="relative h-24 w-24">
+                              <Avatar className="h-24 w-24 border">
+                                {field.value ? (
+                                  <AvatarImage src={field.value} alt="Avatar" />
+                                ) : (
+                                  <AvatarFallback className="bg-primary/10 text-primary text-xl">
+                                    {getInitials()}
+                                  </AvatarFallback>
+                                )}
+                              </Avatar>
+                            </div>
+                          </div>
+                        )}
                         <FormMessage />
                       </FormItem>
                     )}
