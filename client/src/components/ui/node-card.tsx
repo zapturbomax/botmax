@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
+import { InlineEdit } from "@/components/flow-builder/InlineEdit";
 
 const cardVariants = cva(
   "bg-white dark:bg-gray-800 rounded-lg shadow-md border transition-all duration-200 relative min-w-[240px] overflow-visible",
@@ -28,6 +29,9 @@ interface CardProps {
   onDelete?: () => void;
   onDuplicate?: () => void;
   onAddBlock?: () => void;
+  onTitleChange?: (newTitle: string) => void;
+  onDescriptionChange?: (newDescription: string) => void;
+  isEditable?: boolean;
 }
 
 export function Card({
@@ -41,7 +45,11 @@ export function Card({
   onDelete,
   onDuplicate,
   onAddBlock,
+  onTitleChange,
+  onDescriptionChange,
+  isEditable = false,
 }: CardProps) {
+  // Função chamada quando o usuário clica duplo no cartão
   const handleDoubleClick = () => {
     if (onEdit) {
       onEdit();
@@ -61,15 +69,34 @@ export function Card({
             </div>
           )}
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-sm truncate">{title}</h3>
+            {isEditable && onTitleChange ? (
+              <InlineEdit
+                value={title}
+                onChange={onTitleChange}
+                placeholder="Digite um título..."
+                className="w-full"
+                textClassName="font-medium text-sm"
+              />
+            ) : (
+              <h3 className="font-medium text-sm truncate">{title}</h3>
+            )}
+            
             {description && (
-              <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5 truncate">
-                {description}
-              </p>
+              isEditable && onDescriptionChange ? (
+                <InlineEdit
+                  value={description}
+                  onChange={onDescriptionChange}
+                  placeholder="Digite uma descrição..."
+                  className="w-full mt-0.5"
+                  textClassName="text-gray-500 dark:text-gray-400 text-xs"
+                />
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-0.5 truncate">
+                  {description}
+                </p>
+              )
             )}
           </div>
-          
-          {/* Removido o menu de opções para usar o botão existente */}
         </div>
         
         {children}

@@ -37,6 +37,9 @@ const BaseNode = ({ data, id, type, selected }: any) => {
   const reactFlowInstance = useReactFlow();
   const updateNodeInternals = useUpdateNodeInternals();
   
+  // State para controlar a edição
+  const [isEditing, setIsEditing] = useState(false);
+  
   // Find the node type configuration
   const nodeType = nodeTypes.find(t => t.type === type);
   
@@ -80,6 +83,24 @@ const BaseNode = ({ data, id, type, selected }: any) => {
       updateNodeInternals(nodeId);
     }
   }, [reactFlowInstance, updateNodeInternals, type]);
+  
+  // Funções para atualizar o título e a descrição diretamente
+  const handleTitleChange = useCallback((newTitle: string) => {
+    handleUpdateNode(id, { name: newTitle });
+  }, [handleUpdateNode, id]);
+  
+  const handleDescriptionChange = useCallback((newDescription: string) => {
+    handleUpdateNode(id, { description: newDescription });
+  }, [handleUpdateNode, id]);
+  
+  // Função para controlar o início/fim da edição
+  const handleNodeClick = useCallback(() => {
+    setIsEditing(true);
+  }, []);
+  
+  const handleBlur = useCallback(() => {
+    setIsEditing(false);
+  }, []);
   
   // Component state for the add node menu
   const [addNodeMenuOpen, setAddNodeMenuOpen] = useState(false);
