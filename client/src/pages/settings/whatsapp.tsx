@@ -20,10 +20,10 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 
 // Form schema
 const whatsappIntegrationSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  phoneNumber: z.string().min(10, 'Enter a valid phone number'),
-  apiKey: z.string().min(5, 'API key is required'),
-  apiSecret: z.string().min(5, 'API secret is required'),
+  name: z.string().min(2, 'O nome deve ter pelo menos 2 caracteres'),
+  phoneNumber: z.string().min(10, 'Digite um número de telefone válido'),
+  apiKey: z.string().min(5, 'A chave de API é obrigatória'),
+  apiSecret: z.string().min(5, 'O segredo da API é obrigatório'),
 });
 
 export default function WhatsAppSettings() {
@@ -62,16 +62,16 @@ export default function WhatsAppSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/whatsapp'] });
       toast({
-        title: 'Integration created',
-        description: 'WhatsApp integration has been created successfully.',
+        title: 'Integração criada',
+        description: 'Integração do WhatsApp foi criada com sucesso.',
       });
       setIsAddingIntegration(false);
       form.reset();
     },
     onError: (error) => {
       toast({
-        title: 'Creation failed',
-        description: error.message || 'Failed to create WhatsApp integration. Please try again.',
+        title: 'Falha na criação',
+        description: error.message || 'Falha ao criar integração do WhatsApp. Tente novamente.',
         variant: 'destructive',
       });
     },
@@ -86,16 +86,16 @@ export default function WhatsAppSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/whatsapp'] });
       toast({
-        title: 'Integration updated',
-        description: 'WhatsApp integration has been updated successfully.',
+        title: 'Integração atualizada',
+        description: 'Integração do WhatsApp foi atualizada com sucesso.',
       });
       setIsEditingIntegration(null);
       form.reset();
     },
     onError: (error) => {
       toast({
-        title: 'Update failed',
-        description: error.message || 'Failed to update WhatsApp integration. Please try again.',
+        title: 'Falha na atualização',
+        description: error.message || 'Falha ao atualizar integração do WhatsApp. Tente novamente.',
         variant: 'destructive',
       });
     },
