@@ -26,7 +26,7 @@ interface HeaderProps {
 }
 
 const Header: FC<HeaderProps> = ({ title, onMenuClick, showActions = false }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   
   // Get user initials for avatar
   const getInitials = () => {
@@ -51,9 +51,23 @@ const Header: FC<HeaderProps> = ({ title, onMenuClick, showActions = false }) =>
           <Button variant="ghost" size="icon" className="rounded-full bg-white hover:bg-gray-100 h-10 w-10">
             <Bell className="h-5 w-5 text-gray-500" />
           </Button>
-          <Button variant="ghost" size="icon" className="rounded-full bg-white hover:bg-gray-100 h-10 w-10">
-            <Settings className="h-5 w-5 text-gray-500" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="rounded-full bg-white hover:bg-gray-100 h-10 w-10">
+                <Settings className="h-5 w-5 text-gray-500" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link href="/settings/profile" className="w-full cursor-pointer">
+                  Editar Perfil
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => logout()} className="text-destructive cursor-pointer">
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
