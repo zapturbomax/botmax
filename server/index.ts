@@ -8,8 +8,8 @@ import { storage } from "./storage";
 const JWT_SECRET = process.env.JWT_SECRET || 'flowbot-secret-key';
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' })); // Aumentar limite para permitir uploads de imagens
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Setup session middleware
 app.use(session({
