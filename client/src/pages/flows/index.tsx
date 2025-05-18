@@ -301,12 +301,12 @@ export default function Flows() {
             {flows.length > 0 && searchTerm && filteredFlows.length === 0 ? (
               <div className="text-center py-12">
                 <Search className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2">No matching flows found</h3>
+                <h3 className="text-lg font-medium mb-2">Nenhum fluxo correspondente encontrado</h3>
                 <p className="text-gray-500 dark:text-gray-400 mb-6">
-                  Try a different search term or clear the search to see all flows.
+                  Tente um termo de busca diferente ou limpe a busca para ver todos os fluxos.
                 </p>
                 <Button variant="outline" onClick={() => setSearchTerm('')}>
-                  Clear Search
+                  Limpar Busca
                 </Button>
               </div>
             ) : (
@@ -321,12 +321,12 @@ export default function Flows() {
                             {flow.status === 'published' ? (
                               <Badge className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center">
                                 <CheckCircle size={10} className="mr-1" />
-                                Active
+                                Ativo
                               </Badge>
                             ) : (
                               <Badge variant="outline" className="text-xs px-2 py-1 rounded-full flex items-center">
                                 <Clock size={10} className="mr-1" />
-                                Draft
+                                Rascunho
                               </Badge>
                             )}
                           </CardTitle>
@@ -347,14 +347,14 @@ export default function Flows() {
                               onClick={() => window.location.href = `/flows/${flow.id}`}
                               className="flex items-center"
                             >
-                              <Edit className="h-4 w-4 mr-2" /> Edit
+                              <Edit className="h-4 w-4 mr-2" /> Editar
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => setShowDuplicateDialog(flow.id)}
                               className="flex items-center"
                               disabled={!canCreateFlow}
                             >
-                              <Copy className="h-4 w-4 mr-2" /> Duplicate
+                              <Copy className="h-4 w-4 mr-2" /> Duplicar
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             {flow.status === 'published' ? (
@@ -362,7 +362,7 @@ export default function Flows() {
                                 onClick={() => toggleFlowStatusMutation.mutate({ id: flow.id, status: 'draft' })}
                                 className="flex items-center text-amber-500 hover:text-amber-600 focus:text-amber-600"
                               >
-                                <Clock className="h-4 w-4 mr-2" /> Set as Draft
+                                <Clock className="h-4 w-4 mr-2" /> Definir como Rascunho
                               </DropdownMenuItem>
                             ) : (
                               <DropdownMenuItem
@@ -370,7 +370,7 @@ export default function Flows() {
                                 className="flex items-center text-green-500 hover:text-green-600 focus:text-green-600"
                                 disabled={!canCreateFlow && flow.status !== 'published'}
                               >
-                                <CheckCircle className="h-4 w-4 mr-2" /> Publish
+                                <CheckCircle className="h-4 w-4 mr-2" /> Publicar
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuSeparator />
@@ -378,7 +378,7 @@ export default function Flows() {
                               onClick={() => setShowDeleteDialog(flow.id)}
                               className="flex items-center text-red-500 hover:text-red-600 focus:text-red-600"
                             >
-                              <Trash2 className="h-4 w-4 mr-2" /> Delete
+                              <Trash2 className="h-4 w-4 mr-2" /> Excluir
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -388,18 +388,18 @@ export default function Flows() {
                       <div className="flex text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex items-center">
                           <ChartGantt className="h-4 w-4 mr-1" />
-                          <span>{(flow.nodes?.length || 0)} Nodes</span>
+                          <span>{(flow.nodes?.length || 0)} Nós</span>
                         </div>
                       </div>
                     </CardContent>
                     <CardFooter className="pt-2 border-t">
                       <div className="w-full flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
                         <span>
-                          Last updated: {new Date(flow.updatedAt).toLocaleDateString()}
+                          Última atualização: {new Date(flow.updatedAt).toLocaleDateString()}
                         </span>
                         <Link href={`/flows/${flow.id}`}>
                           <Button variant="ghost" size="sm">
-                            Open
+                            Abrir
                           </Button>
                         </Link>
                       </div>
@@ -415,18 +415,18 @@ export default function Flows() {
                           <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
                             <Plus className="h-6 w-6 text-gray-400" />
                           </div>
-                          <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Create New Flow</h3>
+                          <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Criar Novo Fluxo</h3>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Build a new conversational flow for WhatsApp
+                            Construa um novo fluxo de conversação para WhatsApp
                           </p>
                         </CardContent>
                       </Card>
                     </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
-                        <DialogTitle>Create New Flow</DialogTitle>
+                        <DialogTitle>Criar Novo Fluxo</DialogTitle>
                         <DialogDescription>
-                          Give your flow a name and optional description.
+                          Dê um nome ao seu fluxo e uma descrição opcional.
                         </DialogDescription>
                       </DialogHeader>
                       <Form {...form}>
@@ -436,9 +436,9 @@ export default function Flows() {
                             name="name"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Name</FormLabel>
+                                <FormLabel>Nome</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Welcome Flow" {...field} />
+                                  <Input placeholder="Fluxo de Boas-vindas" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -450,9 +450,9 @@ export default function Flows() {
                             name="description"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Description (Optional)</FormLabel>
+                                <FormLabel>Descrição (Opcional)</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Initial greeting for new users" {...field} />
+                                  <Input placeholder="Saudação inicial para novos usuários" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -469,9 +469,9 @@ export default function Flows() {
                           {createFlowMutation.isPending ? (
                             <span className="flex items-center">
                               <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                              Creating...
+                              Criando...
                             </span>
-                          ) : 'Create Flow'}
+                          ) : 'Criar Fluxo'}
                         </Button>
                       </DialogFooter>
                     </DialogContent>
