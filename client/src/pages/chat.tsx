@@ -70,13 +70,13 @@ export default function Chat() {
 
   return (
     <div className="flex h-screen flex-col bg-[#f6f6fa]">
-      {/* Header with Attmosfire logo */}
+      {/* Header with BotMAX logo */}
       <header className="bg-[#5b5dcd] p-4 flex justify-between items-center">
         <div className="text-white text-2xl font-bold flex items-center">
           <svg width="30" height="30" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
             <path d="M10 19L19 10M19 10L28 19M19 10V28" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          Attmosfire
+          BotMAX
         </div>
         <div className="flex space-x-2">
           <Button 
@@ -115,7 +115,7 @@ export default function Chat() {
             {message.sender === 'bot' && (
               <Avatar className="h-8 w-8 mr-2">
                 <AvatarImage src="/avatar-bot.png" />
-                <AvatarFallback className="bg-[#5b5dcd] text-white">AT</AvatarFallback>
+                <AvatarFallback className="bg-[#5b5dcd] text-white">BM</AvatarFallback>
               </Avatar>
             )}
             <div 

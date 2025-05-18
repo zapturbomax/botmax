@@ -51,7 +51,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
                 <path d="M4 16L16 4L28 16M16 4V28" stroke="#a5a6f6" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-              Attmosfire
+              BotMAX
             </div>
           </div>
         </div>
