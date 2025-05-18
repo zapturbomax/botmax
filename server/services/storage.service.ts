@@ -47,7 +47,8 @@ export async function uploadAvatar(userId: number, imageData: string): Promise<s
     fs.unlinkSync(tempFilePath);
     
     // Construir a URL pública para o objeto
-    const url = `https://${bucketId}.replit.dev/${fileName}`;
+    const replId = process.env.REPL_ID;
+    const url = `https://${replId}.id.repl.co/api/storage/${fileName}`;
     
     return url;
   } catch (error) {

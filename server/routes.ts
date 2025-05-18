@@ -8,6 +8,7 @@ import * as flowController from "./controllers/flow.controller";
 import * as subscriptionController from "./controllers/subscription.controller";
 import * as tenantController from "./controllers/tenant.controller";
 import * as whatsAppController from "./controllers/whatsapp.controller";
+import * as storageController from "./controllers/storage.controller";
 import express from "express";
 import Stripe from "stripe";
 
@@ -51,6 +52,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/whatsapp/:id", authenticate, validateTenant, whatsAppController.updateWhatsappIntegration);
   app.delete("/api/whatsapp/:id", authenticate, validateTenant, whatsAppController.deleteWhatsappIntegration);
   app.post("/api/webhook/whatsapp/:id", whatsAppController.handleWhatsappWebhook);
+  
+  // Storage routes - servir arquivos do bucket do Replit
+  app.get("/api/storage/*", storageController.getFile);
   
   const httpServer = createServer(app);
   
