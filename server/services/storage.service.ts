@@ -1,9 +1,17 @@
-import { createClient } from '@replit/object-storage';
+import { Client } from '@replit/object-storage';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 
-// Criando cliente do Object Storage do Replit
-const storageClient = createClient();
-const BUCKET_PREFIX = 'avatars';
+// Criando cliente do Object Storage do Replit com o bucket ID específico
+const bucketId = 'replit-objstore-dbf27d60-62f3-4146-84c4-8aa0a815da56';
+const objectStorage = new Client({
+  bucketId: bucketId
+});
 
+/**
+ * Faz upload de uma imagem de avatar para o bucket do Replit
+ */
 export async function uploadAvatar(userId: number, imageData: string): Promise<string> {
   try {
     // Verificar se é uma imagem base64 válida
@@ -12,7 +20,7 @@ export async function uploadAvatar(userId: number, imageData: string): Promise<s
     }
 
     // Extrair o tipo MIME e os dados
-    const matches = imageData.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
+    const matches = imageData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
     if (!matches || matches.length !== 3) {
       throw new Error('Formato de dados base64 inválido');
     }
@@ -22,17 +30,24 @@ export async function uploadAvatar(userId: number, imageData: string): Promise<s
     const fileExtension = mimeType.split('/')[1];
     const buffer = Buffer.from(base64Data, 'base64');
     
+    // Salvar temporariamente o arquivo
+    const tempFilePath = path.join(os.tmpdir(), `avatar_${userId}_${Date.now()}.${fileExtension}`);
+    fs.writeFileSync(tempFilePath, buffer);
+    
     // Nome único do arquivo no bucket
-    const fileName = `${BUCKET_PREFIX}/${userId}_${Date.now()}.${fileExtension}`;
+    const fileName = `avatars/${userId}_${Date.now()}.${fileExtension}`;
     
     // Fazer upload para o Replit Object Storage
-    await storageClient.setItem(fileName, buffer, {
-      mimeType
-    });
+    await objectStorage.uploadFromFilename(
+      fileName,
+      tempFilePath
+    );
+    
+    // Limpar o arquivo temporário
+    fs.unlinkSync(tempFilePath);
     
     // Construir a URL pública para o objeto
-    const hostname = process.env.REPLIT_DOMAIN || `${process.env.REPL_ID}.id.repl.co`;
-    const url = `https://${hostname}/${fileName}`;
+    const url = `https://${bucketId}.replit.dev/${fileName}`;
     
     return url;
   } catch (error) {
@@ -41,19 +56,30 @@ export async function uploadAvatar(userId: number, imageData: string): Promise<s
   }
 }
 
+/**
+ * Deleta uma imagem de avatar do bucket do Replit
+ */
 export async function deleteAvatar(avatarUrl: string): Promise<void> {
   try {
     // Extrair o nome do arquivo da URL
-    const urlParts = new URL(avatarUrl);
-    const pathName = urlParts.pathname.substring(1); // Remover a primeira barra
+    const parsedUrl = new URL(avatarUrl);
+    const pathParts = parsedUrl.pathname.split('/');
+    // Remover primeira barra e pegar o resto do caminho
+    const fileName = pathParts.slice(1).join('/');
     
-    // Verificar se o arquivo existe
-    if (await storageClient.hasItem(pathName)) {
-      // Deletar o arquivo
-      await storageClient.deleteItem(pathName);
+    if (!fileName) {
+      console.warn('Nome de arquivo inválido ao tentar deletar avatar:', avatarUrl);
+      return;
+    }
+    
+    // Tentar deletar o arquivo
+    try {
+      await objectStorage.delete(fileName);
+      console.log(`Avatar deletado com sucesso: ${fileName}`);
+    } catch (err) {
+      console.warn(`Arquivo não encontrado ou erro ao deletar: ${fileName}`, err);
     }
   } catch (error) {
-    console.error('Erro ao deletar avatar:', error);
-    throw error;
+    console.error('Erro ao processar a URL do avatar para deleção:', error);
   }
 }
