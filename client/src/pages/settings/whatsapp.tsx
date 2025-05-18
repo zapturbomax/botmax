@@ -110,15 +110,15 @@ export default function WhatsAppSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/whatsapp'] });
       toast({
-        title: 'Integration deleted',
-        description: 'WhatsApp integration has been deleted successfully.',
+        title: 'Integração excluída',
+        description: 'Integração do WhatsApp foi excluída com sucesso.',
       });
       setIntegrationToDelete(null);
     },
     onError: (error) => {
       toast({
-        title: 'Deletion failed',
-        description: error.message || 'Failed to delete WhatsApp integration. Please try again.',
+        title: 'Falha na exclusão',
+        description: error.message || 'Falha ao excluir integração do WhatsApp. Tente novamente.',
         variant: 'destructive',
       });
     },
@@ -133,14 +133,14 @@ export default function WhatsAppSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/whatsapp'] });
       toast({
-        title: 'Status updated',
-        description: 'WhatsApp integration status has been updated successfully.',
+        title: 'Status atualizado',
+        description: 'Status da integração do WhatsApp foi atualizado com sucesso.',
       });
     },
     onError: (error) => {
       toast({
-        title: 'Update failed',
-        description: error.message || 'Failed to update integration status. Please try again.',
+        title: 'Falha na atualização',
+        description: error.message || 'Falha ao atualizar status da integração. Tente novamente.',
         variant: 'destructive',
       });
     },
@@ -189,13 +189,13 @@ export default function WhatsAppSettings() {
     integrations.length < plan.maxWhatsappIntegrations;
   
   return (
-    <AppLayout title="WhatsApp Integration">
+    <AppLayout title="Integração WhatsApp">
       <div className="container max-w-4xl mx-auto p-4 md:p-6">
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-medium">WhatsApp Integrations</h3>
+            <h3 className="text-lg font-medium">Integrações WhatsApp</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Connect your WhatsApp Business API accounts to use with your flows.
+              Conecte suas contas de API do WhatsApp Business para usar com seus fluxos.
             </p>
           </div>
           
@@ -204,16 +204,16 @@ export default function WhatsAppSettings() {
           {/* WhatsApp Integration Guide */}
           <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
             <Info className="h-4 w-4 text-blue-500" />
-            <AlertTitle>Getting Started with WhatsApp Integration</AlertTitle>
+            <AlertTitle>Começando com a Integração do WhatsApp</AlertTitle>
             <AlertDescription>
               <p className="text-sm mt-1">
-                To integrate WhatsApp with FlowBot, you'll need to:
+                Para integrar o WhatsApp com o FlowBot, você precisará:
               </p>
               <ol className="list-decimal list-inside text-sm mt-2 space-y-1">
-                <li>Have an approved WhatsApp Business Account</li>
-                <li>Create an app in the Meta Developer Portal</li>
-                <li>Set up a Business System User and get API credentials</li>
-                <li>Configure the webhook URL shown in your integration settings below</li>
+                <li>Ter uma Conta WhatsApp Business aprovada</li>
+                <li>Criar um aplicativo no Portal de Desenvolvedores da Meta</li>
+                <li>Configurar um Usuário do Sistema Empresarial e obter credenciais de API</li>
+                <li>Configurar a URL do webhook mostrada nas configurações de integração abaixo</li>
               </ol>
               <a 
                 href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started"
@@ -222,7 +222,7 @@ export default function WhatsAppSettings() {
                 className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm inline-flex items-center mt-2"
               >
                 <Link className="h-3 w-3 mr-1" />
-                View Facebook's official documentation
+                Ver documentação oficial do Facebook
               </a>
             </AlertDescription>
           </Alert>
@@ -230,7 +230,7 @@ export default function WhatsAppSettings() {
           {/* WhatsApp Integrations List */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-lg font-medium">Your Integrations</h4>
+              <h4 className="text-lg font-medium">Suas Integrações</h4>
               <Dialog open={isAddingIntegration} onOpenChange={setIsAddingIntegration}>
                 <DialogTrigger asChild>
                   <Button 
@@ -238,14 +238,14 @@ export default function WhatsAppSettings() {
                     className="flex items-center gap-1"
                   >
                     <Plus className="h-4 w-4" />
-                    Add Integration
+                    Adicionar Integração
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Add WhatsApp Integration</DialogTitle>
+                    <DialogTitle>Adicionar Integração WhatsApp</DialogTitle>
                     <DialogDescription>
-                      Enter your WhatsApp Business API details to set up the integration.
+                      Digite os detalhes da API do WhatsApp Business para configurar a integração.
                     </DialogDescription>
                   </DialogHeader>
                   <Form {...form}>
@@ -255,15 +255,15 @@ export default function WhatsAppSettings() {
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Integration Name</FormLabel>
+                            <FormLabel>Nome da Integração</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="E.g. Support Bot" 
+                                placeholder="Ex: Bot de Suporte" 
                                 {...field} 
                               />
                             </FormControl>
                             <FormDescription>
-                              A friendly name to identify this integration.
+                              Um nome amigável para identificar esta integração.
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -275,15 +275,15 @@ export default function WhatsAppSettings() {
                         name="phoneNumber"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>WhatsApp Phone Number</FormLabel>
+                            <FormLabel>Número de Telefone WhatsApp</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="+1234567890" 
+                                placeholder="+5511999999999" 
                                 {...field} 
                               />
                             </FormControl>
                             <FormDescription>
-                              The phone number associated with your WhatsApp Business account.
+                              O número de telefone associado à sua conta WhatsApp Business.
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -295,15 +295,15 @@ export default function WhatsAppSettings() {
                         name="apiKey"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>API Key</FormLabel>
+                            <FormLabel>Chave de API</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="WhatsApp Business API Key" 
+                                placeholder="Chave da API WhatsApp Business" 
                                 {...field} 
                               />
                             </FormControl>
                             <FormDescription>
-                              The API key from your WhatsApp Business API account.
+                              A chave de API da sua conta WhatsApp Business API.
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -315,16 +315,16 @@ export default function WhatsAppSettings() {
                         name="apiSecret"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>API Secret</FormLabel>
+                            <FormLabel>Segredo da API</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="WhatsApp Business API Secret" 
+                                placeholder="Segredo da API WhatsApp Business" 
                                 type="password" 
                                 {...field} 
                               />
                             </FormControl>
                             <FormDescription>
-                              The API secret from your WhatsApp Business API account.
+                              O segredo da API da sua conta WhatsApp Business API.
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -334,7 +334,7 @@ export default function WhatsAppSettings() {
                   </Form>
                   <DialogFooter>
                     <Button variant="outline" onClick={handleCloseDialog}>
-                      Cancel
+                      Cancelar
                     </Button>
                     <Button 
                       onClick={form.handleSubmit(onSubmit)}
@@ -343,9 +343,9 @@ export default function WhatsAppSettings() {
                       {createIntegrationMutation.isPending ? (
                         <span className="flex items-center">
                           <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                          Saving...
+                          Salvando...
                         </span>
-                      ) : 'Save Integration'}
+                      ) : 'Salvar Integração'}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
