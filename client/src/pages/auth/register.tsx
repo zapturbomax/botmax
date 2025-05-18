@@ -15,13 +15,13 @@ import { ChartGantt, Eye, EyeOff } from 'lucide-react';
 
 // Form schema
 const registerSchema = z.object({
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  email: z.string().email('Invalid email address'),
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
-  confirmPassword: z.string().min(6, 'Confirm password must be at least 6 characters'),
+  username: z.string().min(3, 'Nome de usuário deve ter pelo menos 3 caracteres'),
+  email: z.string().email('Endereço de email inválido'),
+  fullName: z.string().min(2, 'Nome completo deve ter pelo menos 2 caracteres'),
+  password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
+  confirmPassword: z.string().min(6, 'Confirmação de senha deve ter pelo menos 6 caracteres'),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "As senhas não coincidem",
   path: ['confirmPassword'],
 });
 
@@ -53,15 +53,15 @@ export default function Register() {
     onSuccess: (data) => {
       login(data);
       toast({
-        title: 'Registration successful',
-        description: 'Welcome to FlowBot!',
+        title: 'Cadastro realizado com sucesso',
+        description: 'Bem-vindo ao BotMAX!',
       });
       setLocation('/dashboard');
     },
     onError: (error) => {
       toast({
-        title: 'Registration failed',
-        description: error.message || 'An error occurred during registration',
+        title: 'Falha no cadastro',
+        description: error.message || 'Ocorreu um erro durante o cadastro',
         variant: 'destructive',
       });
     },
@@ -81,13 +81,13 @@ export default function Register() {
           </div>
         </div>
         <h2 className="mt-5 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
-          Create your account
+          Crie sua conta
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-          Or{' '}
+          Ou{' '}
           <Link href="/login">
             <span className="font-medium text-primary hover:text-primary-600 cursor-pointer">
-              sign in to your existing account
+              entre na sua conta existente
             </span>
           </Link>
         </p>
@@ -103,9 +103,9 @@ export default function Register() {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Username</FormLabel>
+                      <FormLabel>Nome de usuário</FormLabel>
                       <FormControl>
-                        <Input placeholder="johndoe" {...field} />
+                        <Input placeholder="joaosilva" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -119,7 +119,7 @@ export default function Register() {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="you@example.com" {...field} />
+                        <Input placeholder="voce@exemplo.com" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -131,9 +131,9 @@ export default function Register() {
                   name="fullName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name</FormLabel>
+                      <FormLabel>Nome Completo</FormLabel>
                       <FormControl>
-                        <Input placeholder="John Doe" {...field} />
+                        <Input placeholder="João Silva" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

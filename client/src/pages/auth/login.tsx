@@ -43,8 +43,8 @@ export default function Login() {
     onSuccess: (data) => {
       login(data);
       toast({
-        title: 'Login successful',
-        description: 'Welcome back!',
+        title: 'Login realizado com sucesso',
+        description: 'Bem-vindo de volta!',
       });
       
       // Add a short delay to ensure state is updated before redirecting
@@ -52,14 +52,14 @@ export default function Login() {
         // Get redirect from URL or go to dashboard
         const urlParams = new URLSearchParams(window.location.search);
         const redirect = urlParams.get('redirect') || '/dashboard';
-        console.log("Redirecting to:", redirect);
+        console.log("Redirecionando para:", redirect);
         setLocation(redirect);
       }, 500);
     },
     onError: (error) => {
       toast({
-        title: 'Login failed',
-        description: error.message || 'Invalid email or password',
+        title: 'Falha no login',
+        description: error.message || 'Email ou senha inválidos',
         variant: 'destructive',
       });
     },
@@ -141,7 +141,7 @@ export default function Login() {
                       <div className="flex justify-end">
                         <Link href="/forgot-password">
                           <span className="text-sm text-primary hover:text-primary-600 cursor-pointer">
-                            Forgot password?
+                            Esqueceu sua senha?
                           </span>
                         </Link>
                       </div>
@@ -158,9 +158,9 @@ export default function Login() {
                   {loginMutation.isPending ? (
                     <span className="flex items-center">
                       <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                      Logging in...
+                      Entrando...
                     </span>
-                  ) : 'Log in'}
+                  ) : 'Entrar'}
                 </Button>
               </form>
             </Form>
@@ -168,10 +168,10 @@ export default function Login() {
           
           <CardFooter className="flex flex-col space-y-4 border-t pt-6">
             <div className="text-sm text-center text-gray-600 dark:text-gray-400">
-              Don't have an account?{' '}
+              Não tem uma conta?{' '}
               <Link href="/register">
                 <span className="font-medium text-primary hover:text-primary-600 cursor-pointer">
-                  Sign up
+                  Cadastre-se
                 </span>
               </Link>
             </div>
