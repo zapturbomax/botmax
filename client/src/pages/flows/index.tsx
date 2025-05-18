@@ -206,15 +206,15 @@ export default function Flows() {
     flows.filter((f: any) => f.status === 'published').length < plan.maxFlows;
   
   return (
-    <AppLayout title="Flows">
+    <AppLayout title="Fluxos">
       <div className="container mx-auto p-4 md:p-6">
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              Your Flows
+              Seus Fluxos
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mt-1">
-              Manage and create your WhatsApp conversation flows.
+              Gerencie e crie seus fluxos de conversação do WhatsApp.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-2">
@@ -222,7 +222,7 @@ export default function Flows() {
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
               <Input 
                 type="text" 
-                placeholder="Search flows..." 
+                placeholder="Buscar fluxos..." 
                 className="pl-9"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -232,14 +232,14 @@ export default function Flows() {
               <DialogTrigger asChild>
                 <Button disabled={!canCreateFlow} className="flex items-center gap-1">
                   <Plus className="h-4 w-4" />
-                  Create Flow
+                  Criar Fluxo
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>Create New Flow</DialogTitle>
+                  <DialogTitle>Criar Novo Fluxo</DialogTitle>
                   <DialogDescription>
-                    Give your flow a name and optional description.
+                    Dê um nome ao seu fluxo e uma descrição opcional.
                   </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
@@ -249,9 +249,9 @@ export default function Flows() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Name</FormLabel>
+                          <FormLabel>Nome</FormLabel>
                           <FormControl>
-                            <Input placeholder="Welcome Flow" {...field} />
+                            <Input placeholder="Fluxo de Boas-vindas" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -263,9 +263,9 @@ export default function Flows() {
                       name="description"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Description (Optional)</FormLabel>
+                          <FormLabel>Descrição (Opcional)</FormLabel>
                           <FormControl>
-                            <Input placeholder="Initial greeting for new users" {...field} />
+                            <Input placeholder="Saudação inicial para novos usuários" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -282,9 +282,9 @@ export default function Flows() {
                     {createFlowMutation.isPending ? (
                       <span className="flex items-center">
                         <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                        Creating...
+                        Criando...
                       </span>
-                    ) : 'Create Flow'}
+                    ) : 'Criar Fluxo'}
                   </Button>
                 </DialogFooter>
               </DialogContent>
