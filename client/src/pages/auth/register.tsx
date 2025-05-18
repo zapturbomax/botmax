@@ -5,8 +5,9 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth';
@@ -18,6 +19,7 @@ const registerSchema = z.object({
   username: z.string().min(3, 'Nome de usuário deve ter pelo menos 3 caracteres'),
   email: z.string().email('Endereço de email inválido'),
   fullName: z.string().min(2, 'Nome completo deve ter pelo menos 2 caracteres'),
+  phone: z.string().min(10, 'Número de WhatsApp deve ter pelo menos 10 dígitos').max(11, 'Número de WhatsApp deve ter no máximo 11 dígitos'),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
   confirmPassword: z.string().min(6, 'Confirmação de senha deve ter pelo menos 6 caracteres'),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -39,6 +41,7 @@ export default function Register() {
       username: '',
       email: '',
       fullName: '',
+      phone: '',
       password: '',
       confirmPassword: '',
     },
@@ -135,6 +138,27 @@ export default function Register() {
                       <FormControl>
                         <Input placeholder="João Silva" {...field} />
                       </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>WhatsApp</FormLabel>
+                      <FormControl>
+                        <PhoneInput 
+                          placeholder="(11) 93008-8181"
+                          value={field.value} 
+                          onChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Seu número de WhatsApp com DDD
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

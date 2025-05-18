@@ -1,14 +1,16 @@
 import React, { useState, useEffect, forwardRef } from 'react';
 import { Input } from "@/components/ui/input";
 
-// Omitimos 'onChange' para evitar conflito de tipos
-interface PhoneInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+interface PhoneInputProps {
   value: string;
   onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+  disabled?: boolean;
 }
 
 export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
-  ({ value, onChange, className, ...props }, ref) => {
+  ({ value, onChange, className, placeholder, disabled, ...props }, ref) => {
     const [formattedValue, setFormattedValue] = useState<string>('');
 
     // Função para formatar o número de telefone no padrão brasileiro
@@ -58,6 +60,8 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
         onChange={handleChange}
         maxLength={16} // (99) 99999-9999
         className={className}
+        placeholder={placeholder}
+        disabled={disabled}
         {...props}
       />
     );
