@@ -151,7 +151,7 @@ export default function Register() {
                       <FormLabel>WhatsApp</FormLabel>
                       <FormControl>
                         <PhoneInput 
-                          placeholder="(11) 93008-8181"
+                          placeholder="(__) _____-____"
                           value={field.value} 
                           onChange={field.onChange}
                         />
