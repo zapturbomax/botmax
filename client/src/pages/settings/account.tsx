@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from '@/components/ui/separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { AvatarUpload } from '@/components/ui/avatar-upload';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient, apiRequest } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
@@ -219,14 +220,22 @@ export default function AccountSettings() {
                       <FormItem>
                         <FormLabel>WhatsApp</FormLabel>
                         <FormControl>
-                          <Input 
-                            {...field} 
-                            disabled={!isEditingProfile} 
-                            placeholder="+5511999999999" 
-                          />
+                          {isEditingProfile ? (
+                            <PhoneInput 
+                              value={field.value || ''} 
+                              onChange={field.onChange} 
+                              placeholder="(11) 93008-8181" 
+                            />
+                          ) : (
+                            <Input 
+                              value={field.value || ''} 
+                              disabled={true}
+                              placeholder="(11) 93008-8181" 
+                            />
+                          )}
                         </FormControl>
                         <FormDescription>
-                          Número com código do país, ex: +5511999999999
+                          Seu número de WhatsApp com DDD, ex: (11) 93008-8181
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
