@@ -85,15 +85,15 @@ export default function AccountSettings() {
     onSuccess: (data) => {
       updateUser(data);
       toast({
-        title: 'Profile updated',
-        description: 'Your profile has been updated successfully.',
+        title: 'Perfil atualizado',
+        description: 'Seu perfil foi atualizado com sucesso.',
       });
       setIsEditingProfile(false);
     },
     onError: (error) => {
       toast({
-        title: 'Update failed',
-        description: error.message || 'Failed to update profile. Please try again.',
+        title: 'Falha na atualização',
+        description: error.message || 'Falha ao atualizar o perfil. Por favor, tente novamente.',
         variant: 'destructive',
       });
     },
@@ -107,15 +107,15 @@ export default function AccountSettings() {
     },
     onSuccess: () => {
       toast({
-        title: 'Password changed',
-        description: 'Your password has been changed successfully.',
+        title: 'Senha alterada',
+        description: 'Sua senha foi alterada com sucesso.',
       });
       passwordForm.reset();
     },
     onError: (error) => {
       toast({
-        title: 'Password change failed',
-        description: error.message || 'Failed to change password. Please verify your current password and try again.',
+        title: 'Falha na alteração de senha',
+        description: error.message || 'Falha ao alterar senha. Por favor, verifique sua senha atual e tente novamente.',
         variant: 'destructive',
       });
     },
@@ -136,9 +136,9 @@ export default function AccountSettings() {
       <div className="container max-w-4xl mx-auto p-4 md:p-6">
         <div className="space-y-6">
           <div>
-            <h3 className="text-lg font-medium">Your Account</h3>
+            <h3 className="text-lg font-medium">Sua Conta</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Manage your account settings and change your password.
+              Gerencie suas configurações de conta e altere sua senha.
             </p>
           </div>
           
@@ -147,9 +147,9 @@ export default function AccountSettings() {
           {/* Profile Settings */}
           <Card>
             <CardHeader>
-              <CardTitle>Profile</CardTitle>
+              <CardTitle>Perfil</CardTitle>
               <CardDescription>
-                Update your personal information.
+                Atualize suas informações pessoais.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -321,9 +321,9 @@ export default function AccountSettings() {
           {/* Password Settings */}
           <Card>
             <CardHeader>
-              <CardTitle>Change Password</CardTitle>
+              <CardTitle>Alterar Senha</CardTitle>
               <CardDescription>
-                Update your password to keep your account secure.
+                Atualize sua senha para manter sua conta segura.
               </CardDescription>
             </CardHeader>
             <CardContent>
