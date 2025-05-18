@@ -1,11 +1,9 @@
 import { Request, Response } from 'express';
 import { Client } from '@replit/object-storage';
 
-// Configuração do client do Object Storage do Replit
+// Bucket ID fornecido pelo usuário
 const bucketId = 'replit-objstore-dbf27d60-62f3-4146-84c4-8aa0a815da56';
-const objectStorage = new Client({
-  bucketId: bucketId
-});
+const storage = new Client({ bucketId });
 
 /**
  * Obtém um arquivo do bucket do Replit e o serve como resposta HTTP
@@ -18,9 +16,12 @@ export const getFile = async (req: Request, res: Response) => {
       return res.status(400).json({ message: 'Caminho do arquivo não especificado' });
     }
     
+    console.log(`Buscando arquivo: ${filePath} do bucket ${bucketId}`);
+    
     // Verifica se o arquivo existe no bucket
-    const exists = await objectStorage.exists(filePath);
+    const exists = await storage.exists(filePath);
     if (!exists) {
+      console.log(`Arquivo não encontrado: ${filePath}`);
       return res.status(404).json({ message: 'Arquivo não encontrado' });
     }
     
@@ -55,8 +56,10 @@ export const getFile = async (req: Request, res: Response) => {
     // Define os cabeçalhos de cache para melhorar o desempenho
     res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
     
+    console.log(`Servindo arquivo ${filePath} com tipo ${contentType}`);
+    
     // Baixa o arquivo como um stream e o envia como resposta
-    const fileStream = await objectStorage.downloadAsStream(filePath);
+    const fileStream = await storage.downloadAsStream(filePath);
     fileStream.pipe(res);
     
   } catch (error) {

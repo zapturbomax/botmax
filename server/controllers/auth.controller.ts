@@ -170,8 +170,9 @@ export const updateProfile = async (req: Request, res: Response) => {
     if (avatar) {
       if (avatar.startsWith('data:image/')) {
         // Upload da nova imagem
-        const { uploadAvatar } = await import('../services/storage.service');
+        const { uploadAvatar } = await import('../services/avatar.service');
         avatarUrl = await uploadAvatar(userId, avatar);
+        console.log('Avatar URL após upload:', avatarUrl);
       } else if (avatar === '') {
         // Se o avatar for string vazia, remover o avatar atual
         avatarUrl = '';
