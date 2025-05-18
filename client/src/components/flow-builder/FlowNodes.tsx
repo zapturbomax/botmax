@@ -211,7 +211,7 @@ const BaseNode = ({ data, id, type, selected }: any) => {
           
           {type === 'waitResponse' && data?.variableName && (
             <div>
-              <span className="text-xs text-gray-500">Variable: </span>
+              <span className="text-xs text-gray-500">Variável: </span>
               <code className="text-xs bg-gray-50 dark:bg-gray-700 px-1 rounded">{data.variableName}</code>
             </div>
           )}
