@@ -41,16 +41,16 @@ export default function NewFlow() {
     },
     onSuccess: (data) => {
       toast({
-        title: 'Flow created',
-        description: 'New flow has been created successfully. Redirecting to editor...',
+        title: 'Fluxo criado',
+        description: 'Novo fluxo foi criado com sucesso. Redirecionando para o editor...',
       });
       // Redirect to flow editor
       setLocation(`/flows/${data.id}`);
     },
     onError: (error) => {
       toast({
-        title: 'Creation failed',
-        description: error.message || 'Failed to create flow. Please try again.',
+        title: 'Falha na criação',
+        description: error.message || 'Falha ao criar fluxo. Por favor tente novamente.',
         variant: 'destructive',
       });
     },
@@ -92,13 +92,13 @@ export default function NewFlow() {
   };
   
   return (
-    <AppLayout title="Create New Flow">
+    <AppLayout title="Criar Novo Fluxo">
       <div className="container max-w-4xl mx-auto p-4 md:p-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">Create New Flow</CardTitle>
+            <CardTitle className="text-2xl">Criar Novo Fluxo</CardTitle>
             <CardDescription>
-              Set up the basic details for your new WhatsApp conversation flow.
+              Configure os detalhes básicos para seu novo fluxo de conversação do WhatsApp.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -109,12 +109,12 @@ export default function NewFlow() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Flow Name</FormLabel>
+                      <FormLabel>Nome do Fluxo</FormLabel>
                       <FormControl>
-                        <Input placeholder="Welcome Flow" {...field} />
+                        <Input placeholder="Fluxo de Boas-vindas" {...field} />
                       </FormControl>
                       <FormDescription>
-                        A clear name to identify this flow in your dashboard.
+                        Um nome claro para identificar este fluxo no seu painel.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -126,16 +126,16 @@ export default function NewFlow() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Description (Optional)</FormLabel>
+                      <FormLabel>Descrição (Opcional)</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="Describe what this flow does or its purpose..." 
+                          placeholder="Descreva o que este fluxo faz ou qual é o seu propósito..." 
                           {...field} 
                           rows={3}
                         />
                       </FormControl>
                       <FormDescription>
-                        A brief description of what this flow does or its purpose.
+                        Uma breve descrição do que este fluxo faz ou qual é o seu propósito.
                       </FormDescription>
                       <FormMessage />
                     </FormItem>
@@ -143,7 +143,7 @@ export default function NewFlow() {
                 />
                 
                 <div>
-                  <h3 className="text-sm font-medium mb-3">Start from a Template (Optional)</h3>
+                  <h3 className="text-sm font-medium mb-3">Comece com um Modelo (Opcional)</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {templates.map((template) => (
                       <Card 
@@ -172,7 +172,7 @@ export default function NewFlow() {
               variant="outline" 
               onClick={() => setLocation('/flows')}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button 
               onClick={form.handleSubmit(onSubmit)}
@@ -182,11 +182,11 @@ export default function NewFlow() {
               {createFlowMutation.isPending ? (
                 <span className="flex items-center">
                   <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                  Creating...
+                  Criando...
                 </span>
               ) : (
                 <>
-                  Create and Open Builder
+                  Criar e Abrir Construtor
                   <ArrowRight className="h-4 w-4 ml-1" />
                 </>
               )}
