@@ -25,7 +25,7 @@ export default function Dashboard() {
   });
   
   return (
-    <AppLayout title="Dashboard">
+    <AppLayout title="Painel">
       <div className="container mx-auto p-4 md:p-6">
         {/* Stats section directly at the top */}
       
@@ -34,7 +34,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Active Flows</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Fluxos Ativos</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center">
@@ -42,14 +42,14 @@ export default function Dashboard() {
                   <span className="text-2xl font-bold">{flows?.filter(f => f.status === 'published').length || 0}</span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {plan && `${flows?.filter(f => f.status === 'published').length || 0}/${plan.maxFlows} flows used`}
+                  {plan && `${flows?.filter(f => f.status === 'published').length || 0}/${plan.maxFlows} fluxos utilizados`}
                 </p>
               </CardContent>
             </Card>
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Messages</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Total de Mensagens</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center">
@@ -57,14 +57,14 @@ export default function Dashboard() {
                   <span className="text-2xl font-bold">0</span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {plan && `0/${plan.maxMessages} messages used`}
+                  {plan && `0/${plan.maxMessages} mensagens utilizadas`}
                 </p>
               </CardContent>
             </Card>
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Contacts</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Contatos</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center">
@@ -72,21 +72,21 @@ export default function Dashboard() {
                   <span className="text-2xl font-bold">0</span>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  {plan && `0/${plan.maxContacts} contacts created`}
+                  {plan && `0/${plan.maxContacts} contatos criados`}
                 </p>
               </CardContent>
             </Card>
             
             <Card>
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Completion Rate</CardTitle>
+                <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">Taxa de Conclusão</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center">
                   <BarChart3 className="h-5 w-5 text-purple-500 mr-2" />
                   <span className="text-2xl font-bold">-</span>
                 </div>
-                <p className="text-xs text-gray-500 mt-1">No data available yet</p>
+                <p className="text-xs text-gray-500 mt-1">Sem dados disponíveis ainda</p>
               </CardContent>
             </Card>
           </div>
@@ -95,10 +95,10 @@ export default function Dashboard() {
         {/* Recent flows section */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Flows</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Fluxos Recentes</h2>
             <Link href="/flows">
               <Button variant="link" className="gap-1">
-                View All <ArrowRight size={16} />
+                Ver Todos <ArrowRight size={16} />
               </Button>
             </Link>
           </div>
@@ -120,26 +120,26 @@ export default function Dashboard() {
                         {flow.status === 'published' ? (
                           <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center">
                             <CheckCircle size={12} className="mr-1" />
-                            Active
+                            Ativo
                           </span>
                         ) : (
                           <span className="bg-amber-100 text-amber-800 text-xs px-2 py-1 rounded-full flex items-center">
                             <Clock size={12} className="mr-1" />
-                            Draft
+                            Rascunho
                           </span>
                         )}
                       </div>
                       <CardDescription>
-                        {flow.description || 'No description'}
+                        {flow.description || 'Sem descrição'}
                       </CardDescription>
                     </CardHeader>
                     <CardFooter>
                       <div className="flex justify-between w-full">
                         <span className="text-xs text-gray-500">
-                          Last updated: {new Date(flow.updatedAt).toLocaleDateString()}
+                          Última atualização: {new Date(flow.updatedAt).toLocaleDateString()}
                         </span>
                         <Link href={`/flows/${flow.id}`}>
-                          <Button variant="ghost" size="sm">Edit</Button>
+                          <Button variant="ghost" size="sm">Editar</Button>
                         </Link>
                       </div>
                     </CardFooter>
@@ -150,9 +150,9 @@ export default function Dashboard() {
                   <Card className="h-full cursor-pointer border-dashed hover:border-primary hover:bg-primary/5 transition-colors">
                     <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center">
                       <PlusCircle size={24} className="text-gray-400 mb-2" />
-                      <h3 className="font-medium text-gray-900 dark:text-gray-100">Create New Flow</h3>
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100">Criar Novo Fluxo</h3>
                       <p className="text-sm text-gray-500 mt-1">
-                        Build a new conversational flow for WhatsApp
+                        Construa um novo fluxo de conversação para WhatsApp
                       </p>
                     </CardContent>
                   </Card>
@@ -163,14 +163,14 @@ export default function Dashboard() {
                 <Card className="h-full col-span-full md:col-span-1">
                   <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center">
                     <AlertTriangle size={24} className="text-amber-500 mb-2" />
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100">No Flows Found</h3>
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100">Nenhum Fluxo Encontrado</h3>
                     <p className="text-sm text-gray-500 mt-1">
-                      You haven't created any flows yet. Get started now!
+                      Você ainda não criou nenhum fluxo. Comece agora!
                     </p>
                     <Link href="/flows/new">
                       <Button className="mt-4 gap-2">
                         <Plus size={16} />
-                        Create Your First Flow
+                        Criar Seu Primeiro Fluxo
                       </Button>
                     </Link>
                   </CardContent>
@@ -183,7 +183,7 @@ export default function Dashboard() {
         {/* Getting started section */}
         <section>
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Getting Started</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Primeiros Passos</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -192,15 +192,15 @@ export default function Dashboard() {
                 <div className="h-10 w-10 bg-primary-50 dark:bg-primary-900/30 text-primary rounded-lg flex items-center justify-center mb-2">
                   <ChartGantt size={20} />
                 </div>
-                <CardTitle>Build a Flow</CardTitle>
+                <CardTitle>Criar um Fluxo</CardTitle>
                 <CardDescription>
-                  Create your first conversational flow with our drag-and-drop builder
+                  Crie seu primeiro fluxo de conversação com nosso construtor de arrastar e soltar
                 </CardDescription>
               </CardHeader>
               <CardFooter>
                 <Link href="/flows/new">
                   <Button variant="outline" className="gap-1">
-                    Start Building <ArrowRight size={16} />
+                    Começar a Construir <ArrowRight size={16} />
                   </Button>
                 </Link>
               </CardFooter>
@@ -211,15 +211,15 @@ export default function Dashboard() {
                 <div className="h-10 w-10 bg-secondary-50 dark:bg-secondary-900/30 text-secondary rounded-lg flex items-center justify-center mb-2">
                   <MessageSquare size={20} />
                 </div>
-                <CardTitle>Connect WhatsApp</CardTitle>
+                <CardTitle>Conectar WhatsApp</CardTitle>
                 <CardDescription>
-                  Link your WhatsApp Business account to start engaging with users
+                  Vincule sua conta do WhatsApp Business para começar a interagir com usuários
                 </CardDescription>
               </CardHeader>
               <CardFooter>
                 <Link href="/settings/whatsapp">
                   <Button variant="outline" className="gap-1">
-                    Setup WhatsApp <ArrowRight size={16} />
+                    Configurar WhatsApp <ArrowRight size={16} />
                   </Button>
                 </Link>
               </CardFooter>
@@ -230,15 +230,15 @@ export default function Dashboard() {
                 <div className="h-10 w-10 bg-green-50 dark:bg-green-900/30 text-green-500 rounded-lg flex items-center justify-center mb-2">
                   <Activity size={20} />
                 </div>
-                <CardTitle>View Analytics</CardTitle>
+                <CardTitle>Visualizar Análises</CardTitle>
                 <CardDescription>
-                  Track performance and optimize your conversational flows
+                  Acompanhe o desempenho e otimize seus fluxos de conversação
                 </CardDescription>
               </CardHeader>
               <CardFooter>
                 <Link href="/analytics">
                   <Button variant="outline" className="gap-1">
-                    Explore Analytics <ArrowRight size={16} />
+                    Explorar Análises <ArrowRight size={16} />
                   </Button>
                 </Link>
               </CardFooter>
