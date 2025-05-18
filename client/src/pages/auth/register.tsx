@@ -145,7 +145,7 @@ export default function Register() {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel>Senha</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input 
@@ -178,7 +178,7 @@ export default function Register() {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Confirm Password</FormLabel>
+                      <FormLabel>Confirmar Senha</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input 
@@ -214,9 +214,9 @@ export default function Register() {
                   {registerMutation.isPending ? (
                     <span className="flex items-center">
                       <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                      Creating account...
+                      Criando conta...
                     </span>
-                  ) : 'Create Account'}
+                  ) : 'Criar Conta'}
                 </Button>
               </form>
             </Form>
@@ -224,20 +224,20 @@ export default function Register() {
           
           <CardFooter className="flex flex-col space-y-4 border-t pt-6">
             <div className="text-sm text-center text-gray-600 dark:text-gray-400">
-              By signing up, you agree to our{' '}
+              Ao se cadastrar, você concorda com nossos{' '}
               <a href="#" className="font-medium text-primary hover:text-primary-600">
-                Terms of Service
+                Termos de Serviço
               </a>{' '}
-              and{' '}
+              e{' '}
               <a href="#" className="font-medium text-primary hover:text-primary-600">
-                Privacy Policy
+                Política de Privacidade
               </a>
             </div>
             <div className="text-sm text-center text-gray-600 dark:text-gray-400">
-              Already have an account?{' '}
+              Já possui uma conta?{' '}
               <Link href="/login">
                 <span className="font-medium text-primary hover:text-primary-600 cursor-pointer">
-                  Sign in
+                  Entrar
                 </span>
               </Link>
             </div>
