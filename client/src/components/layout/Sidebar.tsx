@@ -64,35 +64,35 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               icon={<LayoutDashboard size={18} />} 
               isActive={location === "/dashboard" || location === "/"}
             >
-              Dashboard
+              Painel
             </NavLink>
             <NavLink 
               href="/flows" 
               icon={<ChartGantt size={18} />} 
               isActive={location.startsWith("/flows")}
             >
-              Flow Builder
+              Construtor de Fluxo
             </NavLink>
             <NavLink 
               href="/settings/whatsapp" 
               icon={<MessageSquare size={18} />} 
               isActive={location === "/settings/whatsapp"}
             >
-              WhatsApp Integration
+              Integração WhatsApp
             </NavLink>
             <NavLink 
               href="/conversations" 
               icon={<MessageSquare size={18} />} 
               isActive={location === "/conversations"}
             >
-              Conversations
+              Conversas
             </NavLink>
             <NavLink 
               href="/contacts" 
               icon={<Users size={18} />} 
               isActive={location === "/contacts"}
             >
-              Contacts
+              Contatos
             </NavLink>
             <NavLink 
               href="/analytics" 
@@ -100,13 +100,13 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               isActive={location === "/analytics"}
               badge={plan?.name === "Free" ? "PRO" : undefined}
             >
-              Analytics
+              Análises
             </NavLink>
           </div>
           
           <div className="mt-8">
             <h3 className="px-3 text-xs text-gray-400 uppercase tracking-wider mb-2">
-              Settings
+              Configurações
             </h3>
             <div className="space-y-1.5">
               <NavLink 
@@ -114,21 +114,21 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 icon={<Settings2 size={18} />} 
                 isActive={location === "/settings/general"}
               >
-                General
+                Geral
               </NavLink>
               <NavLink 
                 href="/settings/account" 
                 icon={<User size={18} />} 
                 isActive={location === "/settings/account"}
               >
-                Account
+                Conta
               </NavLink>
               <NavLink 
                 href="/settings/billing" 
                 icon={<CreditCard size={18} />} 
                 isActive={location === "/settings/billing"}
               >
-                Billing
+                Faturamento
               </NavLink>
             </div>
           </div>
@@ -152,17 +152,17 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             <div className="flex items-center">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold">
-                  {plan?.name || "Pro"} Plan
+                  Plano {plan?.name || "Pro"}
                 </h3>
                 <div className="text-2xl font-bold flex items-center mt-1">
-                  ${plan?.price || 189}<span className="text-sm ml-1 opacity-80">/month</span>
+                  R${plan?.price || 189}<span className="text-sm ml-1 opacity-80">/mês</span>
                 </div>
               </div>
             </div>
             <p className="text-xs opacity-80 my-3">
               {plan?.name === "Pro" 
-                ? "You're enjoying all our premium features"
-                : "Open a lot of cool features with our Premium Pro Plan"}
+                ? "Você está aproveitando todos os recursos premium"
+                : "Desbloqueie muitos recursos incríveis com nosso Plano Premium Pro"}
             </p>
             <Button 
               variant="secondary"
@@ -172,14 +172,14 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               {plan?.name === "Pro" ? (
                 <>
                   <Eye size={14} className="mr-1.5" />
-                  View Plan
+                  Ver Plano
                 </>
               ) : (
                 <>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-1.5">
                     <path d="M12 4H6C4.89543 4 4 4.89543 4 6V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V12M9 15V12M12 15V10M15 15V8M17.5858 1.58579C18.3668 0.804738 19.6332 0.804738 20.4142 1.58579C21.1953 2.36683 21.1953 3.63316 20.4142 4.41421L12.8284 12H9V8.17157L16.5858 0.585786C17.3668 -0.195262 18.6332 -0.195262 19.4142 0.585786C20.1953 1.36683 20.1953 2.63316 19.4142 3.41421L11.8284 11H8V7.17157L17.5858 1.58579Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  Get Pro Plan
+                  Obter Plano Pro
                 </>
               )}
             </Button>
