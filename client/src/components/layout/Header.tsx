@@ -42,8 +42,11 @@ const Header: FC<HeaderProps> = ({ title, onMenuClick, showActions = false }) =>
       <div className="p-[3px] pl-[10px] pr-[10px] bg-white rounded-full shadow-sm flex items-center gap-6">
         <div className="flex items-center gap-2">
           <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-[#5b5dcd] text-white">{getInitials()}</AvatarFallback>
-            {/* Avatar image would go here if available */}
+            {user?.avatar ? (
+              <AvatarImage src={user.avatar} alt={user.fullName || user.username} />
+            ) : (
+              <AvatarFallback className="bg-[#5b5dcd] text-white">{getInitials()}</AvatarFallback>
+            )}
           </Avatar>
           <div className="text-sm font-medium">{user?.fullName || user?.username || "Ashly Boldwin"}</div>
         </div>
@@ -59,7 +62,7 @@ const Header: FC<HeaderProps> = ({ title, onMenuClick, showActions = false }) =>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuItem asChild>
-                <Link href="/settings/profile" className="w-full cursor-pointer">
+                <Link href="/settings/account" className="w-full cursor-pointer">
                   Editar Perfil
                 </Link>
               </DropdownMenuItem>
