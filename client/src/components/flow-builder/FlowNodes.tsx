@@ -211,20 +211,42 @@ const BaseNode = ({ data, id, type, selected }: any) => {
         )}
         
         {/* Render node type specific content */}
-        <div className="p-3 text-sm">
-          {type === 'textMessage' && data?.text && (
+        <div className="p-3 text-sm" onClick={handleNodeClick}>
+          {type === 'textMessage' && (
             <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs overflow-auto max-h-20">
-              {data.text}
+              {isEditing ? (
+                <InlineEdit 
+                  value={data?.text || ''} 
+                  onChange={handleTextChange} 
+                  placeholder="Digite sua mensagem..."
+                  multiline={true}
+                  className="w-full"
+                  textClassName="text-xs"
+                  onBlur={handleBlur}
+                />
+              ) : (
+                data?.text || <span className="text-gray-400 italic">Clique para adicionar texto</span>
+              )}
             </div>
           )}
           
           {type === 'quickReplies' && (
             <div className="space-y-1">
-              {data?.text && (
-                <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs overflow-auto max-h-16">
-                  {data.text}
-                </div>
-              )}
+              <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs overflow-auto max-h-16">
+                {isEditing ? (
+                  <InlineEdit 
+                    value={data?.text || ''} 
+                    onChange={handleTextChange} 
+                    placeholder="Digite sua mensagem..."
+                    multiline={true}
+                    className="w-full"
+                    textClassName="text-xs"
+                    onBlur={handleBlur}
+                  />
+                ) : (
+                  data?.text || <span className="text-gray-400 italic">Clique para adicionar texto</span>
+                )}
+              </div>
               <div className="flex flex-wrap gap-1 mt-1">
                 {(data?.buttons || []).map((button: any, index: number) => (
                   <span 
@@ -235,12 +257,40 @@ const BaseNode = ({ data, id, type, selected }: any) => {
                   </span>
                 ))}
               </div>
+              
+              {isEditing && (
+                <button 
+                  className="mt-2 text-xs bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-300 px-2 py-1 rounded w-full"
+                  onClick={() => {
+                    // Adicionar um novo botão
+                    const newButtons = [...(data?.buttons || []), {
+                      id: `btn-${Date.now()}`,
+                      title: 'Novo Botão'
+                    }];
+                    handleUpdateNode(id, { buttons: newButtons });
+                  }}
+                >
+                  + Adicionar Botão
+                </button>
+              )}
             </div>
           )}
           
-          {type === 'condition' && data?.condition && (
+          {type === 'condition' && (
             <div className="p-2 bg-gray-50 dark:bg-gray-700 rounded text-xs font-mono overflow-auto max-h-20">
-              {data.condition}
+              {isEditing ? (
+                <InlineEdit 
+                  value={data?.condition || ''} 
+                  onChange={handleConditionChange} 
+                  placeholder="Digite sua condição... Ex: {{variável}} === 'valor'"
+                  multiline={true}
+                  className="w-full"
+                  textClassName="text-xs font-mono"
+                  onBlur={handleBlur}
+                />
+              ) : (
+                data?.condition || <span className="text-gray-400 italic">Clique para adicionar condição</span>
+              )}
             </div>
           )}
           
