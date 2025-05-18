@@ -158,12 +158,35 @@ export const updateProfile = async (req: Request, res: Response) => {
       fullName: z.string().optional(),
       username: z.string().optional(),
       email: z.string().email().optional(),
+      phone: z.string().optional(),
+      avatar: z.string().optional(),
     });
     
     const validatedData = updateSchema.parse(req.body);
+    const { avatar, ...userData } = validatedData;
+    
+    // Se uma nova imagem foi enviada, fazer upload para o bucket
+    let avatarUrl = undefined;
+    if (avatar) {
+      if (avatar.startsWith('data:image/')) {
+        // Upload da nova imagem
+        const { uploadAvatar } = await import('../services/storage.service');
+        avatarUrl = await uploadAvatar(userId, avatar);
+      } else if (avatar === '') {
+        // Se o avatar for string vazia, remover o avatar atual
+        avatarUrl = '';
+      } else {
+        // Se o avatar for uma URL existente, mantê-la
+        avatarUrl = avatar;
+      }
+    }
     
     // Update user
-    const updatedUser = await storage.updateUser(userId, validatedData);
+    const updatedUser = await storage.updateUser(userId, { 
+      ...userData,
+      ...(avatarUrl !== undefined ? { avatar: avatarUrl } : {})
+    });
+    
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -178,6 +201,7 @@ export const updateProfile = async (req: Request, res: Response) => {
         errors: error.errors 
       });
     }
+    console.error('Erro ao atualizar perfil:', error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
