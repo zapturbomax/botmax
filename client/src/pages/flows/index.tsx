@@ -486,22 +486,22 @@ export default function Flows() {
               <div className="h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
                 <ChartGantt className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-medium mb-2">No Flows Yet</h3>
+              <h3 className="text-lg font-medium mb-2">Nenhum Fluxo Ainda</h3>
               <p className="text-gray-500 dark:text-gray-400 mb-6 max-w-md">
-                You haven't created any flows yet. Get started by creating your first WhatsApp conversation flow.
+                Você ainda não criou nenhum fluxo. Comece criando seu primeiro fluxo de conversação do WhatsApp.
               </p>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className="flex items-center gap-1">
                     <Plus className="h-4 w-4" />
-                    Create Your First Flow
+                    Criar Seu Primeiro Fluxo
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Create New Flow</DialogTitle>
+                    <DialogTitle>Criar Novo Fluxo</DialogTitle>
                     <DialogDescription>
-                      Give your flow a name and optional description.
+                      Dê um nome ao seu fluxo e uma descrição opcional.
                     </DialogDescription>
                   </DialogHeader>
                   <Form {...form}>
@@ -511,9 +511,9 @@ export default function Flows() {
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Name</FormLabel>
+                            <FormLabel>Nome</FormLabel>
                             <FormControl>
-                              <Input placeholder="Welcome Flow" {...field} />
+                              <Input placeholder="Fluxo de Boas-vindas" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -525,9 +525,9 @@ export default function Flows() {
                         name="description"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Description (Optional)</FormLabel>
+                            <FormLabel>Descrição (Opcional)</FormLabel>
                             <FormControl>
-                              <Input placeholder="Initial greeting for new users" {...field} />
+                              <Input placeholder="Saudação inicial para novos usuários" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -544,9 +544,9 @@ export default function Flows() {
                       {createFlowMutation.isPending ? (
                         <span className="flex items-center">
                           <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                          Creating...
+                          Criando...
                         </span>
-                      ) : 'Create Flow'}
+                      ) : 'Criar Fluxo'}
                     </Button>
                   </DialogFooter>
                 </DialogContent>
