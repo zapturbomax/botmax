@@ -72,12 +72,17 @@ export async function deleteAvatar(avatarUrl: string): Promise<void> {
       return;
     }
     
-    // Tentar deletar o arquivo
+    // Verificar se o arquivo existe e então deletá-lo
     try {
-      await objectStorage.delete(fileName);
-      console.log(`Avatar deletado com sucesso: ${fileName}`);
+      const exists = await objectStorage.exists(fileName);
+      if (exists) {
+        await objectStorage.delete(fileName);
+        console.log(`Avatar deletado com sucesso: ${fileName}`);
+      } else {
+        console.warn(`Arquivo não encontrado para deleção: ${fileName}`);
+      }
     } catch (err) {
-      console.warn(`Arquivo não encontrado ou erro ao deletar: ${fileName}`, err);
+      console.warn(`Erro ao deletar arquivo: ${fileName}`, err);
     }
   } catch (error) {
     console.error('Erro ao processar a URL do avatar para deleção:', error);
