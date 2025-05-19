@@ -138,9 +138,17 @@ export const getProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
     
+    // Get tenant for the user
+    const tenant = await storage.getTenantByUserId(userId);
+    
     // Return user data (excluding password)
     const { password, ...userWithoutPassword } = user;
-    res.status(200).json(userWithoutPassword);
+    
+    // Return in the format expected by the frontend
+    res.status(200).json({
+      user: userWithoutPassword,
+      tenant
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

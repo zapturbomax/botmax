@@ -19,6 +19,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.post("/api/auth/register", authController.register);
   app.post("/api/auth/login", authController.login);
+  app.get("/api/auth/me", authenticate, authController.getProfile);
   app.get("/api/auth/profile", authenticate, authController.getProfile);
   app.put("/api/auth/profile", authenticate, authController.updateProfile);
   app.post("/api/auth/change-password", authenticate, authController.changePassword);
