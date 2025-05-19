@@ -5,7 +5,8 @@ import { nodeTypes } from './FlowNodeTypes';
 import { FlowNode, FlowNodeType } from '@shared/schema';
 import { NodePopover } from './NodePopover';
 import AddNodeMenu from './AddNodeMenu';
-import { MessageCircle, ArrowRightLeft, Hourglass, Variable, AlertTriangle } from 'lucide-react';
+import { MessageCircle, ArrowRightLeft, Hourglass, Variable, AlertTriangle, Info, HelpCircle } from 'lucide-react';
+import { UnifiedNodeCard } from './UnifiedNodeCard';
 
 // Function to create a new node connected to the current one
 const createConnectedNode = (
@@ -395,75 +396,18 @@ const BaseNode = ({ data, id, type, selected }: any) => {
 
 import { ConditionNode } from './node-elements/ConditionNode';
 import { QuickRepliesNode } from './node-elements/QuickRepliesNode';
-import { TextMessageNodeCustom } from './TextMessageNodeCustom';
 
 // Versão memorizada do nó base
 const MemoizedBaseNode = memo(BaseNode);
 
 // Componentes específicos de nó com memo
-const MemoizedTextMessageNodeCustom = memo(TextMessageNodeCustom);
 const MemoizedConditionNode = memo(ConditionNode);
 const MemoizedQuickRepliesNode = memo(QuickRepliesNode);
 
 // Exportando os componentes de nó
 export const nodeComponents = {
   startTrigger: MemoizedBaseNode,
-  textMessage: (props: any) => {
-    // Pegamos a função handleUpdateNode do BaseNode
-    const reactFlowInstance = useReactFlow();
-    
-    const handleUpdate = (id: string, newData: Record<string, any>) => {
-      reactFlowInstance.setNodes(nodes => 
-        nodes.map(node => {
-          if (node.id === id) {
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                ...newData
-              }
-            };
-          }
-          return node;
-        })
-      );
-    };
-    
-    const handleDuplicate = () => {
-      const currentNode = reactFlowInstance.getNode(props.id);
-      if (!currentNode) return;
-      
-      // Duplicar o nó
-      const duplicatedNode: FlowNode = {
-        id: `textMessage-${Date.now()}`,
-        type: 'textMessage',
-        position: { 
-          x: currentNode.position.x + 50, 
-          y: currentNode.position.y + 50 
-        },
-        data: { ...props.data }
-      };
-      
-      // Adicionar o nó duplicado ao flow
-      reactFlowInstance.addNodes(duplicatedNode);
-    };
-    
-    const handleDelete = () => {
-      // Remover o nó do flow
-      reactFlowInstance.deleteElements({ nodes: [{ id: props.id }] });
-    };
-    
-    return (
-      <MemoizedTextMessageNodeCustom
-        id={props.id}
-        data={props.data}
-        selected={props.selected}
-        onUpdateNodeData={handleUpdate}
-        onDuplicate={handleDuplicate}
-        onDelete={handleDelete}
-      />
-    );
-  },
+  textMessage: MemoizedBaseNode,
   mediaMessage: MemoizedBaseNode,
   quickReplies: (props: any) => {
     // Pegamos a função handleUpdateNode do BaseNode

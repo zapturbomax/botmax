@@ -1,68 +1,31 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { MessageSquare, Info, Send, Copy, Trash2, HelpCircle, ChevronDown, Smile } from 'lucide-react';
-import { InlineEdit } from '@/components/flow-builder/InlineEdit';
 
-interface TextMessageNodeCustomProps {
-  id: string;
-  data: {
-    name?: string;
-    description?: string;
-    text?: string;
-    isForwarded?: boolean;
-    typingSeconds?: number;
-    executionCount?: number;
-    sentCount?: number;
+// Este é o nó de mensagem de texto personalizado com o design exato da imagem de referência
+export default function TextMessageNode({ id, data, selected, isConnectable }) {
+  const [messageText, setMessageText] = useState(data.text || '');
+  const [typingSeconds, setTypingSeconds] = useState(data.typingSeconds || 0);
+  const [isForwarded, setIsForwarded] = useState(data.isForwarded || false);
+  
+  // Valores de contadores
+  const executionCount = data.executionCount || 0;
+  const sentCount = data.sentCount || 0;
+  
+  // Handlers
+  const handleTextChange = (e) => {
+    const newText = e.target.value;
+    setMessageText(newText);
+    // Atualizar no data do nó
+    data.onChange?.({ ...data, text: newText });
   };
-  selected: boolean;
-  onUpdateNodeData: (id: string, data: Record<string, any>) => void;
-  onDelete?: () => void;
-  onDuplicate?: () => void;
-}
-
-export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
-  id,
-  data,
-  selected,
-  onUpdateNodeData,
-  onDelete,
-  onDuplicate
-}) => {
-  const [isEditing, setIsEditing] = useState(false);
   
-  // Valores padrão
-  const executionCount = data?.executionCount || 0;
-  const sentCount = data?.sentCount || 0;
-  const typingSeconds = data?.typingSeconds || 0;
-  const isForwarded = data?.isForwarded || false;
-  
-  // Manipuladores para atualizar os dados do nó
-  const handleTextChange = useCallback((newText: string) => {
-    onUpdateNodeData(id, { text: newText });
-  }, [id, onUpdateNodeData]);
-  
-  const handleSetForwarded = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    onUpdateNodeData(id, { isForwarded: event.target.checked });
-  }, [id, onUpdateNodeData]);
-  
-  const handleTypingSecondsChange = useCallback((value: number) => {
-    onUpdateNodeData(id, { typingSeconds: value });
-  }, [id, onUpdateNodeData]);
-  
-  const handleNextStep = useCallback(() => {
-    // Lógica para passar para o próximo passo
-    console.log("Próximo passo");
-  }, []);
-  
-  // Ativa o modo de edição ao clicar no nó
-  const handleCardClick = useCallback(() => {
-    setIsEditing(true);
-  }, []);
-  
-  // Desativa o modo de edição ao perder o foco
-  const handleBlur = useCallback(() => {
-    setIsEditing(false);
-  }, []);
+  const handleForwardedChange = (e) => {
+    const checked = e.target.checked;
+    setIsForwarded(checked);
+    // Atualizar no data do nó
+    data.onChange?.({ ...data, isForwarded: checked });
+  };
   
   return (
     <div className="relative" style={{ width: 320 }}>
@@ -70,14 +33,14 @@ export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
       <div className="absolute top-0 left-0 right-0 bg-[#3A4049] text-white rounded-t-xl py-2 px-4 flex justify-end gap-4 z-10">
         <button 
           className="flex items-center gap-1 text-sm font-medium hover:text-gray-200"
-          onClick={onDuplicate}
+          onClick={() => data.onDuplicate?.()}
         >
           <Copy size={16} />
           Duplicar
         </button>
         <button 
           className="flex items-center gap-1 text-sm font-medium hover:text-gray-200"
-          onClick={onDelete}
+          onClick={() => data.onDelete?.()}
         >
           <Trash2 size={16} />
           Remover
@@ -97,6 +60,7 @@ export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
           border: '2px solid #E2E8F0',
           zIndex: 20 
         }}
+        isConnectable={isConnectable}
       />
       
       <div className="relative mt-10 rounded-xl shadow-md border border-[#E2E8F0] bg-white overflow-hidden">
@@ -119,7 +83,7 @@ export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
         </div>
         
         {/* Conteúdo principal */}
-        <div className="p-4" onClick={handleCardClick}>
+        <div className="p-4">
           {/* Cabeçalho do corpo */}
           <div className="flex items-center mb-4">
             <div className="bg-[#26C6B9] p-3 rounded-full mr-3">
@@ -136,21 +100,12 @@ export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
           <div className="mb-4">
             <div className="text-gray-400 italic mb-2">Digite sua mensagem abaixo</div>
             <div className="bg-gray-50 rounded-md p-3 border border-gray-200">
-              {isEditing ? (
-                <InlineEdit 
-                  value={data?.text || ''} 
-                  onChange={handleTextChange} 
-                  placeholder="Digite sua mensagem..."
-                  multiline={true}
-                  className="w-full min-h-[60px]"
-                  textClassName="text-sm"
-                  onBlur={handleBlur}
-                />
-              ) : (
-                <p className="text-sm min-h-[60px]">
-                  {data?.text || <span className="text-gray-400 italic">Digite sua mensagem abaixo</span>}
-                </p>
-              )}
+              <textarea
+                value={messageText}
+                onChange={handleTextChange}
+                placeholder="Digite sua mensagem abaixo"
+                className="w-full min-h-[60px] p-1 text-sm bg-transparent border-none resize-none focus:outline-none"
+              />
             </div>
           </div>
           
@@ -177,7 +132,7 @@ export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
               type="checkbox"
               id={`forwarded-${id}`}
               checked={isForwarded}
-              onChange={handleSetForwarded}
+              onChange={handleForwardedChange}
               className="w-4 h-4 mr-2 rounded border-gray-300"
             />
             <label htmlFor={`forwarded-${id}`} className="text-gray-500 text-sm">
@@ -198,8 +153,19 @@ export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
               <div>
                 <div className="text-gray-600 text-sm">Status digitando</div>
                 <div className="flex items-center">
-                  <span className="mr-1 text-[#4A5568] font-medium">{typingSeconds}</span>
-                  <ChevronDown size={14} className="text-[#4A5568]" />
+                  <select
+                    value={typingSeconds}
+                    onChange={(e) => setTypingSeconds(Number(e.target.value))}
+                    className="mr-1 text-[#4A5568] font-medium bg-transparent border-none focus:outline-none appearance-none"
+                  >
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                  </select>
+                  <ChevronDown size={14} className="text-[#4A5568] -ml-1" />
                   <span className="ml-1 text-gray-500 text-sm">segundos</span>
                 </div>
               </div>
@@ -207,7 +173,6 @@ export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
             
             {/* Botão próximo passo */}
             <button 
-              onClick={handleNextStep}
               className="text-[#4A5568] font-medium flex items-center"
             >
               Próximo passo
@@ -229,7 +194,8 @@ export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
           border: '2px solid #E2E8F0',
           zIndex: 20 
         }}
+        isConnectable={isConnectable}
       />
     </div>
   );
-};
+}

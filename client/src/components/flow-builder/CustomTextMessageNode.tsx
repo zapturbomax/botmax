@@ -1,14 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Handle, Position } from 'reactflow';
-import { cn } from '@/lib/utils';
 import { MessageSquare, Info, Send, Copy, Trash2, HelpCircle, ChevronDown, Smile } from 'lucide-react';
-import { InlineEdit } from '@/components/flow-builder/InlineEdit';
+import { InlineEdit } from '../InlineEdit';
 
 interface TextMessageNodeProps {
   id: string;
   data: {
-    name?: string;
-    description?: string;
     text?: string;
     isForwarded?: boolean;
     typingSeconds?: number;
@@ -16,69 +13,53 @@ interface TextMessageNodeProps {
     sentCount?: number;
   };
   selected: boolean;
-  onUpdateNodeData: (id: string, data: Record<string, any>) => void;
-  onDelete?: () => void;
-  onDuplicate?: () => void;
+  isConnectable: boolean;
 }
 
-export const TextMessageNode: React.FC<TextMessageNodeProps> = ({
-  id,
-  data,
-  selected,
-  onUpdateNodeData,
-  onDelete,
-  onDuplicate
-}) => {
+export default function TextMessageNode({ id, data, selected, isConnectable }: TextMessageNodeProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [typingSeconds, setTypingSeconds] = useState(data.typingSeconds || 0);
+  const [isForwarded, setIsForwarded] = useState(data.isForwarded || false);
+  const [messageText, setMessageText] = useState(data.text || '');
   
-  // Valores padrão
-  const executionCount = data?.executionCount || 0;
-  const sentCount = data?.sentCount || 0;
-  const typingSeconds = data?.typingSeconds || 0;
-  const isForwarded = data?.isForwarded || false;
+  // Valores para o display
+  const executionCount = data.executionCount || 0;
+  const sentCount = data.sentCount || 0;
   
-  // Manipuladores para atualizar os dados do nó
-  const handleTextChange = useCallback((newText: string) => {
-    onUpdateNodeData(id, { text: newText });
-  }, [id, onUpdateNodeData]);
+  const handleDuplicate = () => {
+    console.log("Duplicar nó", id);
+    // A lógica real de duplicação será implementada no componente pai
+  };
   
-  const handleSetForwarded = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    onUpdateNodeData(id, { isForwarded: event.target.checked });
-  }, [id, onUpdateNodeData]);
+  const handleDelete = () => {
+    console.log("Remover nó", id);
+    // A lógica real de exclusão será implementada no componente pai
+  };
   
-  const handleTypingSecondsChange = useCallback((value: number) => {
-    onUpdateNodeData(id, { typingSeconds: value });
-  }, [id, onUpdateNodeData]);
+  const handleTextChange = (text: string) => {
+    setMessageText(text);
+    // Aqui atualizaríamos o estado no React Flow
+  };
   
-  const handleNextStep = useCallback(() => {
-    // Lógica para passar para o próximo passo
-    console.log("Próximo passo");
-  }, []);
-  
-  // Ativa o modo de edição ao clicar no nó
-  const handleCardClick = useCallback(() => {
-    setIsEditing(true);
-  }, []);
-  
-  // Desativa o modo de edição ao perder o foco
-  const handleBlur = useCallback(() => {
-    setIsEditing(false);
-  }, []);
+  const handleForwardedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsForwarded(e.target.checked);
+    // Aqui atualizaríamos o estado no React Flow
+  };
   
   return (
-    <div className="relative">
+    <div className="relative" style={{ width: 320 }}>
       {/* Barra de botões superior */}
       <div className="absolute top-0 left-0 right-0 bg-[#3A4049] text-white rounded-t-xl py-2 px-4 flex justify-end gap-4 z-10">
         <button 
           className="flex items-center gap-1 text-sm font-medium hover:text-gray-200"
-          onClick={onDuplicate}
+          onClick={handleDuplicate}
         >
           <Copy size={16} />
           Duplicar
         </button>
         <button 
           className="flex items-center gap-1 text-sm font-medium hover:text-gray-200"
-          onClick={onDelete}
+          onClick={handleDelete}
         >
           <Trash2 size={16} />
           Remover
@@ -98,6 +79,7 @@ export const TextMessageNode: React.FC<TextMessageNodeProps> = ({
           border: '2px solid #E2E8F0',
           zIndex: 20 
         }}
+        isConnectable={isConnectable}
       />
       
       <div className="relative mt-10 rounded-xl shadow-md border border-[#E2E8F0] bg-white overflow-hidden">
@@ -120,7 +102,7 @@ export const TextMessageNode: React.FC<TextMessageNodeProps> = ({
         </div>
         
         {/* Conteúdo principal */}
-        <div className="p-4" onClick={handleCardClick}>
+        <div className="p-4" onClick={() => setIsEditing(true)}>
           {/* Cabeçalho do corpo */}
           <div className="flex items-center mb-4">
             <div className="bg-[#26C6B9] p-3 rounded-full mr-3">
@@ -139,17 +121,17 @@ export const TextMessageNode: React.FC<TextMessageNodeProps> = ({
             <div className="bg-gray-50 rounded-md p-3 border border-gray-200">
               {isEditing ? (
                 <InlineEdit 
-                  value={data?.text || ''} 
+                  value={messageText} 
                   onChange={handleTextChange} 
                   placeholder="Digite sua mensagem..."
                   multiline={true}
                   className="w-full min-h-[60px]"
                   textClassName="text-sm"
-                  onBlur={handleBlur}
+                  onBlur={() => setIsEditing(false)}
                 />
               ) : (
                 <p className="text-sm min-h-[60px]">
-                  {data?.text || <span className="text-gray-400 italic">Digite sua mensagem abaixo</span>}
+                  {messageText || <span className="text-gray-400 italic">Digite sua mensagem abaixo</span>}
                 </p>
               )}
             </div>
@@ -178,7 +160,7 @@ export const TextMessageNode: React.FC<TextMessageNodeProps> = ({
               type="checkbox"
               id={`forwarded-${id}`}
               checked={isForwarded}
-              onChange={handleSetForwarded}
+              onChange={handleForwardedChange}
               className="w-4 h-4 mr-2 rounded border-gray-300"
             />
             <label htmlFor={`forwarded-${id}`} className="text-gray-500 text-sm">
@@ -208,7 +190,6 @@ export const TextMessageNode: React.FC<TextMessageNodeProps> = ({
             
             {/* Botão próximo passo */}
             <button 
-              onClick={handleNextStep}
               className="text-[#4A5568] font-medium flex items-center"
             >
               Próximo passo
@@ -230,7 +211,8 @@ export const TextMessageNode: React.FC<TextMessageNodeProps> = ({
           border: '2px solid #E2E8F0',
           zIndex: 20 
         }}
+        isConnectable={isConnectable}
       />
     </div>
   );
-};
+}
