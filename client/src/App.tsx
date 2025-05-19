@@ -39,6 +39,7 @@ function Router() {
       <ProtectedRoute path="/flows" component={Flows} />
       <ProtectedRoute path="/flows/new" component={NewFlow} />
       <ProtectedRoute path="/flows/:id" component={FlowBuilder} />
+      <ProtectedRoute path="/flows/:id/beta" component={FlowBuilderBeta} />
       <ProtectedRoute path="/settings/general" component={GeneralSettings} />
       <ProtectedRoute path="/settings/account" component={AccountSettings} />
       <ProtectedRoute path="/settings/billing" component={BillingSettings} />

@@ -5,45 +5,41 @@ import { Play } from 'lucide-react';
 interface StartNodeProps {
   id: string;
   data: {
-    text: string;
+    label?: string;
+    onChange?: (id: string, data: any) => void;
   };
   selected: boolean;
 }
 
 /**
  * Nó de início do fluxo
- * Este é o primeiro nó do fluxo e não possui entrada, apenas saída
+ * Este é o primeiro nó do fluxo, que inicia a conversa
  */
-const StartNode: React.FC<StartNodeProps> = ({ id, data, selected }) => {
+const StartNode = ({ id, data, selected }: StartNodeProps) => {
   return (
-    <div className={`relative rounded-lg shadow-md border border-[#E2E8F0] bg-white overflow-hidden w-[300px] transition-shadow ${selected ? 'shadow-lg ring-2 ring-blue-500 ring-opacity-50' : ''}`}>
-      {/* Cabeçalho */}
-      <div className="bg-[#22c55e] text-white p-3 flex justify-between items-center">
-        <div className="flex items-center">
-          <Play className="h-5 w-5 mr-2" />
-          <span className="font-medium">Início do fluxo</span>
+    <div 
+      className={`relative rounded-lg border-2 p-4 shadow-sm w-[220px] bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-gray-900 ${
+        selected ? 'border-green-500 ring-2 ring-green-200 dark:ring-green-800' : 'border-green-300'
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-green-500 text-white">
+          <Play className="w-4 h-4" />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-medium text-sm text-green-700 dark:text-green-400">Início do Fluxo</h3>
+          <p className="text-xs text-green-600 dark:text-green-500 mt-1">
+            {data.label || "Dispara automaticamente quando o contato inicia a conversa"}
+          </p>
         </div>
       </div>
-      
-      {/* Conteúdo */}
-      <div className="p-4">
-        <p className="text-sm text-gray-600">
-          Este é o início do fluxo. Seu fluxo sempre começa aqui quando ativado através das suas campanhas ou gatilhos.
-        </p>
-      </div>
-      
-      {/* Conector de saída */}
+
+      {/* Saída */}
       <Handle
         type="source"
         position={Position.Bottom}
-        style={{ 
-          width: 12, 
-          height: 12,
-          background: 'white',
-          border: '2px solid #CBD5E0',
-          bottom: -6,
-        }}
-        id="source"
+        id="a"
+        className="w-3 h-3 bg-green-500 border-2 border-white bottom-[-7px]"
       />
     </div>
   );
