@@ -5,7 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { queryClient } from "./lib/queryClient";
-import { AuthProvider } from "./lib/auth";
+import { AuthProvider, AuthContext } from "./lib/auth";
 import { useAuth } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 import { useLocation } from "wouter";

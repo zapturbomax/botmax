@@ -1,8 +1,6 @@
 
-import { useContext, createContext } from 'react';
-import { AuthContextType, User } from '@/lib/auth';
-
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { useContext } from 'react';
+import { AuthContext, AuthContextType, User } from '@/lib/auth';
 
 export function useAuth() {
   const context = useContext(AuthContext);
