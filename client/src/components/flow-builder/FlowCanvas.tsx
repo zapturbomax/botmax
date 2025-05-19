@@ -10,7 +10,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { Button } from '@/components/ui/button';
 import { nodeComponents } from './FlowNodes';
-import ModernTextMessageNode from './ModernTextMessageNode';
+import { modernNodeComponents } from './modern-nodes';  
 import { useFlowBuilder } from '@/hooks/use-flow-builder';
 import FlowControls from './FlowControls';
 import { ZoomIn, ZoomOut, Focus, Trash, Copy, Play } from 'lucide-react';
@@ -143,7 +143,7 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
           onNodeClick={(_, node) => onNodeSelect(node)}
           nodeTypes={{
             ...nodeComponents,
-            textMessage: ModernTextMessageNode  // Usando o novo nó para mensagens de texto
+            ...modernNodeComponents  // Usando os novos componentes modernos
           }}
           className="canvas-bg"
           fitView
