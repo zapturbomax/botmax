@@ -566,7 +566,7 @@ export class DatabaseStorage implements IStorage {
         const flowIsBeta = flow.isBeta === true;
         return flowIsBeta === isBeta;
       });
-      
+
       return filteredFlows;
     } catch (error) {
       console.error("Error getting flows:", error);
@@ -581,7 +581,7 @@ export class DatabaseStorage implements IStorage {
           eq(flows.id, id),
           eq(flows.tenantId, tenantId)
         ));
-        
+
       if (flow) {
         // Converter para boolean para tratar possíveis valores undefined
         const flowIsBeta = flow.isBeta === true;
@@ -765,26 +765,27 @@ export class DatabaseStorage implements IStorage {
 
 // Use DatabaseStorage instead of MemStorage
 export const storage = new DatabaseStorage();
+import * as schema from '@shared/schema';
 export const getFlows = async (tenantId: number, isBeta: boolean = false) => {
-  try {
-    // Obter todos os fluxos do tenant
-    const flowsList = await db.select().from(schema.flows).where(
-      eq(schema.flows.tenantId, tenantId)
-    );
-    
-    // Filtrar baseado na flag isBeta
-    const filteredFlows = flowsList.filter(flow => {
-      // Converter para boolean para tratar possíveis valores undefined
-      const flowIsBeta = flow.isBeta === true;
-      return flowIsBeta === isBeta;
-    });
-    
+    try {
+      console.log(`Buscando fluxos com tenantId=${tenantId} e isBeta=${isBeta}`);
+      const flowsList = await db.select().from(schema.flows).where(
+        eq(schema.flows.tenantId, tenantId)
+      );
+
+      // Filtrar baseado na flag isBeta
+      const filteredFlows = flowsList.filter(flow => {
+        // Converter para boolean para tratar possíveis valores undefined
+        const flowIsBeta = flow.isBeta === true;
+        return flowIsBeta === isBeta;
+      });
+
     return filteredFlows;
-  } catch (error) {
-    console.error("Error getting flows:", error);
-    throw error;
-  }
-};
+    } catch (error) {
+      console.error("Error getting flows:", error);
+      throw error;
+    }
+  };
 
 export const getFlow = async (id: number, tenantId: number, isBeta: boolean = false) => {
   try {
@@ -802,7 +803,7 @@ export const getFlow = async (id: number, tenantId: number, isBeta: boolean = fa
         return flow[0];
       }
     }
-    
+
     return null;
   } catch (error) {
     console.error("Error getting flow:", error);
