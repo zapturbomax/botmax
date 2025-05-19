@@ -1,12 +1,12 @@
+
 import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { queryClient } from "./lib/queryClient";
-import { AuthProvider } from "./lib/auth";
+import { AuthProvider, useAuth } from "./lib/auth";
 import { ProtectedRoute } from "./lib/protected-route";
-import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import React, { useEffect } from 'react';
 import axios from 'axios';
@@ -17,11 +17,12 @@ import Login from '@/pages/auth/login';
 import Register from '@/pages/auth/register';
 import Dashboard from '@/pages/dashboard';
 import FlowBuilder from '@/pages/flow-builder';
+import FlowBuilderBeta from '@/pages/flow-builder-beta';
 import Chat from '@/pages/chat';
 import ForgotPassword from '@/pages/auth/forgot-password';
 import NotFound from '@/pages/not-found';
 
-// Settings
+// Settings pages
 import GeneralSettings from '@/pages/settings/general';
 import AccountSettings from '@/pages/settings/account';
 import BillingSettings from '@/pages/settings/billing';
@@ -30,9 +31,8 @@ import WhatsAppSettings from '@/pages/settings/whatsapp';
 // Flow related pages
 import Flows from '@/pages/flows';
 import NewFlow from '@/pages/flows/new';
-import FlowBuilderBeta from '@/pages/flow-builder-beta';
-import NewFlowBeta from '@/pages/flows-beta/new';
 import FlowsBeta from '@/pages/flows-beta';
+import NewFlowBeta from '@/pages/flows-beta/new';
 
 // Router component to manage routes
 function Router() {
