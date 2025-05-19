@@ -12,8 +12,10 @@ import { Button } from '@/components/ui/button';
 import { nodeComponents } from './FlowNodes';
 import { modernNodeComponents } from './modern-nodes';
 import { modernNodesV2 } from './modern-nodes/index-v2';  
+import { canvasNodes } from './canvas';
 import { useFlowBuilder } from '@/hooks/use-flow-builder';
 import FlowControls from './FlowControls';
+import CanvasControls from './canvas/CanvasControls';
 import { ZoomIn, ZoomOut, Focus, Trash, Copy, Play } from 'lucide-react';
 
 interface FlowCanvasProps {
