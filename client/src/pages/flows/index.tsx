@@ -398,6 +398,11 @@ export default function Flows() {
                           Última atualização: {new Date(flow.updatedAt).toLocaleDateString()}
                         </span>
                         <div className="flex gap-2">
+                          <Link href={`/flows/${flow.id}/new`}>
+                            <Button variant="outline" size="sm" className="text-[#26C6B9] border-[#26C6B9] hover:bg-[#ebf7f5]">
+                              Dispara
+                            </Button>
+                          </Link>
                           <Link href={`/flows/${flow.id}/beta`}>
                             <Button variant="outline" size="sm" className="text-blue-600 border-blue-300">
                               Beta
