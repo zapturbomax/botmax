@@ -1,6 +1,7 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import { useLocation } from 'wouter';
 import { queryClient } from './queryClient';
+import axios from 'axios';
 
 // Types
 interface User {
