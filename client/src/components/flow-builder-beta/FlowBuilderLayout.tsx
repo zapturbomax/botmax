@@ -1,7 +1,7 @@
 
 // src/components/flow-builder-beta/FlowBuilderLayout.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'wouter';
 import { ArrowLeft, Save, Play, Settings, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -21,14 +21,14 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
   flowId, 
   flowName 
 }) => {
-  const navigate = useNavigate();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showProperties, setShowProperties] = useState(false);
   
   // Função para voltar à lista de fluxos
   const handleBack = () => {
-    navigate('/flows');
+    setLocation('/flows');
   };
   
   // Função para salvar o fluxo
@@ -64,20 +64,20 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
   // Função para fechar o painel de propriedades
   const handleCloseProperties = () => {
     setShowProperties(false);
+    setSelectedNode(null);
   };
-
+  
   return (
-    <div className="flex flex-col h-screen w-screen bg-background">
-      {/* Barra superior */}
-      <header className="h-14 border-b flex items-center justify-between px-4">
-        <div className="flex items-center space-x-4">
+    <div className="h-screen flex flex-col bg-background">
+      {/* Barra de navegação superior */}
+      <header className="flex items-center justify-between h-14 px-4 border-b bg-background">
+        <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleBack}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-lg font-medium">{flowName || 'Novo Fluxo'}</h1>
+          <h1 className="text-xl font-semibold">{flowName}</h1>
         </div>
-        
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -86,9 +86,13 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
                   Salvar
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Salvar fluxo</TooltipContent>
+              <TooltipContent>
+                <p>Salvar alterações</p>
+              </TooltipContent>
             </Tooltip>
-            
+          </TooltipProvider>
+          
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="outline" size="sm" onClick={handleTest}>
@@ -96,57 +100,61 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
                   Testar
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Testar fluxo</TooltipContent>
+              <TooltipContent>
+                <p>Testar fluxo</p>
+              </TooltipContent>
             </Tooltip>
-            
+          </TooltipProvider>
+          
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon" onClick={handleSettings}>
                   <Settings className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Configurações</TooltipContent>
+              <TooltipContent>
+                <p>Configurações</p>
+              </TooltipContent>
             </Tooltip>
-            
+          </TooltipProvider>
+          
+          <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <HelpCircle className="h-5 w-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Ajuda</TooltipContent>
+              <TooltipContent>
+                <p>Ajuda</p>
+              </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
       </header>
       
-      {/* Área principal */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Painel de propriedades (esquerda) - visível apenas quando um nó está selecionado */}
+      {/* Conteúdo principal */}
+      <div className="flex-1 flex">
+        {/* Paleta de nós */}
+        <div className="w-64 border-r bg-background overflow-y-auto">
+          <NodePalette />
+        </div>
+        
+        {/* Canvas do fluxo */}
+        <div className="flex-1 relative">
+          <FlowCanvas onNodeSelect={handleNodeSelect} />
+        </div>
+        
+        {/* Painel de propriedades */}
         {showProperties && (
-          <div className="w-[280px] border-r">
+          <div className="w-80 border-l bg-background overflow-y-auto">
             <PropertiesPanel 
-              node={selectedNode!} 
-              updateNodeData={(nodeId, data) => {
-                // Implementar lógica para atualizar dados do nó
-              }}
+              node={selectedNode} 
               onClose={handleCloseProperties} 
             />
           </div>
         )}
-        
-        {/* Canvas central */}
-        <div className="flex-1">
-          <FlowCanvas 
-            flowId={flowId} 
-            onNodeSelect={handleNodeSelect} 
-          />
-        </div>
-        
-        {/* Painel de componentes (direita) */}
-        <div className="w-[280px] border-l">
-          <NodePalette />
-        </div>
       </div>
     </div>
   );
