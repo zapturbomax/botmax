@@ -69,16 +69,16 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             <NavLink 
               href="/flows" 
               icon={<ChartGantt size={18} />} 
-              isActive={location.startsWith("/flows")}
+              isActive={location.startsWith("/flows") && !location.startsWith("/flows-beta")}
             >
               Construtor de Fluxo
             </NavLink>
             <NavLink 
-              href="/flows-beta/new" 
+              href="/flows-beta" 
               icon={<ChartGantt size={18} />} 
-              isActive={location.startsWith("/flow-builder-beta") || location.startsWith("/flows-beta")}
+              isActive={location.startsWith("/flows-beta") || location.startsWith("/flow-builder-beta")}
             >
-              Construtor de Fluxo Beta
+              Construtor Beta
             </NavLink>
             <NavLink 
               href="/settings/whatsapp" 

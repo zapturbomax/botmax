@@ -1,34 +1,32 @@
-import React from 'react';
-import { useLocation, useAuth } from 'wouter';
-import AppLayout from '@/components/layout/AppLayout';
-import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import { useLocation } from 'wouter';
 import { z } from 'zod';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/utils';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import axios from 'axios';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/hooks/use-auth';
 
+// Form schema
 const formSchema = z.object({
-  name: z.string().min(3, {
-    message: "O nome do fluxo deve ter pelo menos 3 caracteres",
-  }),
+  name: z.string().min(3, { message: "Nome precisa ter pelo menos 3 caracteres" }).max(50),
   description: z.string().optional(),
 });
 
-type FormValues = z.infer<typeof formSchema>;
+type FormData = z.infer<typeof formSchema>;
 
 export default function NewFlowBeta() {
-  const [_, navigate] = useLocation();
+  const { user, isLoading: isAuthLoading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { user } = useAuth();
 
-  // Form setup with validation
-  const form = useForm<FormValues>({
+  // Form setup
+  const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -36,108 +34,109 @@ export default function NewFlowBeta() {
     },
   });
 
-  // Create flow mutation
-  const createFlowMutation = useMutation({
-    mutationFn: async (values: FormValues) => {
-      return await apiRequest('POST', '/api/flows-beta', values);
-    },
-    onSuccess: (data) => {
-      console.log("Fluxo Beta criado com sucesso:", data);
-      toast({
-        title: 'Sucesso',
-        description: 'Fluxo criado com sucesso',
-      });
-      navigate(`/flow-builder-beta/${data.id}`);
-    },
-    onError: (error: any) => {
-      console.error("Erro ao criar fluxo beta:", error);
-      toast({
-        title: 'Erro',
-        description: `Falha ao criar fluxo: ${error.message || 'Erro desconhecido'}`,
-        variant: 'destructive',
-      });
-    },
-  });
+  const onSubmit = async (data: FormData) => {
+    setIsSubmitting(true);
+    try {
+      console.log("Enviando requisição para criar fluxo beta:", data);
+      const response = await axios.post('/api/flows-beta', data);
+      console.log("Resposta da criação de fluxo beta:", response.data);
 
-  // Handle form submission
-  const onSubmit = (values: FormValues) => {
-    console.log("Enviando dados para criar fluxo beta:", values);
-    createFlowMutation.mutate(values);
+      toast({
+        title: "Fluxo Beta criado com sucesso",
+        description: `O fluxo "${data.name}" foi criado.`,
+        variant: "default",
+      });
+
+      // Redirecionar para o construtor de fluxo com o novo ID
+      setLocation(`/flow-builder-beta/${response.data.id}`);
+    } catch (error) {
+      console.error("Erro ao criar fluxo beta:", error);
+      let errorMessage = "Ocorreu um erro ao criar o fluxo.";
+
+      if (axios.isAxiosError(error) && error.response) {
+        errorMessage = error.response.data.message || errorMessage;
+        console.error("Detalhes do erro:", error.response.data);
+      }
+
+      toast({
+        title: "Erro ao criar fluxo",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+    }
   };
 
+  // Se o usuário não estiver autenticado, redirecionamos para login
+  if (isAuthLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin w-8 h-8 border-4 border-t-transparent border-primary rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    setLocation('/login');
+    return null;
+  }
+
   return (
-    <AppLayout title="Novo Fluxo Beta">
-      <div className="container mx-auto py-6 max-w-2xl">
-        <Card>
-          <CardHeader>
-            <CardTitle>Criar Novo Fluxo Beta</CardTitle>
-            <CardDescription>
-              Crie um novo fluxo para começar a construção do seu chatbot no construtor beta.
-            </CardDescription>
-          </CardHeader>
+    <div className="container mx-auto py-10">
+      <Card className="max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle>Novo Fluxo Beta</CardTitle>
+          <CardDescription>Crie um novo fluxo de conversa para testar na versão Beta.</CardDescription>
+        </CardHeader>
+        <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome do Fluxo</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ex: Atendimento ao Cliente" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Um nome descritivo para identificar seu fluxo.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Descrição (opcional)</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="Ex: Fluxo para gerenciar o primeiro contato com clientes" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Uma breve descrição do propósito deste fluxo.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={() => navigate('/flows')}
-                >
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome do Fluxo</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Atendimento Comercial" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Este nome será exibido na lista de fluxos.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descrição (opcional)</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Descreva o propósito deste fluxo" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Uma breve descrição sobre o que este fluxo faz.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" type="button" onClick={() => setLocation('/flows-beta')}>
                   Cancelar
                 </Button>
-                <Button 
-                  type="submit"
-                  disabled={createFlowMutation.isPending}
-                >
-                  {createFlowMutation.isPending ? (
-                    <span className="flex items-center">
-                      <span className="h-4 w-4 mr-2 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
-                      Criando...
-                    </span>
-                  ) : 'Criar Fluxo'}
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Criando..." : "Criar Fluxo"}
                 </Button>
-              </CardFooter>
+              </div>
             </form>
           </Form>
-        </Card>
-      </div>
-    </AppLayout>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

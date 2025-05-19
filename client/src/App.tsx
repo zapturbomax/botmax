@@ -70,7 +70,8 @@ function Router() {
           </Route>
       <Route path="/flow-builder-beta/:id">
             {(params) => <React.Suspense fallback={<div>Carregando...</div>}>
-              <FlowBuilderBeta />}
+              <FlowBuilderBeta />
+            </React.Suspense>}
           </Route>
       <ProtectedRoute path="/settings/general" component={GeneralSettings} />
       <ProtectedRoute path="/settings/account" component={AccountSettings} />

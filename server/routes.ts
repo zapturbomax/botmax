@@ -38,14 +38,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/flows/:id/edges", authenticate, validateTenant, flowController.updateFlowEdges);
 
   // Flow Beta routes
-  app.get("/api/flows-beta", authenticate, validateTenant, flowController.getFlowsBeta);
-  app.get("/api/flows-beta/:id", authenticate, validateTenant, flowController.getFlowBeta);
-  app.post("/api/flows-beta", authenticate, validateTenant, flowController.createFlowBeta);
-  app.put("/api/flows-beta/:id", authenticate, validateTenant, flowController.updateFlowBeta);
-  app.delete("/api/flows-beta/:id", authenticate, validateTenant, flowController.deleteFlowBeta);
-  app.put("/api/flows-beta/:id/status", authenticate, validateTenant, flowController.updateFlowBetaStatus);
-  app.put("/api/flows-beta/:id/nodes", authenticate, validateTenant, flowController.updateFlowBetaNodes);
-  app.put("/api/flows-beta/:id/edges", authenticate, validateTenant, flowController.updateFlowBetaEdges);
+  app.get("/api/flows-beta", authenticate, validateTenant, flowController.getFlowsBeta1);
+  app.get("/api/flows-beta/:id", authenticate, validateTenant, flowController.getFlowBeta1);
+  app.post("/api/flows-beta", authenticate, validateTenant, flowController.createFlowBeta1);
+  app.put("/api/flows-beta/:id", authenticate, validateTenant, flowController.updateFlowBeta1);
+  app.delete("/api/flows-beta/:id", authenticate, validateTenant, flowController.deleteFlowBeta1);
+  app.put("/api/flows-beta/:id/status", authenticate, validateTenant, flowController.updateFlowBetaStatus1);
+  app.put("/api/flows-beta/:id/nodes", authenticate, validateTenant, flowController.updateFlowBetaNodes1);
+  app.put("/api/flows-beta/:id/edges", authenticate, validateTenant, flowController.updateFlowBetaEdges1);
 
   // Subscription routes
   app.get("/api/plans", subscriptionController.getPlans);
