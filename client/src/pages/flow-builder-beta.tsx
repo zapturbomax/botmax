@@ -20,12 +20,31 @@ export default function FlowBuilderBeta() {
     queryKey: ['flows-beta', id],
     queryFn: async () => {
       try {
+        // Garantir que o token está nos headers
+        const token = localStorage.getItem('flowbot_token');
+        if (token) {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        }
+        
         if (!id) throw new Error("ID do fluxo não fornecido");
         
         console.log(`Carregando fluxo beta id=${id} para tenantId=${user?.tenantId}`);
         const response = await axios.get(`/api/flows-beta/${id}`);
         console.log("Dados do fluxo beta carregados:", response.data);
-        return response.data;
+        
+        // Normalizar nomes de campos para garantir consistência
+        const flowData = response.data;
+        return {
+          id: flowData.id,
+          name: flowData.name,
+          description: flowData.description,
+          status: flowData.status,
+          createdAt: flowData.createdAt || flowData.created_at,
+          updatedAt: flowData.updatedAt || flowData.updated_at,
+          nodes: flowData.nodes || [],
+          edges: flowData.edges || [],
+          isBeta: flowData.isBeta || flowData.is_beta || true
+        };
       } catch (err) {
         console.error("Erro ao carregar fluxo beta:", err);
         if (axios.isAxiosError(err) && err.response) {
@@ -40,7 +59,7 @@ export default function FlowBuilderBeta() {
       }
     },
     enabled: !!id && !!user && !!user.tenantId,
-    retry: 1,
+    retry: 2, // Aumentar para 2 tentativas
   });
 
   // Tentar novamente caso falhe na primeira vez
