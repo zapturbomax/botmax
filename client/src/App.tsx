@@ -10,6 +10,7 @@ import { ProtectedRoute } from "./lib/protected-route";
 import { useLocation } from "wouter";
 import React, { useEffect } from 'react';
 import axios from 'axios';
+import { useAuth } from "@/hooks/use-auth";
 
 // Pages
 import Home from './pages/home';
