@@ -1,0 +1,174 @@
+# PROMPT DETALHADO: REDESIGN COMPLETO DOS BLOCOS DO FLOW BUILDER
+
+Ajuste todos os blocos do Flow Builder para seguir EXATAMENTE o design do dispara.ai, seguindo estas especificações detalhadas:
+
+## 1. ESTRUTURA COMUM A TODOS OS BLOCOS
+
+### 1.1. Container Principal
+- Formato retangular com cantos arredondados (border-radius: 12px)
+- Sombra: box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08)
+- Fundo branco (#FFFFFF) para o corpo do bloco
+- Largura: 380px (ajustável conforme conteúdo)
+- Overflow: hidden (para manter cantos arredondados)
+
+### 1.2. Barra Superior (Ações)
+- Altura: 40px
+- Fundo: #3A4049 (cinza escuro)
+- Botões alinhados à direita com espaçamento de 8px
+- Botão "Duplicar": ícone de documento com sinal de +
+- Botão "Remover": ícone de lixeira
+- Ícones em branco (#FFFFFF) com hover em cinza claro
+
+### 1.3. Cabeçalho Colorido
+- Altura: 60px
+- Fundo: cor específica para cada tipo de bloco (ver seção 2)
+- Display: flex, justify-content: space-between
+- Padding: 12px 16px
+- Contadores:
+  * Texto "0" em tamanho grande (24px, font-weight: 500)
+  * Subtexto "Executando" e "Enviados" em tamanho pequeno (12px)
+  * Ícones de informação (círculo com "i") à direita de cada contador
+  * Tudo em branco (#FFFFFF)
+
+### 1.4. Seção de Título
+- Padding: 16px
+- Display: flex, align-items: center
+- Ícone à esquerda: círculo colorido com ícone específico do tipo de bloco
+- Textos:
+  * Título principal: 16px, font-weight: 500, cor #4A5568
+  * Subtítulo: 14px, cor específica para cada tipo de bloco
+
+### 1.5. Área de Conteúdo
+- Padding: 16px
+- Background: #FFFFFF
+- Campos de entrada com estilo consistente:
+  * Border: 1px solid #E2E8F0
+  * Border-radius: 6px
+  * Padding: 10px 12px
+  * Font-size: 14px
+  * Placeholder em cinza claro (#A0AEC0)
+
+### 1.6. Rodapé
+- Padding: 12px 16px
+- Border-top: 1px solid #F0F4F8
+- Display: flex, justify-content: space-between, align-items: center
+- Checkbox "Marcar como encaminhada" à esquerda (quando aplicável)
+- Status digitando:
+  * Texto "Status digitando" em cinza (#718096)
+  * Seletor de segundos com dropdown
+  * Valor padrão: 0
+- Botão "Próximo passo" à direita:
+  * Background: branco
+  * Border: 1px solid cor do bloco
+  * Border-radius: 50%
+  * Ícone de seta para direita na cor do bloco
+
+### 1.7. Conectores
+- Entrada: círculo à esquerda do bloco, centralizado verticalmente
+- Saída: círculo à direita do bloco, centralizado verticalmente
+- Cor: cinza claro (#CBD5E0) quando não conectado, verde (#10B981) quando conectado
+- Tamanho: 12px de diâmetro
+- Border: 2px solid white
+
+## 2. ESTILOS ESPECÍFICOS POR TIPO DE BLOCO
+
+### 2.1. Mensagem de Texto
+- Cor principal: #26C6B9 (verde-água)
+- Ícone: balão de mensagem
+- Campos específicos:
+  * Área de texto com placeholder "Digite sua mensagem abaixo"
+  * Campo de entrada com ícone de emoji à esquerda e botão de envio à direita
+  * Checkbox "Marcar como encaminhada"
+  * Status digitando com seletor de segundos
+
+### 2.2. Imagem/Mídia
+- Cor principal: #B44BF2 (roxo)
+- Ícone: imagem/galeria
+- Campos específicos:
+  * Área para upload com ícone de nuvem
+  * Texto "Carregar imagem do computador"
+  * Indicador de tamanho máximo: "60 mb"
+  * Botão "Carregar" na cor roxa
+  * Texto pequeno "Arraste e solte"
+  * Campo de texto para digitar @ para utilizar campos
+  * Checkbox "Marcar como encaminhada"
+  * Status digitando com seletor de segundos
+
+### 2.3. Áudio
+- Cor principal: #C77DFF (roxo mais claro)
+- Ícone: ondas sonoras/alto-falante
+- Campos específicos:
+  * Área para upload com ícone de nuvem
+  * Texto "Carregar áudio do computador"
+  * Indicador de tamanho máximo: "60 mb"
+  * Botão "Carregar" na cor roxa
+  * Campo de texto para digitar @ para utilizar campos
+  * Opção "Grave o áudio ao vivo" com ícone de microfone
+  * Checkbox "Marcar como encaminhada"
+  * Status digitando com seletor de segundos
+
+### 2.4. Botões/Opções
+- Cor principal: #4A7AFF (azul)
+- Ícone: botões/controles
+- Campos específicos:
+  * Campo de texto para mensagem acima dos botões
+  * Seletor de formato (Texto)
+  * Dropdown "Salvar resposta em"
+  * Seções para diferentes tipos de botões (Suporte, Vendas, Outros)
+  * Indicadores de CTR para cada botão (0.0%)
+  * Botão "+ Novo botão"
+  * Opção "Se não responder em X segundos"
+  * Opção "Caso a resposta seja inválida"
+  * Status digitando com seletor de segundos
+
+### 2.5. Perguntas
+- Cor principal: #26C6B9 (verde-água)
+- Ícone: ponto de interrogação/balão de diálogo
+- Campos específicos:
+  * Campo de pergunta com exemplo "Qual seu nome?"
+  * Área de edição com botão "Editar"
+  * Dropdown "Salvar resposta em"
+  * Opção "Se não responder em X segundos"
+  * Opção "Caso a resposta seja inválida"
+  * Status digitando com seletor de segundos
+  * Botão "Adicionar condição" no canto inferior direito
+
+### 2.6. Contatos
+- Cor principal: #FF9F4A (laranja)
+- Ícone: pessoa/contato
+- Campos específicos:
+  * Título "Envio de contatos"
+  * Subtítulo "Contatos"
+  * Campos específicos para configuração de contatos
+  * Status digitando com seletor de segundos
+
+## 3. IMPLEMENTAÇÃO TÉCNICA
+
+### 3.1. Componentes React
+- Crie um componente base `FlowNode` que implemente a estrutura comum
+- Estenda este componente para cada tipo específico de nó
+- Use styled-components ou Tailwind CSS para estilização consistente
+- Implemente props para todas as opções configuráveis
+
+### 3.2. Interatividade
+- Todos os campos de entrada devem ser funcionais e salvar no estado do nó
+- Os botões de duplicar e remover devem funcionar corretamente
+- Checkboxes e seletores devem alterar o estado correspondente
+- Conectores devem permitir conexões entre nós
+
+### 3.3. Responsividade
+- Os blocos devem manter sua aparência em diferentes tamanhos de tela
+- O layout interno deve se ajustar para conteúdos de diferentes tamanhos
+- Textos longos devem ser truncados com elipses quando necessário
+
+## 4. VERIFICAÇÃO FINAL
+
+Após implementar todos os ajustes, verifique:
+- Consistência visual entre todos os tipos de blocos
+- Alinhamento preciso de todos os elementos
+- Cores exatas conforme especificado
+- Funcionalidade de todos os campos e botões
+- Conectores funcionando corretamente
+- Aparência idêntica aos blocos do dispara.ai
+
+Implemente estas mudanças mantendo todas as funcionalidades existentes, apenas ajustando o visual para ficar pixel-perfect com o design do dispara.ai.

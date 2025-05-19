@@ -6,6 +6,7 @@ import { FlowNode, FlowNodeType } from '@shared/schema';
 import { NodePopover } from './NodePopover';
 import AddNodeMenu from './AddNodeMenu';
 import { MessageCircle, ArrowRightLeft, Hourglass, Variable, AlertTriangle, Info, HelpCircle } from 'lucide-react';
+import InlineEdit from './InlineEdit';
 import { UnifiedNodeCard } from './UnifiedNodeCard';
 
 // Function to create a new node connected to the current one
@@ -223,7 +224,6 @@ const BaseNode = ({ data, id, type, selected }: any) => {
                   multiline={true}
                   className="w-full"
                   textClassName="text-xs"
-                  onBlur={handleBlur}
                 />
               ) : (
                 data?.text || <span className="text-gray-400 italic">Clique para adicionar texto</span>
@@ -242,7 +242,6 @@ const BaseNode = ({ data, id, type, selected }: any) => {
                     multiline={true}
                     className="w-full"
                     textClassName="text-xs"
-                    onBlur={handleBlur}
                   />
                 ) : (
                   data?.text || <span className="text-gray-400 italic">Clique para adicionar texto</span>
@@ -287,7 +286,6 @@ const BaseNode = ({ data, id, type, selected }: any) => {
                   multiline={true}
                   className="w-full"
                   textClassName="text-xs font-mono"
-                  onBlur={handleBlur}
                 />
               ) : (
                 data?.condition || <span className="text-gray-400 italic">Clique para adicionar condição</span>

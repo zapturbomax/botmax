@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Save, Rocket, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import ModernDesignControls from './ModernDesignControls';
 
 interface FlowControlsProps {
   onSave: () => void;
@@ -43,7 +44,9 @@ const FlowControls = ({ onSave, onPublish, isSaving = false }: FlowControlsProps
         </Button>
       </div>
       
-      <div className="flex items-center space-x-1">
+      <div className="flex items-center space-x-2">
+        <ModernDesignControls />
+        
         <Button 
           variant="ghost" 
           size="sm" 

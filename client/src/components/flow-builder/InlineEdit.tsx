@@ -1,116 +1,131 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { cn } from '@/lib/utils';
 
 interface InlineEditProps {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (newValue: string) => void;
   placeholder?: string;
-  multiline?: boolean;
   className?: string;
   textClassName?: string;
+  inputClassName?: string;
+  multiline?: boolean;
+  maxRows?: number;
   onBlur?: () => void;
 }
 
+/**
+ * Componente InlineEdit que permite edição in-place de texto
+ * Clique para editar, pressione Enter ou clique fora para salvar
+ */
 export const InlineEdit: React.FC<InlineEditProps> = ({
   value,
   onChange,
-  placeholder = 'Clique para editar...',
-  multiline = false,
+  placeholder = 'Clique para editar',
   className = '',
   textClassName = '',
+  inputClassName = '',
+  multiline = false,
+  maxRows = 5,
   onBlur
 }) => {
-  const [editedValue, setEditedValue] = useState(value);
-  const [isFocused, setIsFocused] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [text, setText] = useState(value);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setEditedValue(value);
+    setText(value);
   }, [value]);
 
   useEffect(() => {
-    if (isFocused && inputRef.current) {
+    if (isEditing && inputRef.current) {
       inputRef.current.focus();
       
-      // Posiciona o cursor no final do texto
-      if (inputRef.current instanceof HTMLInputElement || inputRef.current instanceof HTMLTextAreaElement) {
-        const length = inputRef.current.value.length;
-        inputRef.current.setSelectionRange(length, length);
+      // Posicionar o cursor no final do texto
+      if (typeof (inputRef.current as HTMLInputElement).setSelectionRange === 'function') {
+        const length = text.length;
+        (inputRef.current as HTMLInputElement).setSelectionRange(length, length);
       }
     }
-  }, [isFocused]);
+  }, [isEditing]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setEditedValue(e.target.value);
+  const handleTextClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setText(e.target.value);
   };
 
   const handleBlur = () => {
-    setIsFocused(false);
-    if (editedValue !== value) {
-      onChange(editedValue);
+    setIsEditing(false);
+    if (text !== value) {
+      onChange(text);
     }
-    onBlur?.();
+    // Chamamos o callback onBlur se ele existir
+    if (typeof onBlur === 'function') {
+      onBlur();
+    }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !multiline) {
-      e.preventDefault();
-      handleBlur();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      if (!multiline) {
+        e.preventDefault();
+        setIsEditing(false);
+        onChange(text);
+      }
     } else if (e.key === 'Escape') {
-      e.preventDefault();
-      setEditedValue(value);
-      setIsFocused(false);
-      onBlur?.();
+      setIsEditing(false);
+      setText(value); // Revert to original
     }
+  };
+
+  // Ajustar altura da textarea dinamicamente
+  const handleTextareaInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+    const textarea = e.currentTarget;
+    textarea.style.height = 'auto';
+    
+    // Limitar o número de linhas
+    const lineHeight = parseInt(getComputedStyle(textarea).lineHeight);
+    const maxHeight = lineHeight * maxRows;
+    
+    textarea.style.height = `${Math.min(textarea.scrollHeight, maxHeight)}px`;
   };
 
   return (
-    <div className={cn('relative w-full', className)}>
-      {isFocused ? (
+    <div className={`inline-edit ${className}`}>
+      {isEditing ? (
         multiline ? (
           <textarea
             ref={inputRef as React.RefObject<HTMLTextAreaElement>}
-            value={editedValue}
-            onChange={handleChange}
+            value={text}
+            onChange={handleInputChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            className={cn(
-              'w-full min-h-[60px] p-1 text-sm rounded border border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none',
-              textClassName
-            )}
-            autoFocus
+            onInput={handleTextareaInput}
+            className={`w-full p-2 border border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 ${inputClassName}`}
+            style={{ resize: 'none' }}
           />
         ) : (
           <input
             ref={inputRef as React.RefObject<HTMLInputElement>}
             type="text"
-            value={editedValue}
-            onChange={handleChange}
+            value={text}
+            onChange={handleInputChange}
             onBlur={handleBlur}
             onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            className={cn(
-              'w-full p-1 text-sm rounded border border-primary/50 focus:border-primary focus:ring-1 focus:ring-primary outline-none',
-              textClassName
-            )}
-            autoFocus
+            className={`w-full p-2 border border-primary rounded-md focus:outline-none focus:ring-2 focus:ring-primary/20 ${inputClassName}`}
           />
         )
       ) : (
         <div
-          onClick={() => setIsFocused(true)}
-          className={cn(
-            'cursor-text p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800/50 min-h-[24px]',
-            {
-              'text-gray-400 italic': !value,
-            },
-            textClassName
-          )}
+          onClick={handleTextClick}
+          className={`cursor-pointer p-2 rounded-md hover:bg-gray-100 min-h-[2rem] ${textClassName}`}
         >
-          {value || placeholder}
+          {value || <span className="text-gray-400 italic">{placeholder}</span>}
         </div>
       )}
     </div>
   );
 };
+
+export default InlineEdit;
