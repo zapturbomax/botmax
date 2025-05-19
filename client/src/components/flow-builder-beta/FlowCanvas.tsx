@@ -23,20 +23,27 @@ import { nodeTypes } from './FlowNodeTypes';
 import { useFlowStore } from '@/hooks/use-flow-store';
 import { Button } from '@/components/ui/button';
 import { ZoomIn, ZoomOut, Maximize, Save } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface FlowCanvasProps {
   flowId: string;
   onNodeSelect: (node: Node | null) => void;
+  initialNodes?: Node[];
+  initialEdges?: Edge[];
 }
 
 const FlowCanvas: React.FC<FlowCanvasProps> = ({ 
   flowId, 
-  onNodeSelect 
+  onNodeSelect,
+  initialNodes = [],
+  initialEdges = []
 }) => {
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState<any>(null);
+  const { toast } = useToast();
+  const initialized = useRef(false);
   
   // Referências para conexão de nós
   const connectingNodeId = useRef<string | null>(null);
@@ -46,17 +53,50 @@ const FlowCanvas: React.FC<FlowCanvasProps> = ({
   // Carregar fluxo do store
   const { getFlow, updateFlow } = useFlowStore();
   
+  // Inicialização do fluxo: prioridade para initialNodes/Edges (vindo do backend)
   useEffect(() => {
-    const flow = getFlow(flowId);
-    if (flow) {
-      setNodes(flow.nodes || []);
-      setEdges(flow.edges || []);
+    console.log("FlowCanvas - Inicializando com flowId:", flowId);
+    
+    if (initialNodes?.length > 0 || initialEdges?.length > 0) {
+      console.log("FlowCanvas - Usando dados iniciais do backend:", { 
+        nodes: initialNodes, 
+        edges: initialEdges 
+      });
+      
+      // Usar dados do backend que foram passados como props
+      setNodes(initialNodes || []);
+      setEdges(initialEdges || []);
+      
+      // Atualizar o store local com os dados do backend
+      updateFlow(flowId, { 
+        nodes: initialNodes || [], 
+        edges: initialEdges || [] 
+      });
+      
+      initialized.current = true;
+    } else {
+      // Verificar se já existe no store local
+      const flow = getFlow(flowId);
+      if (flow && (flow.nodes?.length > 0 || flow.edges?.length > 0)) {
+        console.log("FlowCanvas - Usando dados do store local:", flow);
+        setNodes(flow.nodes || []);
+        setEdges(flow.edges || []);
+        initialized.current = true;
+      } else {
+        // Não há dados no backend nem no store local
+        console.log("FlowCanvas - Inicializando fluxo vazio");
+        initialized.current = true;
+      }
     }
-  }, [flowId, getFlow]);
+  }, [flowId, initialNodes, initialEdges, getFlow, updateFlow]);
   
   // Salvar fluxo no store quando nodes ou edges mudam
   useEffect(() => {
+    // Só salvamos se já estiver inicializado
+    if (!initialized.current) return;
+    
     const timer = setTimeout(() => {
+      console.log("Atualizando fluxo no store...", { nodes, edges });
       updateFlow(flowId, { nodes, edges });
     }, 500);
     
@@ -65,12 +105,14 @@ const FlowCanvas: React.FC<FlowCanvasProps> = ({
   
   // Manipulador para conexão entre nós
   const onConnect = useCallback((connection: Connection) => {
+    console.log("Criando conexão entre nós:", connection);
     setEdges((eds) => addEdge(connection, eds));
   }, [setEdges]);
   
   // Manipulador para início de conexão
   const onConnectStart = useCallback(
     (_: React.MouseEvent, { nodeId, handleId, handleType }: OnConnectStartParams) => {
+      console.log("Iniciando conexão a partir do nó:", nodeId);
       connectingNodeId.current = nodeId;
       connectingHandleId.current = handleId;
       connectingHandleType.current = handleType;
@@ -93,15 +135,17 @@ const FlowCanvas: React.FC<FlowCanvasProps> = ({
           y: event.clientY - top,
         });
         
-        // Aqui você pode implementar a lógica para mostrar um menu de sugestão
-        // ou criar um nó padrão
+        toast({
+          title: 'Conectar a um novo nó',
+          description: 'Use o painel de componentes para adicionar um nó e depois conecte-o.',
+        });
       }
       
       connectingNodeId.current = null;
       connectingHandleId.current = null;
       connectingHandleType.current = null;
     },
-    [reactFlowInstance]
+    [reactFlowInstance, toast]
   );
   
   // Manipulador para arrastar e soltar novos nós
@@ -130,16 +174,30 @@ const FlowCanvas: React.FC<FlowCanvasProps> = ({
         id: `${nodeType}_${Date.now()}`,
         type: nodeType,
         position,
-        data: {}, // Dados iniciais vazios, serão preenchidos pelo componente específico
+        data: {
+          label: nodeType.charAt(0).toUpperCase() + nodeType.slice(1).replace(/([A-Z])/g, ' $1'),
+          // Dados iniciais que serão customizados no painel de propriedades
+        },
       };
       
+      console.log("Adicionando novo nó:", newNode);
       setNodes((nds) => nds.concat(newNode));
+      
+      toast({
+        title: 'Nó adicionado',
+        description: `Um novo nó do tipo ${nodeType} foi adicionado ao fluxo.`,
+      });
     },
-    [reactFlowInstance, setNodes]
+    [reactFlowInstance, setNodes, toast]
   );
   
   // Manipulador para seleção de nós
   const onSelectionChange = useCallback(({ nodes }: { nodes: Node[] }) => {
+    if (nodes.length === 1) {
+      console.log("Nó selecionado:", nodes[0]);
+    } else if (nodes.length > 1) {
+      console.log("Múltiplos nós selecionados:", nodes.length);
+    }
     onNodeSelect(nodes.length === 1 ? nodes[0] : null);
   }, [onNodeSelect]);
   
