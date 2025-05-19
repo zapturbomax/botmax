@@ -1,171 +1,177 @@
 import React, { useState } from 'react';
+import { LayoutGrid, PlusCircle, X } from 'lucide-react';
 import FlowNode from './FlowNode';
-import { MenuSquare, PlusCircle, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
-/**
- * Nó para envio de botões interativos
- */
 const ButtonsNode = ({ id, data, selected }) => {
-  const [headerText, setHeaderText] = useState(data.headerText || 'Selecione uma opção');
+  // Estado local para gerenciar os botões
   const [buttons, setButtons] = useState(data.buttons || [
     { id: '1', text: 'Opção 1', value: 'opcao_1' },
-    { id: '2', text: 'Opção 2', value: 'opcao_2' }
+    { id: '2', text: 'Opção 2', value: 'opcao_2' },
   ]);
+  const [message, setMessage] = useState(data.message || "Escolha uma opção:");
   
-  // Função para atualizar o texto do cabeçalho
-  const handleHeaderTextChange = (e) => {
-    const newText = e.target.value;
-    setHeaderText(newText);
-    
-    if (data.onChange) {
-      data.onChange(id, { ...data, headerText: newText });
-    }
-  };
-  
-  // Função para atualizar o texto de um botão
-  const handleButtonTextChange = (buttonId, newText) => {
-    const updatedButtons = buttons.map(button => 
-      button.id === buttonId ? { ...button, text: newText } : button
-    );
-    
-    setButtons(updatedButtons);
-    
-    if (data.onChange) {
-      data.onChange(id, { ...data, buttons: updatedButtons });
-    }
-  };
-  
-  // Função para atualizar o valor de um botão
-  const handleButtonValueChange = (buttonId, newValue) => {
-    const updatedButtons = buttons.map(button => 
-      button.id === buttonId ? { ...button, value: newValue } : button
-    );
-    
-    setButtons(updatedButtons);
-    
-    if (data.onChange) {
-      data.onChange(id, { ...data, buttons: updatedButtons });
-    }
-  };
-  
-  // Função para adicionar um novo botão
+  // Adiciona um novo botão
   const handleAddButton = () => {
-    if (buttons.length >= 5) return; // Limite de 5 botões
-    
-    const newButton = {
-      id: Date.now().toString(),
-      text: `Opção ${buttons.length + 1}`,
-      value: `opcao_${buttons.length + 1}`
-    };
-    
-    const updatedButtons = [...buttons, newButton];
-    setButtons(updatedButtons);
-    
-    if (data.onChange) {
-      data.onChange(id, { ...data, buttons: updatedButtons });
+    if (buttons.length < 5) {
+      const newId = String(buttons.length + 1);
+      setButtons([
+        ...buttons,
+        { id: newId, text: `Opção ${newId}`, value: `opcao_${newId}` }
+      ]);
     }
   };
   
-  // Função para remover um botão
-  const handleRemoveButton = (buttonId) => {
-    if (buttons.length <= 1) return; // Pelo menos 1 botão
-    
-    const updatedButtons = buttons.filter(button => button.id !== buttonId);
-    setButtons(updatedButtons);
-    
-    if (data.onChange) {
-      data.onChange(id, { ...data, buttons: updatedButtons });
-    }
+  // Remove um botão específico
+  const handleRemoveButton = (id) => {
+    setButtons(buttons.filter(button => button.id !== id));
   };
-
+  
+  // Atualiza um botão específico
+  const handleUpdateButton = (id, field, value) => {
+    setButtons(buttons.map(button => {
+      if (button.id === id) {
+        return { ...button, [field]: value };
+      }
+      return button;
+    }));
+  };
+  
   return (
-    <FlowNode 
+    <FlowNode
       id={id}
       data={data}
       selected={selected}
-      icon={MenuSquare}
-      title="Botões"
-      subtitle="Opções interativas"
-      color="#7950f2"
-      outputs={buttons.length} // Múltiplas saídas para cada botão
+      icon={<LayoutGrid className="h-6 w-6" />}
+      title="Enviar botões"
+      subtitle="Interação rápida"
+      color="#F59F0A"
+      outputs={buttons.length + 1}
     >
-      {/* Campo para o texto do cabeçalho */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">Texto introdutório</label>
-        <Input
-          value={headerText}
-          onChange={handleHeaderTextChange}
-          placeholder="Insira o texto que aparecerá acima dos botões"
-          className="w-full"
+        <label className="block text-sm font-medium text-gray-700 mb-1">Mensagem</label>
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          className="w-full rounded-lg p-3 min-h-[80px] bg-gray-50 border-0 text-gray-800 focus:ring-2 focus:ring-[#F59F0A]/50 outline-none resize-none"
+          placeholder="Digite a mensagem que acompanha os botões..."
         />
       </div>
       
-      {/* Lista de botões */}
-      <div className="mb-4 space-y-3">
-        <div className="flex justify-between items-center">
-          <h3 className="text-sm font-medium text-gray-700">Botões (max. 5)</h3>
-          <Button 
-            variant="outline" 
-            size="sm" 
+      <div className="mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <label className="block text-sm font-medium text-gray-700">Botões (máx. 5)</label>
+          <button 
             onClick={handleAddButton}
             disabled={buttons.length >= 5}
-            className="h-7 text-xs"
+            className={`flex items-center text-xs px-2 py-1 rounded ${buttons.length >= 5 ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-[#F59F0A] text-white hover:bg-[#F59F0A]/80'}`}
           >
-            <PlusCircle className="h-3.5 w-3.5 mr-1" />
+            <PlusCircle className="h-3 w-3 mr-1" />
             Adicionar
-          </Button>
+          </button>
         </div>
         
-        <div className="space-y-3">
-          {buttons.map((button, index) => (
+        <div className="space-y-2">
+          {buttons.map((button) => (
             <div key={button.id} className="flex items-start space-x-2">
-              <div className="flex-1">
-                <Input
-                  value={button.text}
-                  onChange={(e) => handleButtonTextChange(button.id, e.target.value)}
-                  placeholder={`Texto do botão ${index + 1}`}
-                  className="w-full mb-1.5"
-                  maxLength={20}
-                />
-                <Input
-                  value={button.value}
-                  onChange={(e) => handleButtonValueChange(button.id, e.target.value)}
-                  placeholder={`Valor do botão ${index + 1}`}
-                  className="w-full text-xs"
-                />
+              <div className="flex-1 p-2 bg-white border border-gray-200 rounded-lg shadow-sm">
+                <div className="flex mb-2">
+                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-xs font-medium text-gray-700">
+                    {button.id}
+                  </div>
+                  <button 
+                    onClick={() => handleRemoveButton(button.id)}
+                    className="ml-auto text-gray-400 hover:text-red-500"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+                <div className="space-y-2">
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Texto exibido</label>
+                    <input
+                      type="text"
+                      value={button.text}
+                      onChange={(e) => handleUpdateButton(button.id, 'text', e.target.value)}
+                      className="w-full p-2 text-sm rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#F59F0A]/50"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-1">Valor (variável)</label>
+                    <input
+                      type="text"
+                      value={button.value}
+                      onChange={(e) => handleUpdateButton(button.id, 'value', e.target.value)}
+                      className="w-full p-2 text-xs rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#F59F0A]/50 font-mono"
+                    />
+                  </div>
+                </div>
               </div>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-8 px-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                onClick={() => handleRemoveButton(button.id)}
-                disabled={buttons.length <= 1}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
             </div>
           ))}
         </div>
       </div>
       
-      {/* Preview dos botões */}
-      <div className="mt-5 space-y-3">
-        <h3 className="text-sm font-medium text-gray-700">Preview</h3>
-        <div className="rounded-lg border border-gray-200 p-4 bg-gray-50">
-          <p className="text-sm text-gray-600 mb-3">{headerText}</p>
-          <div className="flex flex-col space-y-2">
-            {buttons.map((button) => (
+      <div className="mt-4 border-t border-gray-100 pt-4">
+        <h3 className="text-sm font-medium text-gray-700 mb-2">Fluxo</h3>
+        <div className="space-y-2 text-sm text-gray-600">
+          {buttons.map((button, index) => (
+            <div key={`flow-${button.id}`} className="flex items-center">
               <div 
-                key={button.id} 
-                className="bg-white border border-gray-200 rounded px-4 py-2 text-center text-sm font-medium text-gray-800 shadow-sm hover:bg-gray-50 cursor-pointer"
+                className="rounded-full w-5 h-5 flex items-center justify-center mr-2 text-xs"
+                style={{ 
+                  backgroundColor: `rgba(245, 159, 10, ${0.1 + (index * 0.15)})`,
+                  color: '#F59F0A'
+                }}
               >
-                {button.text}
+                {index + 1}
               </div>
-            ))}
+              <span>
+                Botão "{button.text}" → Saída {index + 1}
+              </span>
+            </div>
+          ))}
+          <div className="flex items-center">
+            <div className="bg-red-100 text-red-800 rounded-full w-5 h-5 flex items-center justify-center mr-2 text-xs">
+              {buttons.length + 1}
+            </div>
+            <span>Timeout (resposta não recebida) → Última saída</span>
           </div>
         </div>
+      </div>
+      
+      <div className="mt-4">
+        <details className="group">
+          <summary className="flex justify-between items-center font-medium cursor-pointer list-none">
+            <span className="text-sm text-gray-600">Opções avançadas</span>
+            <span className="transition group-open:rotate-180">
+              <svg fill="none" height="14" width="14" viewBox="0 0 24 24" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </span>
+          </summary>
+          <div className="mt-3 text-sm text-gray-500 group-open:animate-fadeIn">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tempo limite (segundos)</label>
+                <input
+                  type="number"
+                  defaultValue={60}
+                  min={10}
+                  max={86400}
+                  className="w-full p-2 text-sm rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#F59F0A]/50"
+                />
+              </div>
+              <div className="form-group">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nome da variável</label>
+                <input
+                  type="text"
+                  defaultValue="resposta_botao"
+                  className="w-full p-2 text-sm rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#F59F0A]/50"
+                />
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
     </FlowNode>
   );
