@@ -103,9 +103,12 @@ const BetaFlowCanvasContent = ({
         setPendingConnection(connection);
         setConnectionMenuPosition({ x: menuX, y: menuY });
         setShowConnectionMenu(true);
+      } else {
+        // Se não encontrar o nó alvo, apenas conecta diretamente
+        setEdges((eds) => addEdge(connection, eds));
       }
     }
-  }, [nodes]);
+  }, [nodes, setEdges]);
 
   // Função para adicionar um nó com o tipo selecionado no menu de conexão
   const addNodeFromConnection = (nodeType: string) => {
@@ -115,7 +118,7 @@ const BetaFlowCanvasContent = ({
     const sourceNode = nodes.find((node) => node.id === pendingConnection.source);
     const targetNode = nodes.find((node) => node.id === pendingConnection.target);
     
-    if (!sourceNode || !targetNode) return;
+    if (!sourceNode || !targetNode || !pendingConnection.source || !pendingConnection.target) return;
     
     // Calcular posição para o novo nó
     const newNodePosition = {

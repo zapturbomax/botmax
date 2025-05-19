@@ -16,6 +16,7 @@ import Register from "@/pages/auth/register";
 import ForgotPassword from "@/pages/auth/forgot-password";
 import Dashboard from "@/pages/dashboard";
 import FlowBuilder from "@/pages/flow-builder";
+import FlowBuilderBeta from "@/pages/flow-builder-beta";
 import Flows from "@/pages/flows/index";
 import NewFlow from "@/pages/flows/new";
 import GeneralSettings from "@/pages/settings/general";
