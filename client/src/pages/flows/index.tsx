@@ -95,7 +95,7 @@ export default function Flows({ isBeta = false }) {
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/flows'] });
+      queryClient.invalidateQueries({ queryKey: [isBeta ? '/api/flows-beta' : '/api/flows'] });
       toast({
         title: 'Flow created',
         description: 'New flow has been created successfully.',

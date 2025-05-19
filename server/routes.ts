@@ -22,11 +22,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/auth/profile", authenticate, authController.getProfile);
   app.put("/api/auth/profile", authenticate, authController.updateProfile);
   app.post("/api/auth/change-password", authenticate, authController.changePassword);
-  
+
   // Tenant routes
   app.get("/api/tenant", authenticate, tenantController.getTenant);
   app.put("/api/tenant", authenticate, tenantController.updateTenant);
-  
+
   // Flow routes
   app.get("/api/flows", authenticate, validateTenant, flowController.getFlows);
   app.get("/api/flows/:id", authenticate, validateTenant, flowController.getFlow);
@@ -36,7 +36,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/flows/:id/status", authenticate, validateTenant, flowController.updateFlowStatus);
   app.put("/api/flows/:id/nodes", authenticate, validateTenant, flowController.updateFlowNodes);
   app.put("/api/flows/:id/edges", authenticate, validateTenant, flowController.updateFlowEdges);
-  
+
+  // Flow Beta routes
+  app.get("/api/flows-beta", authenticate, validateTenant, flowController.getFlowsBeta);
+  app.get("/api/flows-beta/:id", authenticate, validateTenant, flowController.getFlowBeta);
+  app.post("/api/flows-beta", authenticate, validateTenant, flowController.createFlowBeta);
+  app.put("/api/flows-beta/:id", authenticate, validateTenant, flowController.updateFlowBeta);
+  app.delete("/api/flows-beta/:id", authenticate, validateTenant, flowController.deleteFlowBeta);
+  app.put("/api/flows-beta/:id/status", authenticate, validateTenant, flowController.updateFlowBetaStatus);
+  app.put("/api/flows-beta/:id/nodes", authenticate, validateTenant, flowController.updateFlowBetaNodes);
+  app.put("/api/flows-beta/:id/edges", authenticate, validateTenant, flowController.updateFlowBetaEdges);
+
   // Subscription routes
   app.get("/api/plans", subscriptionController.getPlans);
   app.get("/api/plans/:id", subscriptionController.getPlan);
@@ -44,7 +54,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/subscription/checkout", authenticate, subscriptionController.createCheckoutSession);
   app.post("/api/subscription/portal", authenticate, subscriptionController.getPortalSession);
   app.post("/api/webhook/stripe", stripeWebhookMiddleware, subscriptionController.handleStripeWebhook);
-  
+
   // WhatsApp routes
   app.get("/api/whatsapp", authenticate, validateTenant, whatsAppController.getWhatsappIntegrations);
   app.get("/api/whatsapp/:id", authenticate, validateTenant, whatsAppController.getWhatsappIntegration);
@@ -52,11 +62,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/whatsapp/:id", authenticate, validateTenant, whatsAppController.updateWhatsappIntegration);
   app.delete("/api/whatsapp/:id", authenticate, validateTenant, whatsAppController.deleteWhatsappIntegration);
   app.post("/api/webhook/whatsapp/:id", whatsAppController.handleWhatsappWebhook);
-  
+
   // Storage routes - servir arquivos do bucket do Replit
   app.get("/api/storage/*", storageController.getFile);
-  
+
   const httpServer = createServer(app);
-  
+
   return httpServer;
 }

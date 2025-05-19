@@ -37,7 +37,22 @@ export const getFlows = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
-    const flows = await storage.getFlows(tenantId);
+    const flows = await storage.getFlows(tenantId, false); // false para fluxos normais
+    res.status(200).json(flows);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Beta flow controller methods
+export const getFlowsBeta = async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    const flows = await storage.getFlows(tenantId, true); // true para fluxos beta
     res.status(200).json(flows);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -56,9 +71,32 @@ export const getFlow = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Invalid flow ID" });
     }
     
-    const flow = await storage.getFlow(flowId, tenantId);
+    const flow = await storage.getFlow(flowId, tenantId, false);
     if (!flow) {
       return res.status(404).json({ message: "Flow not found" });
+    }
+    
+    res.status(200).json(flow);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const getFlowBeta = async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    const flowId = parseInt(req.params.id);
+    if (isNaN(flowId)) {
+      return res.status(400).json({ message: "Invalid flow ID" });
+    }
+    
+    const flow = await storage.getFlow(flowId, tenantId, true);
+    if (!flow) {
+      return res.status(404).json({ message: "Flow Beta not found" });
     }
     
     res.status(200).json(flow);
@@ -85,7 +123,7 @@ export const createFlow = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "User not found" });
     }
     
-    const currentFlows = await storage.getFlows(tenantId);
+    const currentFlows = await storage.getFlows(tenantId, false);
     const plan = user.planId ? await storage.getPlan(user.planId) : await storage.getPlan(1); // Default to Free plan
     
     if (plan && currentFlows.length >= plan.maxFlows) {
@@ -102,7 +140,56 @@ export const createFlow = async (req: Request, res: Response) => {
       tenantId,
       status: req.body.status || 'draft',
       nodes: req.body.nodes || null,
-      edges: req.body.edges || null
+      edges: req.body.edges || null,
+      isBeta: false // Fluxo normal
+    };
+    
+    // Validate the combined data
+    const validatedData = insertFlowSchema.parse(flowData);
+    
+    // Create flow
+    const flow = await storage.createFlow(validatedData);
+    
+    res.status(201).json(flow);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ 
+        message: "Validation error", 
+        errors: error.errors 
+      });
+    }
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const createFlowBeta = async (req: Request, res: Response) => {
+  try {
+    const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    // Get tenant's flows to check against plan limit
+    const tenant = await storage.getTenant(tenantId);
+    if (!tenant) {
+      return res.status(404).json({ message: "Tenant not found" });
+    }
+    
+    const user = await storage.getUser(tenant.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    // Não limitamos a quantidade de fluxos beta para testes
+    
+    // Prepare flow data with tenantId automatically added
+    const flowData = {
+      ...req.body,
+      tenantId,
+      status: req.body.status || 'draft',
+      nodes: req.body.nodes || null,
+      edges: req.body.edges || null,
+      isBeta: true // Marcar como fluxo beta
     };
     
     // Validate the combined data
