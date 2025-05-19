@@ -38,8 +38,8 @@ export default function Home() {
           </div>
           
           <div className="flex items-center space-x-4">
-            <Link href="/login">
-              <a className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">Log in</a>
+            <Link href="/login" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100">
+              Log in
             </Link>
             <Link href="/register">
               <Button>Get Started</Button>
@@ -60,12 +60,10 @@ export default function Home() {
               Drag-and-drop interface for businesses of all sizes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
-                <Button size="lg" className="w-full sm:w-auto gap-2">
-                  Start Building for Free
-                  <ArrowRight size={16} />
-                </Button>
-              </Link>
+              <Button size="lg" className="w-full sm:w-auto gap-2" onClick={() => setLocation('/register')}>
+                Start Building for Free
+                <ArrowRight size={16} />
+              </Button>
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
                 View Pricing
               </Button>
@@ -113,11 +111,14 @@ export default function Home() {
               Plans that grow with your business. Start free, upgrade as you scale.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
-                <Button variant="default" size="lg" className="w-full sm:w-auto">
-                  Get Started
-                </Button>
-              </Link>
+              <Button 
+                variant="default" 
+                size="lg" 
+                className="w-full sm:w-auto"
+                onClick={() => setLocation('/register')}
+              >
+                Get Started
+              </Button>
             </div>
           </div>
         </div>
