@@ -6,7 +6,7 @@ import { FlowNode, FlowNodeType } from '@shared/schema';
 import { NodePopover } from './NodePopover';
 import AddNodeMenu from './AddNodeMenu';
 import { MessageCircle, ArrowRightLeft, Hourglass, Variable, AlertTriangle, Info, HelpCircle } from 'lucide-react';
-import InlineEdit from './InlineEdit';
+import InlineEdit from './InlineEdit2';
 import { UnifiedNodeCard } from './UnifiedNodeCard';
 
 // Function to create a new node connected to the current one
