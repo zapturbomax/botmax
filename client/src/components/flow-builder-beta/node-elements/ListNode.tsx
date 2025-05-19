@@ -1,18 +1,18 @@
 
 import React from 'react';
 import { Handle, Position, NodeProps } from 'reactflow';
-import { MousePointerClick } from 'lucide-react';
+import { List } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-const ButtonsNode: React.FC<NodeProps> = ({ data, selected }) => {
+const ListNode: React.FC<NodeProps> = ({ data, selected }) => {
   return (
     <Card className="w-[280px] shadow-md transition-all">
       <CardHeader className="bg-blue-500 text-white p-3 flex flex-row items-center space-x-2">
-        <MousePointerClick size={18} />
-        <CardTitle className="text-sm font-medium">Botões</CardTitle>
+        <List size={18} />
+        <CardTitle className="text-sm font-medium">Lista</CardTitle>
       </CardHeader>
       <CardContent className="p-3">
-        <div className="text-sm">Botões (implementação pendente)</div>
+        <div className="text-sm">Lista (implementação pendente)</div>
       </CardContent>
       
       <Handle
@@ -30,4 +30,4 @@ const ButtonsNode: React.FC<NodeProps> = ({ data, selected }) => {
   );
 };
 
-export default ButtonsNode;
+export default ListNode;

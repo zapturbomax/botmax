@@ -1,46 +1,134 @@
 
-import React from 'react';
-import { MessageSquare, Menu, SplitSquareVertical } from 'lucide-react';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search } from 'lucide-react';
+import { nodeMetadata, NODE_TYPES } from './FlowNodeTypes';
+import { cn } from '@/lib/utils';
+import * as Icons from 'lucide-react';
 
-const NodePalette: React.FC = () => {
-  const onDragStart = (event: React.DragEvent, nodeType: string) => {
-    event.dataTransfer.setData('application/reactflow', nodeType);
-    event.dataTransfer.effectAllowed = 'move';
+// Agrupar nós por categoria
+const nodesByCategory = Object.entries(nodeMetadata).reduce((acc, [type, meta]) => {
+  if (!acc[meta.category]) {
+    acc[meta.category] = [];
+  }
+  acc[meta.category].push({ type, ...meta });
+  return acc;
+}, {} as Record<string, Array<{ type: string; label: string; description: string; icon: string; color: string }>>);
+
+interface NodePaletteProps {
+  onDragStart?: (event: React.DragEvent, nodeType: string) => void;
+}
+
+const NodePalette: React.FC<NodePaletteProps> = ({ onDragStart }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>(
+    Object.keys(nodesByCategory).reduce((acc, category) => {
+      acc[category] = true; // Inicialmente todas as categorias estão expandidas
+      return acc;
+    }, {} as Record<string, boolean>)
+  );
+  
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [category]: !prev[category]
+    }));
+  };
+  
+  // Filtrar nós com base no termo de busca
+  const filteredCategories = Object.entries(nodesByCategory).reduce((acc, [category, nodes]) => {
+    const filteredNodes = nodes.filter(node => 
+      node.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      node.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    if (filteredNodes.length > 0) {
+      acc[category] = filteredNodes;
+    }
+    
+    return acc;
+  }, {} as Record<string, Array<{ type: string; label: string; description: string; icon: string; color: string }>>);
+
+  // Função para renderizar o ícone dinâmico
+  const renderIcon = (iconName: string) => {
+    const Icon = (Icons as any)[iconName] || Icons.HelpCircle;
+    return <Icon size={16} />;
+  };
+
+  const handleDragStart = (event: React.DragEvent, nodeType: string) => {
+    if (onDragStart) {
+      onDragStart(event, nodeType);
+    } else {
+      event.dataTransfer.setData('application/reactflow', nodeType);
+      event.dataTransfer.effectAllowed = 'move';
+    }
   };
 
   return (
-    <div className="p-4 h-full overflow-y-auto">
-      <h3 className="text-lg font-medium mb-4">Componentes</h3>
-      
-      <div className="space-y-2">
-        <div 
-          className="flex items-center p-3 bg-white dark:bg-gray-800 rounded-md shadow-sm cursor-move border border-gray-200 dark:border-gray-700"
-          draggable
-          onDragStart={(e) => onDragStart(e, 'textMessage')}
-        >
-          <MessageSquare className="h-5 w-5 text-blue-500 mr-3" />
-          <span>Mensagem de Texto</span>
+    <Card className="w-full h-full overflow-hidden flex flex-col">
+      <CardHeader className="p-3 border-b">
+        <CardTitle className="text-sm font-medium">Componentes</CardTitle>
+        <div className="relative mt-2">
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar componentes..."
+            className="pl-8 text-sm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-        
-        <div 
-          className="flex items-center p-3 bg-white dark:bg-gray-800 rounded-md shadow-sm cursor-move border border-gray-200 dark:border-gray-700"
-          draggable
-          onDragStart={(e) => onDragStart(e, 'buttons')}
-        >
-          <Menu className="h-5 w-5 text-green-500 mr-3" />
-          <span>Botões</span>
-        </div>
-        
-        <div 
-          className="flex items-center p-3 bg-white dark:bg-gray-800 rounded-md shadow-sm cursor-move border border-gray-200 dark:border-gray-700"
-          draggable
-          onDragStart={(e) => onDragStart(e, 'condition')}
-        >
-          <SplitSquareVertical className="h-5 w-5 text-orange-500 mr-3" />
-          <span>Condição</span>
-        </div>
-      </div>
-    </div>
+      </CardHeader>
+      <CardContent className="p-0 overflow-y-auto flex-1">
+        {Object.keys(filteredCategories).length === 0 ? (
+          <div className="p-4 text-center text-sm text-muted-foreground">
+            Nenhum componente encontrado
+          </div>
+        ) : (
+          <div className="divide-y">
+            {Object.entries(filteredCategories).map(([category, nodes]) => (
+              <div key={category} className="py-1">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-between px-3 py-1.5 h-auto text-sm font-medium"
+                  onClick={() => toggleCategory(category)}
+                >
+                  {category}
+                  <span className="text-xs text-muted-foreground">
+                    {nodes.length}
+                  </span>
+                </Button>
+                
+                {expandedCategories[category] && (
+                  <div className="grid grid-cols-1 gap-1 p-1">
+                    {nodes.map((node) => (
+                      <div
+                        key={node.type}
+                        className={cn(
+                          "flex items-center space-x-2 p-2 rounded-md cursor-grab hover:bg-muted transition-colors",
+                          `border-l-4 border-${node.color}-500`
+                        )}
+                        draggable
+                        onDragStart={(e) => handleDragStart(e, node.type)}
+                      >
+                        <div className={`p-1.5 rounded-md bg-${node.color}-100 text-${node.color}-500`}>
+                          {renderIcon(node.icon)}
+                        </div>
+                        <div>
+                          <div className="text-sm font-medium">{node.label}</div>
+                          <div className="text-xs text-muted-foreground">{node.description}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 };
 
