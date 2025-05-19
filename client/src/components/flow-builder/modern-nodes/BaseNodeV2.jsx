@@ -46,35 +46,7 @@ function BaseNodeV2({
   };
   
   return (
-    <div className="relative node-container" style={{ width: 320 }}>
-      {/* Barra superior com ações exatamente como na imagem de referência */}
-      <div className="absolute top-0 left-0 right-0 bg-[#3A4049] text-white rounded-t-lg py-3.5 px-6 flex justify-between z-10">
-        <div className="w-24"></div> {/* Espaçador para centralizar os botões */}
-        <div className="flex justify-center space-x-20">
-          <button 
-            className="flex items-center gap-2 text-base font-medium hover:text-gray-200"
-            onClick={handleDuplicate}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M15 2H9C8.44772 2 8 2.44772 8 3V5C8 5.55228 8.44772 6 9 6H15C15.5523 6 16 5.55228 16 5V3C16 2.44772 15.5523 2 15 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Duplicar
-          </button>
-          <button 
-            className="flex items-center gap-2 text-base font-medium hover:text-gray-200"
-            onClick={handleDelete}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 6H5H21" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Remover
-          </button>
-        </div>
-        <div className="w-24"></div> {/* Espaçador para centralizar os botões */}
-      </div>
-      
+    <div className="relative node-container" style={{ width: 380 }}>
       {/* Conector de entrada (lado esquerdo) */}
       <Handle
         type="target"
@@ -91,7 +63,7 @@ function BaseNodeV2({
       />
       
       {/* Conteúdo do nó */}
-      <div className="relative mt-[48px] rounded-xl shadow-md bg-white overflow-hidden">
+      <div className="relative rounded-xl shadow-md bg-white overflow-hidden">
         {/* Cabeçalho com contadores exatamente como na imagem */}
         <div style={{ backgroundColor: color }} className="text-white py-5 flex justify-between">
           <div className="flex-1 flex flex-col items-center">
