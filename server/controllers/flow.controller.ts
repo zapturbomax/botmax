@@ -530,7 +530,7 @@ export const deleteFlowBeta1 = async (req: Request, res: Response) => {
   }
 };
 
-export const updateFlowBetaStatus1 = async (req: Request, res: Response) => {
+export const updateFlowBetaStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tenantId = req.user?.tenantId;
@@ -568,7 +568,7 @@ export const updateFlowBetaStatus1 = async (req: Request, res: Response) => {
   }
 };
 
-export const updateFlowBetaNodes1 = async (req: Request, res: Response) => {
+export const updateFlowBetaNodes = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tenantId = req.user?.tenantId;

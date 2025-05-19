@@ -827,3 +827,104 @@ export const createFlow = async (data: z.infer<typeof schema.insertFlowSchema>) 
     throw error;
   }
 };
+
+export const getFlowsBeta = async (tenantId: string): Promise<Flow[]> => {
+  try {
+    console.log(`Buscando fluxos beta para tenantId: ${tenantId}`);
+    const flows = await db.query.flows.findMany({
+      where: and(
+        eq(schema.flows.tenantId, tenantId),
+        eq(schema.flows.isBeta, true)
+      ),
+      orderBy: [desc(schema.flows.updatedAt)]
+    });
+
+    console.log(`Encontrados ${flows.length} fluxos beta`);
+    return flows;
+  } catch (error) {
+    console.error("Error getting beta flows:", error);
+    throw error;
+  }
+};
+
+export const getFlowById = async (flowId: number, tenantId: string): Promise<Flow | null> => {
+  try {
+    console.log(`Buscando fluxo ID: ${flowId} para tenantId: ${tenantId}`);
+    const flow = await db.query.flows.findFirst({
+      where: and(
+        eq(schema.flows.id, flowId),
+        eq(schema.flows.tenantId, tenantId)
+      )
+    });
+
+    if (flow) {
+      console.log(`Fluxo encontrado: ${flow.name}, isBeta: ${flow.isBeta}`);
+    } else {
+      console.log(`Fluxo não encontrado para ID: ${flowId}`);
+    }
+
+    return flow;
+  } catch (error) {
+    console.error("Error getting flow by ID:", error);
+    throw error;
+  }
+};
+
+export const getFlowBetaById = async (flowId: number, tenantId: string): Promise<Flow | null> => {
+  try {
+    console.log(`Buscando fluxo beta ID: ${flowId} para tenantId: ${tenantId}`);
+    const flow = await db.query.flows.findFirst({
+      where: and(
+        eq(schema.flows.id, flowId),
+        eq(schema.flows.tenantId, tenantId),
+        eq(schema.flows.isBeta, true)
+      )
+    });
+
+    if (flow) {
+      console.log(`Fluxo beta encontrado: ${flow.name}`);
+    } else {
+      console.log(`Fluxo beta não encontrado para ID: ${flowId}`);
+    }
+
+    return flow;
+  } catch (error) {
+    console.error("Error getting beta flow by ID:", error);
+    throw error;
+  }
+};
+
+type NewFlow = Omit<schema.Flow, 'id' | 'createdAt' | 'updatedAt'>;
+
+export const createFlowBeta = async (flow: NewFlow, tenantId: string): Promise<Flow> => {
+  try {
+    console.log(`Criando fluxo beta para tenantId: ${tenantId}`, flow);
+
+    // Adicionar campo isBeta e outros campos necessários
+    const newFlow = {
+      ...flow,
+      tenantId,
+      isBeta: true,
+      status: flow.status || 'draft',
+      nodes: flow.nodes || [],
+      edges: flow.edges || [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+
+    console.log("Dados do novo fluxo beta:", newFlow);
+
+    // Inserir no banco de dados
+    const result = await db.insert(schema.flows).values(newFlow).returning();
+
+    if (!result || result.length === 0) {
+      throw new Error("Failed to create beta flow");
+    }
+
+    console.log(`Fluxo beta criado com ID: ${result[0].id}`);
+    return result[0];
+  } catch (error) {
+    console.error("Error creating beta flow:", error);
+    throw error;
+  }
+};

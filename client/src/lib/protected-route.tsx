@@ -1,35 +1,33 @@
-import { Route, Redirect, useLocation } from 'wouter';
+
+import React from 'react';
+import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/use-auth';
 
 interface ProtectedRouteProps {
-  path: string;
-  component: React.ComponentType<any>;
+  children: React.ReactNode;
 }
 
-export function ProtectedRoute({ path, component: Component }: ProtectedRouteProps) {
+export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
+  
+  React.useEffect(() => {
+    if (!isLoading && !user) {
+      setLocation(`/login?redirect=${encodeURIComponent(location)}`);
+    }
+  }, [isLoading, user, location, setLocation]);
 
-  return (
-    <Route path={path}>
-      {(params) => {
-        // Show loading state if auth is still being checked
-        if (isLoading) {
-          return (
-            <div className="flex items-center justify-center min-h-screen">
-              <div className="animate-spin w-8 h-8 border-4 border-t-transparent border-primary rounded-full"></div>
-            </div>
-          );
-        }
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin w-8 h-8 border-4 border-t-transparent border-primary rounded-full"></div>
+      </div>
+    );
+  }
 
-        // Redirect to login if not authenticated
-        if (!user) {
-          return <Redirect to={`/login?redirect=${encodeURIComponent(location)}`} />;
-        }
+  if (!user) {
+    return null;
+  }
 
-        // Render the protected component
-        return <Component {...params} />;
-      }}
-    </Route>
-  );
+  return <>{children}</>;
 }

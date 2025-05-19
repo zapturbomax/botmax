@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
@@ -9,24 +9,19 @@ import FlowBuilderLayout from '@/components/flow-builder-beta/FlowBuilderLayout'
 import { useToast } from '@/hooks/use-toast';
 
 export default function FlowBuilderBeta() {
-  const { user, isLoading: isAuthLoading } = useAuth();
-  const [location, setLocation] = useLocation();
+  const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const { id } = useParams<{ id: string }>();
-
-  // Verificar se o usuário está autenticado antes de carregar o fluxo
-  useEffect(() => {
-    if (!isAuthLoading && !user) {
-      console.log("Usuário não autenticado, redirecionando para login");
-      setLocation('/login?redirect=' + encodeURIComponent(location));
-    }
-  }, [user, isAuthLoading, location, setLocation]);
+  const params = useParams<{ id: string }>();
+  const id = params?.id;
 
   // Check flow exists and user has access (using Beta-specific endpoint)
   const { data: flow, isLoading, error, refetch } = useQuery({
     queryKey: ['flows-beta', id],
     queryFn: async () => {
       try {
+        if (!id) throw new Error("ID do fluxo não fornecido");
+        
         console.log(`Carregando fluxo beta id=${id} para tenantId=${user?.tenantId}`);
         const response = await axios.get(`/api/flows-beta/${id}`);
         console.log("Dados do fluxo beta carregados:", response.data);
@@ -67,15 +62,6 @@ export default function FlowBuilderBeta() {
     }
   }, [isLoading, error, setLocation]);
 
-  if (isAuthLoading || !user) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin w-8 h-8 border-4 border-t-transparent border-primary rounded-full"></div>
-        <p className="ml-2">Verificando autenticação...</p>
-      </div>
-    );
-  }
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -97,5 +83,10 @@ export default function FlowBuilderBeta() {
     );
   }
 
-  return <FlowBuilderLayout flowId={id} flowName={flow?.name || 'Flow Builder Beta'} />;
+  return (
+    <FlowBuilderLayout 
+      flowId={id} 
+      flowName={flow?.name || 'Fluxo sem nome'} 
+    />
+  );
 }
