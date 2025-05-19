@@ -1,6 +1,5 @@
 
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
 import { sql } from 'drizzle-orm';
 
@@ -22,7 +21,7 @@ async function runMigration() {
       WHERE table_name = 'flows' AND column_name = 'is_beta'
     `);
     
-    if (checkColumn.length === 0) {
+    if (checkColumn.rows.length === 0) {
       // Adicionar a coluna is_beta
       await db.execute(sql`
         ALTER TABLE flows
@@ -40,5 +39,8 @@ async function runMigration() {
     await pool.end();
   }
 }
+
+// Executar a migração
+runMigration();
 
 runMigration();

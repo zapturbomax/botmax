@@ -375,13 +375,12 @@ export const updateFlowEdges = async (req: Request, res: Response) => {
 export const getFlowsBeta1 = async (req: Request, res: Response) => {
   try {
     const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-    const flows = await storage.db.select().from(schema.flows)
-      .where(and(
-        eq(schema.flows.tenantId, tenantId),
-        eq(schema.flows.isBeta, true)
-      ));
-
+    // Usando a função existente no storage
+    const flows = await storage.getFlows(tenantId, true);
     return res.json(flows);
   } catch (error: any) {
     console.error("Error fetching beta flows:", error);
@@ -393,20 +392,17 @@ export const getFlowBeta1 = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-    const flow = await storage.db.select().from(schema.flows)
-      .where(and(
-        eq(schema.flows.id, Number(id)),
-        eq(schema.flows.tenantId, tenantId),
-        eq(schema.flows.isBeta, true)
-      ))
-      .limit(1);
-
-    if (!flow.length) {
+    // Usando a função existente no storage
+    const flow = await storage.getFlow(Number(id), tenantId, true);
+    if (!flow) {
       return res.status(404).json({ message: "Flow not found" });
     }
 
-    return res.json(flow[0]);
+    return res.json(flow);
   } catch (error: any) {
     console.error("Error fetching beta flow:", error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -416,6 +412,10 @@ export const getFlowBeta1 = async (req: Request, res: Response) => {
 export const createFlowBeta1 = async (req: Request, res: Response) => {
   try {
     const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const { name, description } = req.body;
 
     // Schema validation
@@ -433,19 +433,19 @@ export const createFlowBeta1 = async (req: Request, res: Response) => {
       });
     }
 
-    const newFlow = await storage.db.insert(schema.flows).values({
+    // Usando a função createFlow existente
+    const flowData = {
       name,
       description: description || "",
       tenantId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      status: "draft",
       isBeta: true,
-      nodes: JSON.stringify([]),
-      edges: JSON.stringify([]),
-    }).returning();
+      status: "draft",
+      nodes: [],
+      edges: []
+    };
 
-    return res.json(newFlow[0]);
+    const newFlow = await storage.createFlow(flowData);
+    return res.json(newFlow);
   } catch (error: any) {
     console.error("Error creating beta flow:", error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -456,6 +456,10 @@ export const updateFlowBeta1 = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const { name, description } = req.body;
 
     // Schema validation
@@ -476,23 +480,16 @@ export const updateFlowBeta1 = async (req: Request, res: Response) => {
     const updateData = {
       name,
       description: description || "",
-      updatedAt: new Date(),
     };
 
-    const result = await storage.db.update(schema.flows)
-      .set(updateData)
-      .where(and(
-        eq(schema.flows.id, Number(id)),
-        eq(schema.flows.tenantId, tenantId),
-        eq(schema.flows.isBeta, true)
-      ))
-      .returning();
-
-    if (!result.length) {
+    // Usando o método existente de updateFlow
+    const updatedFlow = await storage.updateFlow(Number(id), tenantId, updateData);
+    
+    if (!updatedFlow) {
       return res.status(404).json({ message: "Flow not found" });
     }
 
-    return res.json(result[0]);
+    return res.json(updatedFlow);
   } catch (error: any) {
     console.error("Error updating beta flow:", error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -503,16 +500,14 @@ export const deleteFlowBeta1 = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
 
-    const result = await storage.db.delete(schema.flows)
-      .where(and(
-        eq(schema.flows.id, Number(id)),
-        eq(schema.flows.tenantId, tenantId),
-        eq(schema.flows.isBeta, true)
-      ))
-      .returning();
-
-    if (!result.length) {
+    // Usando o método existente de deleteFlow
+    const success = await storage.deleteFlow(Number(id), tenantId);
+    
+    if (!success) {
       return res.status(404).json({ message: "Flow not found" });
     }
 
@@ -527,6 +522,10 @@ export const updateFlowBetaStatus1 = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const { status } = req.body;
 
     // Schema validation
@@ -543,23 +542,14 @@ export const updateFlowBetaStatus1 = async (req: Request, res: Response) => {
       });
     }
 
-    const result = await storage.db.update(schema.flows)
-      .set({
-        status,
-        updatedAt: new Date(),
-      })
-      .where(and(
-        eq(schema.flows.id, Number(id)),
-        eq(schema.flows.tenantId, tenantId),
-        eq(schema.flows.isBeta, true)
-      ))
-      .returning();
-
-    if (!result.length) {
+    // Usando o método existente de updateFlowStatus
+    const updatedFlow = await storage.updateFlowStatus(Number(id), tenantId, status);
+    
+    if (!updatedFlow) {
       return res.status(404).json({ message: "Flow not found" });
     }
 
-    return res.json(result[0]);
+    return res.json(updatedFlow);
   } catch (error: any) {
     console.error("Error updating beta flow status:", error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -570,6 +560,10 @@ export const updateFlowBetaNodes1 = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const { nodes } = req.body;
 
     // Schema validation
@@ -586,23 +580,14 @@ export const updateFlowBetaNodes1 = async (req: Request, res: Response) => {
       });
     }
 
-    const result = await storage.db.update(schema.flows)
-      .set({
-        nodes: JSON.stringify(nodes),
-        updatedAt: new Date(),
-      })
-      .where(and(
-        eq(schema.flows.id, Number(id)),
-        eq(schema.flows.tenantId, tenantId),
-        eq(schema.flows.isBeta, true)
-      ))
-      .returning();
-
-    if (!result.length) {
+    // Usando o método existente de updateFlowNodes
+    const updatedFlow = await storage.updateFlowNodes(Number(id), tenantId, nodes);
+    
+    if (!updatedFlow) {
       return res.status(404).json({ message: "Flow not found" });
     }
 
-    return res.json(result[0]);
+    return res.json(updatedFlow);
   } catch (error: any) {
     console.error("Error updating beta flow nodes:", error);
     res.status(500).json({ message: "Server error", error: error.message });
@@ -613,6 +598,10 @@ export const updateFlowBetaEdges1 = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tenantId = req.user?.tenantId;
+    if (!tenantId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
     const { edges } = req.body;
 
     // Schema validation
@@ -629,23 +618,14 @@ export const updateFlowBetaEdges1 = async (req: Request, res: Response) => {
       });
     }
 
-    const result = await storage.db.update(schema.flows)
-      .set({
-        edges: JSON.stringify(edges),
-        updatedAt: new Date(),
-      })
-      .where(and(
-        eq(schema.flows.id, Number(id)),
-        eq(schema.flows.tenantId, tenantId),
-        eq(schema.flows.isBeta, true)
-      ))
-      .returning();
-
-    if (!result.length) {
+    // Usando o método existente de updateFlowEdges
+    const updatedFlow = await storage.updateFlowEdges(Number(id), tenantId, edges);
+    
+    if (!updatedFlow) {
       return res.status(404).json({ message: "Flow not found" });
     }
 
-    return res.json(result[0]);
+    return res.json(updatedFlow);
   } catch (error: any) {
     console.error("Error updating beta flow edges:", error);
     res.status(500).json({ message: "Server error", error: error.message });

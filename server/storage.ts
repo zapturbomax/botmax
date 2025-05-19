@@ -555,16 +555,19 @@ export class DatabaseStorage implements IStorage {
   // Flow operations
   async getFlows(tenantId: number, isBeta: boolean = false): Promise<Flow[]> {
     try {
+      // Obter todos os fluxos do tenant
       const flowsResult = await db.select().from(flows).where(
-        and(
-          eq(flows.tenantId, tenantId),
-        )
+        eq(flows.tenantId, tenantId)
       );
 
-      // Filter flows based on the isBeta flag
-      const filteredFlows = flowsResult.filter(flow => flow.isBeta === isBeta);
+      // Filtrar baseado na flag isBeta
+      const filteredFlows = flowsResult.filter(flow => {
+        // Converter para boolean para tratar possíveis valores undefined
+        const flowIsBeta = flow.isBeta === true;
+        return flowIsBeta === isBeta;
+      });
+      
       return filteredFlows;
-
     } catch (error) {
       console.error("Error getting flows:", error);
       throw error;
@@ -576,13 +579,17 @@ export class DatabaseStorage implements IStorage {
       const [flow] = await db.select().from(flows)
         .where(and(
           eq(flows.id, id),
-          eq(flows.tenantId, tenantId),
+          eq(flows.tenantId, tenantId)
         ));
-        if (flow && flow.isBeta === isBeta) {
+        
+      if (flow) {
+        // Converter para boolean para tratar possíveis valores undefined
+        const flowIsBeta = flow.isBeta === true;
+        if (flowIsBeta === isBeta) {
           return flow;
-        } else {
-          return undefined;
         }
+      }
+      return undefined;
     } catch (error) {
       console.error("Error getting flow:", error);
       throw error;
@@ -760,13 +767,19 @@ export class DatabaseStorage implements IStorage {
 export const storage = new DatabaseStorage();
 export const getFlows = async (tenantId: number, isBeta: boolean = false) => {
   try {
-    const flows = await db.select().from(flows).where(
-      and(
-        eq(flows.tenantId, tenantId),
-        eq(flows.isBeta, isBeta)
-      )
+    // Obter todos os fluxos do tenant
+    const flowsList = await db.select().from(schema.flows).where(
+      eq(schema.flows.tenantId, tenantId)
     );
-    return flows;
+    
+    // Filtrar baseado na flag isBeta
+    const filteredFlows = flowsList.filter(flow => {
+      // Converter para boolean para tratar possíveis valores undefined
+      const flowIsBeta = flow.isBeta === true;
+      return flowIsBeta === isBeta;
+    });
+    
+    return filteredFlows;
   } catch (error) {
     console.error("Error getting flows:", error);
     throw error;
@@ -775,15 +788,22 @@ export const getFlows = async (tenantId: number, isBeta: boolean = false) => {
 
 export const getFlow = async (id: number, tenantId: number, isBeta: boolean = false) => {
   try {
-    const flow = await db.select().from(flows)
+    const flow = await db.select().from(schema.flows)
       .where(and(
-        eq(flows.id, id),
-        eq(flows.tenantId, tenantId),
-        eq(flows.isBeta, isBeta)
+        eq(schema.flows.id, id),
+        eq(schema.flows.tenantId, tenantId)
       ))
       .limit(1);
 
-    return flow.length > 0 ? flow[0] : null;
+    if (flow.length > 0) {
+      // Converter para boolean para tratar possíveis valores undefined
+      const flowIsBeta = flow[0].isBeta === true;
+      if (flowIsBeta === isBeta) {
+        return flow[0];
+      }
+    }
+    
+    return null;
   } catch (error) {
     console.error("Error getting flow:", error);
     throw error;

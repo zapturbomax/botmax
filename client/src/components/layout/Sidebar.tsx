@@ -78,7 +78,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               icon={<ChartGantt size={18} />} 
               isActive={location.startsWith("/flows-beta") || location.startsWith("/flow-builder-beta")}
             >
-              Construtor Beta
+              Construtor de Fluxo Beta
             </NavLink>
             <NavLink 
               href="/settings/whatsapp" 

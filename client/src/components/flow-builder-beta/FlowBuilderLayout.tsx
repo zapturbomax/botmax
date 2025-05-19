@@ -1,8 +1,9 @@
 
 // src/components/flow-builder-beta/FlowBuilderLayout.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { ArrowLeft, Save, Play, Settings, HelpCircle } from 'lucide-react';
+import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -32,11 +33,29 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
   };
   
   // Função para salvar o fluxo
-  const handleSave = () => {
-    toast({
-      title: "Fluxo salvo",
-      description: "Seu fluxo foi salvo com sucesso",
-    });
+  const handleSave = async () => {
+    try {
+      // Aqui você precisaria obter os nós e bordas do fluxo
+      // Este é apenas um exemplo, você precisaria implementar a lógica para obter os dados reais
+      
+      // Para salvar nós (exemplo)
+      // await axios.put(`/api/flows-beta/${flowId}/nodes`, { nodes: yourNodes });
+      
+      // Para salvar bordas (exemplo)
+      // await axios.put(`/api/flows-beta/${flowId}/edges`, { edges: yourEdges });
+      
+      toast({
+        title: "Fluxo salvo",
+        description: "Seu fluxo foi salvo com sucesso",
+      });
+    } catch (error) {
+      console.error("Erro ao salvar o fluxo:", error);
+      toast({
+        title: "Erro ao salvar",
+        description: "Ocorreu um erro ao salvar o fluxo. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
   
   // Função para testar o fluxo

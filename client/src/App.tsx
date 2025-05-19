@@ -21,8 +21,10 @@ import ForgotPassword from '@/pages/auth/forgot-password';
 import NotFound from '@/pages/not-found';
 import Flows from '@/pages/flows';
 import NewFlow from '@/pages/flows/new';
+import FlowBuilder from '@/pages/flow-builder';
 import FlowBuilderBeta from '@/pages/flow-builder-beta';
 import NewFlowBeta from '@/pages/flows-beta/new';
+import FlowsBeta from '@/pages/flows-beta';
 
 // Importando as páginas de configurações
 import GeneralSettings from '@/pages/settings/general';
@@ -30,8 +32,7 @@ import AccountSettings from '@/pages/settings/account';
 import BillingSettings from '@/pages/settings/billing';
 import WhatsAppSettings from '@/pages/settings/whatsapp';
 
-// Componente temporário para listar fluxos beta
-const FlowsBeta = () => {
+// Componente temporário para listar fluxos beta foi movido para seu próprio arquivo
   const { user } = useAuth();
   const [_, setLocation] = useLocation();
 
@@ -60,9 +61,17 @@ function Router() {
       <Route path="/flows/:id">
             {(params) => <FlowBuilder />}
           </Route>
+      <Route path="/flows-beta">
+            {() => <FlowsBeta />}
+          </Route>
       <Route path="/flows-beta/new">
             {() => <React.Suspense fallback={<div>Carregando...</div>}>
               <NewFlowBeta />
+            </React.Suspense>}
+          </Route>
+      <Route path="/flow-builder-beta/:id">
+            {(params) => <React.Suspense fallback={<div>Carregando...</div>}>
+              <FlowBuilderBeta />
             </React.Suspense>}
           </Route>
       <Route path="/flows-beta">
