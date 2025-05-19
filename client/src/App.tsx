@@ -17,6 +17,7 @@ import ForgotPassword from "@/pages/auth/forgot-password";
 import Dashboard from "@/pages/dashboard";
 import FlowBuilder from "@/pages/flow-builder";
 import FlowBuilderBeta from "@/pages/flow-builder-beta";
+import FlowBuilderNew from "@/pages/flow-builder-new";
 import Flows from "@/pages/flows/index";
 import NewFlow from "@/pages/flows/new";
 import GeneralSettings from "@/pages/settings/general";
@@ -40,6 +41,7 @@ function Router() {
       <ProtectedRoute path="/flows/new" component={NewFlow} />
       <ProtectedRoute path="/flows/:id" component={FlowBuilder} />
       <ProtectedRoute path="/flows/:id/beta" component={FlowBuilderBeta} />
+      <ProtectedRoute path="/flows/:id/new" component={FlowBuilderNew} />
       <ProtectedRoute path="/settings/general" component={GeneralSettings} />
       <ProtectedRoute path="/settings/account" component={AccountSettings} />
       <ProtectedRoute path="/settings/billing" component={BillingSettings} />
