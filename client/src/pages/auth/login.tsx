@@ -22,7 +22,7 @@ const loginSchema = z.object({
 export default function Login() {
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const auth = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   
   // Initialize form
@@ -37,11 +37,9 @@ export default function Login() {
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: async (data: z.infer<typeof loginSchema>) => {
-      const res = await apiRequest('POST', '/api/auth/login', data);
-      return res.json();
+      return await auth.login(data.email, data.password);
     },
     onSuccess: (data) => {
-      login(data);
       toast({
         title: 'Login realizado com sucesso',
         description: 'Bem-vindo de volta!',
