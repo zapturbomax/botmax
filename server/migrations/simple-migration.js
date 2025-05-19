@@ -1,5 +1,5 @@
 
-import { Pool } from 'pg';
+const { Pool } = require('pg');
 
 async function runMigration() {
   // Configuração da conexão com o banco de dados
