@@ -83,13 +83,19 @@ export function useModernNodes() {
     setNodes(
       nodes.map(node => {
         const getV2Type = (type: string | undefined) => {
-          if (!type) return 'textMessage'; // Fallback para um tipo padrão
+          if (!type) return 'textMessageV2'; // Fallback para um tipo padrão
           
-          if (type === 'textMessage') {
-            return 'textMessage'; // Usar o tipo V2
-          }
+          // Mapeamento de tipos para versão V2
+          const v2Types: Record<string, string> = {
+            'textMessage': 'textMessageV2',
+            'mediaMessage': 'mediaMessageV2',
+            'audioMessage': 'audioMessageV2',
+            'quickReplies': 'quickRepliesV2',
+            'waitResponse': 'waitResponseV2',
+            'contactMessage': 'contactMessageV2'
+          };
           
-          return type;
+          return v2Types[type] || type;
         };
 
         return {
