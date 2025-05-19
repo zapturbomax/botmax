@@ -568,7 +568,7 @@ export const updateFlowBetaStatus = async (req: Request, res: Response) => {
   }
 };
 
-export const updateFlowBetaNodes = async (req: Request, res: Response) => {
+export const updateFlowBetaNodes1 = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tenantId = req.user?.tenantId;
@@ -576,14 +576,11 @@ export const updateFlowBetaNodes = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
-    const { nodes } = req.body;
+    const nodes = req.body;
 
     // Schema validation
-    const schemaZ = z.object({
-      nodes: z.array(z.any()),
-    });
-
-    const validation = schemaZ.safeParse(req.body);
+    const schemaZ = flowNodesSchema;
+    const validation = schemaZ.safeParse(nodes);
 
     if (!validation.success) {
       return res.status(400).json({
@@ -593,7 +590,7 @@ export const updateFlowBetaNodes = async (req: Request, res: Response) => {
     }
 
     // Usando o método existente de updateFlowNodes
-    const updatedFlow = await storage.updateFlowNodes(Number(id), tenantId, nodes);
+    const updatedFlow = await storage.updateFlowNodes(Number(id), tenantId, nodes as FlowNode[]);
     
     if (!updatedFlow) {
       return res.status(404).json({ message: "Flow not found" });
