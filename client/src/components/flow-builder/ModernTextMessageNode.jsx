@@ -8,15 +8,32 @@ function ModernTextMessageNode({ id, data, selected, isConnectable }) {
   // Funções para atualizar o nó
   const handleTextChange = (e) => {
     setMessageText(e.target.value);
-    data.onChange?.(id, { text: e.target.value });
+    // Atualizamos diretamente o data sem depender de callbacks externos
+    if (data.onChange) {
+      data.onChange(id, { text: e.target.value });
+    } else if (data.updateNodeData) {
+      data.updateNodeData(id, { text: e.target.value });
+    }
   };
   
   const handleDuplicate = () => {
-    data.onDuplicate?.(id);
+    console.log("Duplicar nó:", id);
+    // Implementação padrão caso não tenhamos callbacks externos
+    if (data.onDuplicate) {
+      data.onDuplicate(id);
+    } else if (window.duplicateNode) {
+      window.duplicateNode(id);
+    }
   };
   
   const handleDelete = () => {
-    data.onDelete?.(id);
+    console.log("Remover nó:", id);
+    // Implementação padrão caso não tenhamos callbacks externos
+    if (data.onDelete) {
+      data.onDelete(id);
+    } else if (window.deleteNode) {
+      window.deleteNode(id);
+    }
   };
   
   return (

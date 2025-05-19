@@ -141,7 +141,10 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
           onDragOver={onDragOver}
           onDrop={handleDrop}
           onNodeClick={(_, node) => onNodeSelect(node)}
-          nodeTypes={{...nodeComponents, ...customNodeTypes}}
+          nodeTypes={{
+            ...nodeComponents,
+            textMessage: ModernTextMessageNode  // Usando o novo nó para mensagens de texto
+          }}
           className="canvas-bg"
           fitView
           proOptions={{ hideAttribution: true }}
