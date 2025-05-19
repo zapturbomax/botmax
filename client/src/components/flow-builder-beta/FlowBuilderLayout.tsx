@@ -22,12 +22,12 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
   flowId, 
   flowName 
 }) => {
-  const [, setLocation] = useLocation();
+  const [_, setLocation] = useLocation();
   const { toast } = useToast();
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showProperties, setShowProperties] = useState(false);
   
-  // Função para voltar à lista de fluxos Beta
+  // Função para voltar à lista de fluxos
   const handleBack = () => {
     setLocation('/flows-beta');
   };
@@ -35,24 +35,20 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
   // Função para salvar o fluxo
   const handleSave = async () => {
     try {
-      // Aqui você precisaria obter os nós e bordas do fluxo
-      // Este é apenas um exemplo, você precisaria implementar a lógica para obter os dados reais
-      
-      // Para salvar nós (exemplo)
-      // await axios.put(`/api/flows-beta/${flowId}/nodes`, { nodes: yourNodes });
-      
-      // Para salvar bordas (exemplo)
-      // await axios.put(`/api/flows-beta/${flowId}/edges`, { edges: yourEdges });
+      // Implemente a lógica de salvamento do fluxo aqui
+      await axios.post(`/api/flows-beta/${flowId}/save`, {
+        // Dados a serem enviados para o servidor
+      });
       
       toast({
         title: "Fluxo salvo",
         description: "Seu fluxo foi salvo com sucesso",
       });
     } catch (error) {
-      console.error("Erro ao salvar o fluxo:", error);
+      console.error('Erro ao salvar o fluxo:', error);
       toast({
         title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar o fluxo. Tente novamente.",
+        description: "Ocorreu um erro ao salvar o fluxo",
         variant: "destructive",
       });
     }
@@ -87,35 +83,36 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
   };
   
   return (
-    <div className="h-screen flex flex-col bg-background">
-      {/* Barra de navegação superior */}
-      <header className="flex items-center justify-between h-14 px-4 border-b bg-background">
+    <div className="flex flex-col h-screen bg-background">
+      {/* Cabeçalho */}
+      <header className="h-14 border-b flex items-center px-4 justify-between bg-card">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" onClick={handleBack}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-xl font-semibold">{flowName}</h1>
+          <h1 className="font-semibold text-lg truncate max-w-[200px] md:max-w-md">
+            {flowName}
+          </h1>
         </div>
+        
         <div className="flex items-center gap-2">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="outline" size="sm" onClick={handleSave}>
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="h-4 w-4 mr-1" />
                   Salvar
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Salvar alterações</p>
+                <p>Salvar fluxo</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
-          
-          <TooltipProvider>
+            
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="outline" size="sm" onClick={handleTest}>
-                  <Play className="h-4 w-4 mr-2" />
+                  <Play className="h-4 w-4 mr-1" />
                   Testar
                 </Button>
               </TooltipTrigger>
@@ -123,26 +120,22 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
                 <p>Testar fluxo</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
-          
-          <TooltipProvider>
+            
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={handleSettings}>
-                  <Settings className="h-5 w-5" />
+                <Button variant="outline" size="icon" onClick={handleSettings}>
+                  <Settings className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
                 <p>Configurações</p>
               </TooltipContent>
             </Tooltip>
-          </TooltipProvider>
-          
-          <TooltipProvider>
+            
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <HelpCircle className="h-5 w-5" />
+                <Button variant="outline" size="icon">
+                  <HelpCircle className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -153,25 +146,43 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
         </div>
       </header>
       
-      {/* Conteúdo principal */}
-      <div className="flex-1 flex">
-        {/* Paleta de nós */}
-        <div className="w-64 border-r bg-background overflow-y-auto">
+      {/* Conteúdo Principal */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Painel de Nós */}
+        <div className="w-56 border-r bg-card p-4 overflow-y-auto">
+          <h2 className="font-medium mb-3">Componentes</h2>
           <NodePalette />
         </div>
         
-        {/* Canvas do fluxo */}
+        {/* Canvas do Flow */}
         <div className="flex-1 relative">
-          <FlowCanvas onNodeSelect={handleNodeSelect} />
+          <FlowCanvas 
+            flowId={flowId} 
+            onNodeSelect={handleNodeSelect} 
+          />
         </div>
         
-        {/* Painel de propriedades */}
+        {/* Painel de Propriedades (condicional) */}
         {showProperties && (
-          <div className="w-80 border-l bg-background overflow-y-auto">
-            <PropertiesPanel 
-              node={selectedNode} 
-              onClose={handleCloseProperties} 
-            />
+          <div className="w-80 border-l bg-card overflow-y-auto">
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-medium">Propriedades</h2>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={handleCloseProperties}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              </div>
+              <Separator className="mb-4" />
+              {selectedNode && (
+                <PropertiesPanel 
+                  node={selectedNode} 
+                />
+              )}
+            </div>
           </div>
         )}
       </div>

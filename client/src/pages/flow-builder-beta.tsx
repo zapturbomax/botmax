@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
@@ -13,7 +14,11 @@ export default function FlowBuilderBeta() {
 
   // Check flow exists and user has access (using Beta-specific endpoint)
   const { data: flow, isLoading, error } = useQuery({
-    queryKey: ['/api/flows-beta', id],
+    queryKey: ['flows-beta', id],
+    queryFn: async () => {
+      const response = await axios.get(`/api/flows-beta/${id}`);
+      return response.data;
+    },
     enabled: !!id && !!user,
   });
 
@@ -28,7 +33,7 @@ export default function FlowBuilderBeta() {
   useEffect(() => {
     if (!isLoading && error) {
       console.error("Flow not found or error:", error);
-      setLocation('/flows');
+      setLocation('/flows-beta');
     }
   }, [isLoading, error, setLocation]);
 
