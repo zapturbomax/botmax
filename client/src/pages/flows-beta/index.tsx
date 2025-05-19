@@ -32,9 +32,23 @@ export default function FlowsBeta() {
   const { data: flows, isLoading, error, refetch } = useQuery({
     queryKey: ['flows-beta'],
     queryFn: async () => {
-      const response = await axios.get<Flow[]>('/api/flows-beta');
+      const response = await axios.get<any[]>('/api/flows-beta');
       console.log("Fluxos Beta recebidos:", response.data);
-      return response.data;
+      
+      // Normalizar campos para garantir consistência (converter snake_case para camelCase)
+      const normalizedFlows = response.data.map(flow => ({
+        id: flow.id,
+        name: flow.name,
+        description: flow.description,
+        status: flow.status,
+        createdAt: flow.created_at || flow.createdAt,
+        updatedAt: flow.updated_at || flow.updatedAt,
+        tenantId: flow.tenant_id || flow.tenantId,
+        isBeta: flow.is_beta || flow.isBeta || true
+      }));
+      
+      console.log("Fluxos Beta normalizados:", normalizedFlows);
+      return normalizedFlows;
     },
     enabled: !!user,
   });
