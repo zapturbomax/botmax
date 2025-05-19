@@ -556,21 +556,21 @@ export class DatabaseStorage implements IStorage {
   async getFlows(tenantId: number, isBeta: boolean = false): Promise<Flow[]> {
     try {
       console.log(`Getting flows for tenant ${tenantId}, isBeta=${isBeta}`);
-      // Obter fluxos do tenant com filtro direto na consulta SQL
-      const flowsResult = await db.select()
-        .from(flows)
-        .where(
-          and(
-            eq(flows.tenantId, tenantId),
-            // Usar SQL diretamente para lidar com valores nulos adequadamente
-            isBeta 
-              ? eq(flows.isBeta, true)
-              : or(eq(flows.isBeta, false), sql`${flows.isBeta} IS NULL`)
-          )
-        );
+
+      const query = `
+        SELECT *
+        FROM flows
+        WHERE tenant_id = $1
+        AND is_beta = $2
+        ORDER BY created_at DESC
+      `;
+
+      const result = await pool.query(query, [tenantId, isBeta]);
+
+      const flowsResult = result.rows;
 
       console.log(`Found ${flowsResult.length} flows for tenant ${tenantId} with isBeta=${isBeta}`);
-      return flowsResult;
+      return flowsResult as Flow[];
     } catch (error) {
       console.error("Error getting flows:", error);
       throw error;

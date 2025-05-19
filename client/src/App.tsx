@@ -85,11 +85,110 @@ function Router() {
   );
 }
 
+// Router component to manage routes
+function Router() {
+  const { isLoading, user, token } = useAuth();
+  const [location, setLocation] = useLocation();
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !user && !token && !location.includes('/login') && !location.includes('/register')) {
+      console.log("Redirecionando para:", "/login");
+      setLocation('/login');
+    }
+  }, [isLoading, user, token, location, setLocation]);
+
+  return (
+    <Switch>
+      {/* Public routes */}
+      <Route path="/" component={Home} />
+      <Route path="/login" component={Login} />
+      <Route path="/register" component={Register} />
+      <Route path="/forgot-password" component={ForgotPassword} />
+      
+      {/* Protected routes */}
+      <Route path="/dashboard">
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/flows">
+        <ProtectedRoute>
+          <Flows />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/flows/new">
+        <ProtectedRoute>
+          <NewFlow />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/flows-beta">
+        <ProtectedRoute>
+          <FlowsBeta />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/flows-beta/new">
+        <ProtectedRoute>
+          <NewFlowBeta />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/flow-builder/:id">
+        <ProtectedRoute>
+          <FlowBuilder />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/flow-builder-beta/:id">
+        <ProtectedRoute>
+          <FlowBuilderBeta />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/chat">
+        <ProtectedRoute>
+          <Chat />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/settings/general">
+        <ProtectedRoute>
+          <GeneralSettings />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/settings/account">
+        <ProtectedRoute>
+          <AccountSettings />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/settings/billing">
+        <ProtectedRoute>
+          <BillingSettings />
+        </ProtectedRoute>
+      </Route>
+      
+      <Route path="/settings/whatsapp">
+        <ProtectedRoute>
+          <WhatsAppSettings />
+        </ProtectedRoute>
+      </Route>
+      
+      {/* Fallback route */}
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
 function App() {
-  // Check authentication state
+  // Verificar autenticação global ao iniciar a aplicação
   const { isLoading, user, token } = useAuth();
 
-  // Verificar autenticação ao iniciar a aplicação
   useEffect(() => {
     if (!isLoading) {
       if (user && token) {
@@ -102,6 +201,7 @@ function App() {
       }
     }
   }, [isLoading, user, token]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="light">
@@ -116,4 +216,4 @@ function App() {
   );
 }
 
-export default App;
+export default App;ult App;
