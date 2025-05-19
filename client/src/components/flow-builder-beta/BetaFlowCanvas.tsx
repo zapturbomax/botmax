@@ -22,9 +22,10 @@ import { Button } from '@/components/ui/button';
 import { Save, Rocket, ZoomIn, ZoomOut, Focus } from 'lucide-react';
 import BetaFlowControls from './BetaFlowControls';
 import ConnectionMenu from './ConnectionMenu';
-import TextMessageNode from './nodes/TextMessageNode';
-import ImageNode from './nodes/ImageNode';
-import StartNode from './nodes/StartNode';
+// Importamos os componentes de nós
+const TextMessageNode = React.lazy(() => import('./nodes/TextMessageNode'));
+const ImageNode = React.lazy(() => import('./nodes/ImageNode'));
+const StartNode = React.lazy(() => import('./nodes/StartNode'));
 
 // Definindo os tipos de nós personalizados
 const nodeTypes: NodeTypes = {

@@ -5,7 +5,8 @@ import BetaFlowCanvas from '@/components/flow-builder-beta/BetaFlowCanvas';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient, apiRequest } from '@/lib/queryClient';
-import NodePanel from '@/components/flow-builder-beta/NodePanel';
+// Importamos o componente NodePanel
+const NodePanel = React.lazy(() => import('@/components/flow-builder-beta/NodePanel'));
 
 /**
  * FlowBuilderBeta Page - Nova implementação do Flow Builder
