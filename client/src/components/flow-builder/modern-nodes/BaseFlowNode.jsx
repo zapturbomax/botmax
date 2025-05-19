@@ -60,9 +60,9 @@ function BaseFlowNode({
   };
   
   return (
-    <div className="relative" style={{ width: 380 }}>
-      {/* Barra superior com ações - alinhadas à direita */}
-      <div className="absolute top-0 left-0 right-0 bg-[#3A4049] text-white rounded-t-xl py-3 px-6 flex justify-end gap-8 z-10">
+    <div className="relative" style={{ width: 320 }}>
+      {/* Barra superior com ações - alinhadas ao centro */}
+      <div className="absolute top-0 left-0 right-0 bg-[#3A4049] text-white rounded-t-lg py-4 px-4 flex justify-center gap-20 z-10">
         <button 
           className="flex items-center gap-2 text-base font-medium hover:text-gray-200"
           onClick={handleDuplicate}
@@ -101,35 +101,35 @@ function BaseFlowNode({
       />
       
       <div className="relative mt-10 rounded-xl shadow-md border border-[#E2E8F0] bg-white overflow-hidden">
-        {/* Cabeçalho com contadores */}
-        <div style={{ backgroundColor: color }} className="text-white py-4 px-6 flex justify-between">
+        {/* Cabeçalho com contadores - exatamente como na imagem */}
+        <div style={{ backgroundColor: color }} className="text-white py-6 px-4 flex justify-between">
           <div className="flex flex-col items-center">
-            <div className="text-5xl font-medium">0</div>
+            <div className="text-6xl font-medium leading-none">0</div>
             <div className="flex items-center text-sm mt-1">
               Executando
               <svg className="ml-1 cursor-help" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5"/>
-                <path d="M12 17V11" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                <circle cx="12" cy="8" r="1" fill="white"/>
+                <circle cx="12" cy="8" r="1.5" fill="white"/>
+                <line x1="12" y1="11" x2="12" y2="16" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </div>
           </div>
           <div className="flex flex-col items-center">
-            <div className="text-5xl font-medium">0</div>
+            <div className="text-6xl font-medium leading-none">0</div>
             <div className="flex items-center text-sm mt-1">
               Enviados
               <svg className="ml-1 cursor-help" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="1.5"/>
-                <path d="M12 17V11" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
-                <circle cx="12" cy="8" r="1" fill="white"/>
+                <circle cx="12" cy="8" r="1.5" fill="white"/>
+                <line x1="12" y1="11" x2="12" y2="16" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </div>
           </div>
         </div>
         
         {/* Seção de título */}
-        <div className="p-6 flex items-center border-b border-gray-100">
-          <div style={{ backgroundColor: color }} className="p-4 rounded-full mr-4">
+        <div className="py-5 px-5 flex items-center border-b border-gray-100">
+          <div style={{ backgroundColor: color }} className="h-14 w-14 rounded-full mr-4 flex items-center justify-center">
             {icon}
           </div>
           <div className="flex-1">
@@ -154,48 +154,24 @@ function BaseFlowNode({
           {children}
         </div>
         
-        {/* Rodapé */}
-        <div className="px-6 py-3 border-t border-[#F0F4F8] flex justify-between items-center">
+        {/* Rodapé - simplificado conforme solicitado */}
+        <div className="px-4 py-4 border-t border-[#F0F4F8] flex justify-between items-center">
           <div className="flex items-center">
-            <div className="flex items-center">
-              <input 
-                type="checkbox"
-                checked={isForwarded}
-                onChange={handleForwardedChange}
-                className="mr-2 h-4 w-4"
-              />
-              <span className="text-gray-600">Marcar como encaminhada</span>
-            </div>
+            <input 
+              type="checkbox"
+              checked={isForwarded}
+              onChange={handleForwardedChange}
+              className="mr-2 h-4 w-4"
+            />
+            <span className="text-gray-600 text-sm">Marcar como encaminhada</span>
           </div>
           
-          <div className="flex items-center">
-            <div className="mr-4 flex items-center">
-              <div className="flex items-center justify-center p-1 border border-[#26C6B9] rounded-md mr-2">
-                <div className="flex space-x-1">
-                  <div className="w-1 h-1 bg-[#26C6B9] rounded-full"></div>
-                  <div className="w-1 h-1 bg-[#26C6B9] rounded-full"></div>
-                  <div className="w-1 h-1 bg-[#26C6B9] rounded-full"></div>
-                </div>
-              </div>
-              <div>
-                <span className="text-gray-600 text-sm">Status digitando</span>
-                <div className="flex items-center">
-                  <span className="text-sm text-[#4A5568] font-medium">0</span>
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-1">
-                    <path d="M6 9L12 15L18 9" stroke="#718096" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <span className="ml-1 text-gray-500 text-sm">segundos</span>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center">
-              <span className="text-[#26C6B9] font-medium mr-1">Próximo passo</span>
-              <div className="flex items-center justify-center w-6 h-6 rounded-full border border-[#26C6B9]">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 18L15 12L9 6" stroke="#26C6B9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
+          <div className="flex items-center text-[#26C6B9]">
+            <span className="font-medium mr-1">Próximo passo</span>
+            <div className="flex items-center justify-center w-6 h-6 rounded-full border border-[#26C6B9]">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 18L15 12L9 6" stroke="#26C6B9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
           </div>
         </div>
