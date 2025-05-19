@@ -1,3 +1,4 @@
+import React from "react";
 import { Switch, Route, Redirect } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
@@ -23,6 +24,7 @@ import AccountSettings from "@/pages/settings/account";
 import BillingSettings from "@/pages/settings/billing";
 import WhatsAppSettings from "@/pages/settings/whatsapp";
 import Chat from "@/pages/chat";
+import NewCanvasDemoWrapper from "@/pages/new-canvas-demo-wrapper";
 
 function Router() {
   return (
@@ -38,7 +40,7 @@ function Router() {
       <ProtectedRoute path="/flows" component={Flows} />
       <ProtectedRoute path="/flows/new" component={NewFlow} />
       <ProtectedRoute path="/flows/:id" component={FlowBuilder} />
-      <ProtectedRoute path="/new-canvas-demo" component={() => import("@/pages/new-canvas-demo").then(module => module.default)} />
+      <Route path="/new-canvas-demo" component={NewCanvasDemoWrapper} />
       <ProtectedRoute path="/settings/general" component={GeneralSettings} />
       <ProtectedRoute path="/settings/account" component={AccountSettings} />
       <ProtectedRoute path="/settings/billing" component={BillingSettings} />
