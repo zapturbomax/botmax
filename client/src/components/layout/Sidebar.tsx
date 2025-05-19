@@ -23,12 +23,12 @@ interface SidebarProps {
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const [location] = useLocation();
   const { user } = useAuth();
-  
+
   const { data: plan } = useQuery({
     queryKey: ['/api/subscription/current'],
     enabled: !!user,
   });
-  
+
   return (
     <>
       {/* Mobile overlay */}
@@ -38,7 +38,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           onClick={onClose}
         />
       )}
-      
+
       <aside className={cn(
         "fixed md:relative md:translate-x-0 z-50 md:z-0 inset-y-0 left-0 transform transition-transform duration-300 ease-in-out",
         open ? "translate-x-0" : "-translate-x-full",
@@ -55,7 +55,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             </div>
           </div>
         </div>
-        
+
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-4 py-2">
           <div className="space-y-1.5">
@@ -103,7 +103,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               Análises
             </NavLink>
           </div>
-          
+
           <div className="mt-8">
             <h3 className="px-3 text-xs text-gray-400 uppercase tracking-wider mb-2">
               Configurações
@@ -133,7 +133,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
             </div>
           </div>
         </nav>
-        
+
         {/* Pro Plan Section */}
         <div className="px-4 py-5 mt-auto mb-5">
           <div className="bg-[#5b5dcd] rounded-lg p-4 text-white relative overflow-hidden">
@@ -148,7 +148,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
                 <path d="M4 16L16 4L28 16M16 4V28" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            
+
             <div className="flex items-center">
               <div className="flex-1">
                 <h3 className="text-lg font-semibold">

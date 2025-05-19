@@ -15,7 +15,8 @@ import Login from "@/pages/auth/login";
 import Register from "@/pages/auth/register";
 import ForgotPassword from "@/pages/auth/forgot-password";
 import Dashboard from "@/pages/dashboard";
-import FlowBuilder from "@/pages/flow-builder";
+import FlowBuilderPage from './pages/flow-builder';
+import FlowBuilderBeta from './pages/flow-builder-beta';
 import Flows from "@/pages/flows/index";
 import NewFlow from "@/pages/flows/new";
 import GeneralSettings from "@/pages/settings/general";
@@ -32,12 +33,17 @@ function Router() {
       <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/chat" component={Chat} />
-      
+
       {/* Protected Routes */}
       <ProtectedRoute path="/dashboard" component={Dashboard} />
       <ProtectedRoute path="/flows" component={Flows} />
       <ProtectedRoute path="/flows/new" component={NewFlow} />
-      <ProtectedRoute path="/flows/:id" component={FlowBuilder} />
+      <Route path="/flows/:id">
+            {(params) => <FlowBuilderPage />}
+          </Route>
+          <Route path="/flow-builder-beta/:id">
+            {(params) => <FlowBuilderBeta />}
+          </Route>
       <ProtectedRoute path="/settings/general" component={GeneralSettings} />
       <ProtectedRoute path="/settings/account" component={AccountSettings} />
       <ProtectedRoute path="/settings/billing" component={BillingSettings} />
@@ -48,12 +54,12 @@ function Router() {
       <ProtectedRoute path="/live-chat" component={Dashboard} />
       <ProtectedRoute path="/blocked" component={Dashboard} />
       <ProtectedRoute path="/trash" component={Dashboard} />
-      
+
       {/* Home Page / Redirect */}
       <Route path="/">
         {() => <Home />}
       </Route>
-      
+
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>
