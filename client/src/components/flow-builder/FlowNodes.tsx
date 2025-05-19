@@ -393,16 +393,15 @@ const BaseNode = ({ data, id, type, selected }: any) => {
   );
 };
 
-// Importar os novos componentes de nó
-import { TextMessageNode } from './node-elements/TextMessageNode';
 import { ConditionNode } from './node-elements/ConditionNode';
 import { QuickRepliesNode } from './node-elements/QuickRepliesNode';
+import { TextMessageNodeCustom } from './TextMessageNodeCustom';
 
 // Versão memorizada do nó base
 const MemoizedBaseNode = memo(BaseNode);
 
 // Componentes específicos de nó com memo
-const MemoizedTextMessageNode = memo(TextMessageNode);
+const MemoizedTextMessageNodeCustom = memo(TextMessageNodeCustom);
 const MemoizedConditionNode = memo(ConditionNode);
 const MemoizedQuickRepliesNode = memo(QuickRepliesNode);
 
@@ -411,8 +410,9 @@ export const nodeComponents = {
   startTrigger: MemoizedBaseNode,
   textMessage: (props: any) => {
     // Pegamos a função handleUpdateNode do BaseNode
+    const reactFlowInstance = useReactFlow();
+    
     const handleUpdate = (id: string, newData: Record<string, any>) => {
-      const reactFlowInstance = useReactFlow();
       reactFlowInstance.setNodes(nodes => 
         nodes.map(node => {
           if (node.id === id) {
@@ -429,12 +429,38 @@ export const nodeComponents = {
       );
     };
     
+    const handleDuplicate = () => {
+      const currentNode = reactFlowInstance.getNode(props.id);
+      if (!currentNode) return;
+      
+      // Duplicar o nó
+      const duplicatedNode: FlowNode = {
+        id: `textMessage-${Date.now()}`,
+        type: 'textMessage',
+        position: { 
+          x: currentNode.position.x + 50, 
+          y: currentNode.position.y + 50 
+        },
+        data: { ...props.data }
+      };
+      
+      // Adicionar o nó duplicado ao flow
+      reactFlowInstance.addNodes(duplicatedNode);
+    };
+    
+    const handleDelete = () => {
+      // Remover o nó do flow
+      reactFlowInstance.deleteElements({ nodes: [{ id: props.id }] });
+    };
+    
     return (
-      <MemoizedTextMessageNode
+      <MemoizedTextMessageNodeCustom
         id={props.id}
         data={props.data}
         selected={props.selected}
         onUpdateNodeData={handleUpdate}
+        onDuplicate={handleDuplicate}
+        onDelete={handleDelete}
       />
     );
   },

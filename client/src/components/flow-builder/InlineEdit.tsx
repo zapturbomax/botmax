@@ -14,7 +14,7 @@ interface InlineEditProps {
 export const InlineEdit: React.FC<InlineEditProps> = ({
   value,
   onChange,
-  placeholder = 'Click to edit...',
+  placeholder = 'Clique para editar...',
   multiline = false,
   className = '',
   textClassName = '',

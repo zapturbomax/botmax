@@ -1,10 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { Handle, Position } from 'reactflow';
-import { cn } from '@/lib/utils';
 import { MessageSquare, Info, Send, Copy, Trash2, HelpCircle, ChevronDown, Smile } from 'lucide-react';
 import { InlineEdit } from '@/components/flow-builder/InlineEdit';
 
-interface TextMessageNodeProps {
+interface TextMessageNodeCustomProps {
   id: string;
   data: {
     name?: string;
@@ -21,7 +20,7 @@ interface TextMessageNodeProps {
   onDuplicate?: () => void;
 }
 
-export const TextMessageNode: React.FC<TextMessageNodeProps> = ({
+export const TextMessageNodeCustom: React.FC<TextMessageNodeCustomProps> = ({
   id,
   data,
   selected,
@@ -66,7 +65,7 @@ export const TextMessageNode: React.FC<TextMessageNodeProps> = ({
   }, []);
   
   return (
-    <div className="relative">
+    <div className="relative" style={{ width: 320 }}>
       {/* Barra de botões superior */}
       <div className="absolute top-0 left-0 right-0 bg-[#3A4049] text-white rounded-t-xl py-2 px-4 flex justify-end gap-4 z-10">
         <button 
