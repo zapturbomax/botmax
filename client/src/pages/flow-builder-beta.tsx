@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import BetaFlowCanvas from '@/components/flow-builder-beta/BetaFlowCanvas';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { queryClient, apiRequest } from '@/lib/queryClient';
+import { Loader2 } from 'lucide-react';
 // Importamos o componente NodePanel
-const NodePanel = React.lazy(() => import('@/components/flow-builder-beta/NodePanel'));
+import NodePanel from '@/components/flow-builder-beta/NodePanel';
 
 /**
  * FlowBuilderBeta Page - Nova implementação do Flow Builder
@@ -134,16 +135,28 @@ const FlowBuilderBeta = () => {
     <div className="flex h-screen overflow-hidden">
       {/* Painel lateral esquerdo com os nós disponíveis */}
       <div className="w-64 border-r border-gray-200 bg-white flex flex-col">
-        <NodePanel />
+        <Suspense fallback={
+          <div className="p-4 flex items-center justify-center h-full">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        }>
+          <NodePanel />
+        </Suspense>
       </div>
       
       {/* Canvas principal */}
       <div className="flex-1 overflow-hidden flex flex-col">
-        <BetaFlowCanvas 
-          onSaveDraft={handleSaveDraft}
-          onPublish={handlePublish}
-          isSaving={isSaving}
-        />
+        <Suspense fallback={
+          <div className="p-4 flex items-center justify-center h-full">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          </div>
+        }>
+          <BetaFlowCanvas 
+            onSaveDraft={handleSaveDraft}
+            onPublish={handlePublish}
+            isSaving={isSaving}
+          />
+        </Suspense>
       </div>
     </div>
   );
