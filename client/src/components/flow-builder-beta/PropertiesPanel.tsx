@@ -7,92 +7,96 @@ import { NODE_TYPES, nodeMetadata } from './FlowNodeTypes';
 import TextMessageProperties from './properties/TextMessageProperties';
 import ButtonsProperties from './properties/ButtonsProperties';
 import ConditionProperties from './properties/ConditionProperties';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 interface PropertiesPanelProps {
-  node: Node;
+  selectedNode: Node | null;
   updateNodeData: (nodeId: string, data: any) => void;
-  onClose?: () => void;
+  nodes: Node[];
 }
 
 const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ 
-  node, 
+  selectedNode, 
   updateNodeData,
-  onClose 
+  nodes
 }) => {
-  // Obter metadados do tipo de nó
-  const nodeType = node.type || '';
-  const metadata = nodeMetadata[nodeType] || { label: 'Desconhecido', icon: 'HelpCircle', color: 'gray' };
-  
-  // Renderizar o componente de propriedades com base no tipo de nó
-  const renderPropertiesComponent = () => {
-    switch (nodeType) {
-      case NODE_TYPES.textMessage:
-        return (
-          <TextMessageProperties 
-            node={node} 
-            updateNodeData={updateNodeData} 
-          />
-        );
-      case NODE_TYPES.buttons:
-        return (
-          <ButtonsProperties 
-            node={node} 
-            updateNodeData={updateNodeData} 
-          />
-        );
-      case NODE_TYPES.condition:
-        return (
-          <ConditionProperties 
-            node={node} 
-            updateNodeData={updateNodeData} 
-          />
-        );
-      // Adicionar outros casos para outros tipos de nós
-      default:
-        return (
-          <div className="p-4 text-center text-sm text-muted-foreground">
-            Propriedades não disponíveis para este tipo de nó
+  if (!selectedNode) {
+    return (
+      <Card className="w-full h-full flex flex-col">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg">Propriedades</CardTitle>
+        </CardHeader>
+        <CardContent className="flex-1 flex items-center justify-center text-center p-6">
+          <div className="text-muted-foreground">
+            <p>Selecione um nó para editar suas propriedades</p>
           </div>
-        );
-    }
-  };
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const nodeType = selectedNode.type as NODE_TYPES;
+  const metadata = nodeMetadata[nodeType];
 
   return (
-    <Card className="w-full h-full overflow-hidden flex flex-col">
-      <CardHeader className={`p-3 border-b bg-${metadata.color}-500 text-white flex flex-row justify-between items-center`}>
-        <CardTitle className="text-sm font-medium">{metadata.label}</CardTitle>
-        {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose} className="h-6 w-6 text-white">
-            <X size={16} />
-          </Button>
-        )}
+    <Card className="w-full h-full flex flex-col">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-lg flex items-center">
+          {metadata.icon && React.createElement(metadata.icon, { className: "w-4 h-4 mr-2" })}
+          {metadata.label}
+        </CardTitle>
       </CardHeader>
-      <CardContent className="p-0 overflow-y-auto flex-1">
-        <Tabs defaultValue="properties" className="w-full">
-          <TabsList className="w-full">
-            <TabsTrigger value="properties" className="flex-1">Propriedades</TabsTrigger>
-            <TabsTrigger value="advanced" className="flex-1">Avançado</TabsTrigger>
+      <CardContent className="flex-1 overflow-auto pt-2">
+        <Tabs defaultValue="properties">
+          <TabsList className="mb-4">
+            <TabsTrigger value="properties">Propriedades</TabsTrigger>
+            <TabsTrigger value="advanced">Avançado</TabsTrigger>
           </TabsList>
-          <TabsContent value="properties" className="p-3">
-            {renderPropertiesComponent()}
+          
+          <TabsContent value="properties" className="space-y-4">
+            {nodeType === NODE_TYPES.TEXT_MESSAGE && (
+              <TextMessageProperties 
+                node={selectedNode} 
+                updateNodeData={updateNodeData} 
+              />
+            )}
+            
+            {nodeType === NODE_TYPES.BUTTONS && (
+              <ButtonsProperties
+                node={selectedNode}
+                updateNodeData={updateNodeData}
+                availableNodes={nodes}
+              />
+            )}
+            
+            {nodeType === NODE_TYPES.CONDITION && (
+              <ConditionProperties 
+                node={selectedNode}
+                updateNodeData={updateNodeData}
+                availableNodes={nodes}
+              />
+            )}
+            
+            {/* Adicione outros componentes de propriedades aqui conforme necessário */}
           </TabsContent>
-          <TabsContent value="advanced" className="p-3">
-            <div className="space-y-4">
+          
+          <TabsContent value="advanced">
+            <div className="text-sm space-y-4">
               <div>
-                <h3 className="text-sm font-medium mb-1">ID do Nó</h3>
-                <div className="text-xs p-2 bg-muted rounded-md">{node.id}</div>
+                <p className="font-medium mb-1">ID do Nó</p>
+                <p className="text-muted-foreground">{selectedNode.id}</p>
               </div>
+              
               <div>
-                <h3 className="text-sm font-medium mb-1">Tipo</h3>
-                <div className="text-xs p-2 bg-muted rounded-md">{nodeType}</div>
+                <p className="font-medium mb-1">Tipo</p>
+                <p className="text-muted-foreground">{metadata.label}</p>
               </div>
+              
               <div>
-                <h3 className="text-sm font-medium mb-1">Posição</h3>
-                <div className="text-xs p-2 bg-muted rounded-md">
-                  X: {Math.round(node.position.x)}, Y: {Math.round(node.position.y)}
-                </div>
+                <p className="font-medium mb-1">Posição</p>
+                <p className="text-muted-foreground">
+                  X: {Math.round(selectedNode.position.x)}, 
+                  Y: {Math.round(selectedNode.position.y)}
+                </p>
               </div>
             </div>
           </TabsContent>

@@ -1,208 +1,190 @@
 
-import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-interface ConditionPropertiesProps {
-  data: any;
-  onChange: (data: any) => void;
-}
-
-const ConditionProperties: React.FC<ConditionPropertiesProps> = ({ data, onChange }) => {
-  const conditionTypes = [
-    { value: 'variable', label: 'Variável' },
-    { value: 'input', label: 'Entrada do Usuário' },
-    { value: 'date', label: 'Data' },
-  ];
-
-  const handleTypeChange = (value: string) => {
-    onChange({
-      ...data,
-      conditionType: value,
-    });
-  };
-
-  const handleConditionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onChange({
-      ...data,
-      condition: event.target.value,
-    });
-  };
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <Label htmlFor="conditionType">Tipo de Condição</Label>
-        <Select 
-          value={data?.conditionType || 'variable'} 
-          onValueChange={handleTypeChange}
-        >
-          <SelectTrigger id="conditionType" className="mt-2">
-            <SelectValue placeholder="Selecione o tipo de condição" />
-          </SelectTrigger>
-          <SelectContent>
-            {conditionTypes.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {type.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      
-      <div>
-        <Label htmlFor="condition">Condição</Label>
-        <Input
-          id="condition"
-          value={data?.condition || ''}
-          onChange={handleConditionChange}
-          placeholder="Ex: {{nome}} == 'João'"
-          className="mt-2"
-        />
-      </div>
-    </div>
-  );
-};
-
-export default ConditionProperties;
 import React, { useState, useEffect } from 'react';
 import { Node } from 'reactflow';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Trash2 } from 'lucide-react';
-
-type ConditionType = 'starts_with' | 'contains' | 'equals' | 'default';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Separator } from '@/components/ui/separator';
+import { AlertTriangle } from 'lucide-react';
 
 interface ConditionPropertiesProps {
   node: Node;
   updateNodeData: (nodeId: string, data: any) => void;
+  availableNodes: Node[];
 }
 
 const ConditionProperties: React.FC<ConditionPropertiesProps> = ({ 
   node, 
-  updateNodeData 
+  updateNodeData,
+  availableNodes
 }) => {
-  const [conditions, setConditions] = useState(
-    node.data?.conditions || [
-      { type: 'contains', value: '', targetNodeId: null },
-      { type: 'default', value: '', targetNodeId: null }
-    ]
-  );
-  
+  const [variable, setVariable] = useState(node.data.variable || '');
+  const [operator, setOperator] = useState(node.data.operator || 'equals');
+  const [value, setValue] = useState(node.data.value || '');
+  const [trueTargetId, setTrueTargetId] = useState(node.data.trueTargetId || null);
+  const [falseTargetId, setFalseTargetId] = useState(node.data.falseTargetId || null);
+
+  // Atualizar estado local quando o nó mudar
   useEffect(() => {
-    if (node.data) {
-      setConditions(node.data.conditions || [
-        { type: 'contains', value: '', targetNodeId: null },
-        { type: 'default', value: '', targetNodeId: null }
-      ]);
-    }
-  }, [node.data]);
+    setVariable(node.data.variable || '');
+    setOperator(node.data.operator || 'equals');
+    setValue(node.data.value || '');
+    setTrueTargetId(node.data.trueTargetId || null);
+    setFalseTargetId(node.data.falseTargetId || null);
+  }, [node.id, node.data]);
   
-  const updateConditionType = (index: number, type: ConditionType) => {
-    const newConditions = [...conditions];
-    newConditions[index] = { ...newConditions[index], type };
-    setConditions(newConditions);
-    updateNodeData(node.id, { ...node.data, conditions: newConditions });
+  // Atualizar dados do nó quando qualquer valor mudar
+  const updateNodeDataField = (field: string, newValue: any) => {
+    updateNodeData(node.id, { [field]: newValue });
   };
   
-  const updateConditionValue = (index: number, value: string) => {
-    const newConditions = [...conditions];
-    newConditions[index] = { ...newConditions[index], value };
-    setConditions(newConditions);
-    updateNodeData(node.id, { ...node.data, conditions: newConditions });
+  const handleVariableChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setVariable(newValue);
+    updateNodeDataField('variable', newValue);
   };
   
-  const addCondition = () => {
-    // Sempre manter a condição default por último
-    const defaultCondition = conditions.find(c => c.type === 'default');
-    const otherConditions = conditions.filter(c => c.type !== 'default');
-    
-    const newConditions = [
-      ...otherConditions,
-      { type: 'contains', value: '', targetNodeId: null },
-      defaultCondition || { type: 'default', value: '', targetNodeId: null }
-    ];
-    
-    setConditions(newConditions);
-    updateNodeData(node.id, { ...node.data, conditions: newConditions });
+  const handleOperatorChange = (newValue: string) => {
+    setOperator(newValue);
+    updateNodeDataField('operator', newValue);
   };
   
-  const removeCondition = (index: number) => {
-    if (conditions.length <= 2 || conditions[index].type === 'default') return;
-    
-    const newConditions = conditions.filter((_, i) => i !== index);
-    setConditions(newConditions);
-    updateNodeData(node.id, { ...node.data, conditions: newConditions });
+  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+    updateNodeDataField('value', newValue);
   };
   
+  const handleTrueTargetChange = (newValue: string | null) => {
+    setTrueTargetId(newValue);
+    updateNodeDataField('trueTargetId', newValue);
+  };
+  
+  const handleFalseTargetChange = (newValue: string | null) => {
+    setFalseTargetId(newValue);
+    updateNodeDataField('falseTargetId', newValue);
+  };
+
+  const isConfigured = variable && value && (trueTargetId || falseTargetId);
+
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-2">Condições</label>
+        <label className="text-sm font-medium block mb-1">Condição</label>
+        {!isConfigured && (
+          <Alert variant="default" className="bg-muted/50 mb-3">
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            <AlertDescription>
+              Configure a condição completa e pelo menos um caminho
+            </AlertDescription>
+          </Alert>
+        )}
         
         <div className="space-y-3">
-          {conditions.map((condition, index) => (
-            <div key={index} className="p-2 border rounded-md">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium">
-                  {condition.type === 'default' ? 'Condição Padrão' : `Condição ${index + 1}`}
-                </span>
-                {condition.type !== 'default' && (
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => removeCondition(index)}
-                  >
-                    <Trash2 size={14} />
-                  </Button>
-                )}
-              </div>
-              
-              {condition.type !== 'default' && (
-                <>
-                  <div className="mb-2">
-                    <Select 
-                      value={condition.type} 
-                      onValueChange={(value) => updateConditionType(index, value as ConditionType)}
-                    >
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Tipo de condição" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="starts_with">Começa com</SelectItem>
-                        <SelectItem value="contains">Contém</SelectItem>
-                        <SelectItem value="equals">Igual a</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <Input
-                    value={condition.value}
-                    onChange={(e) => updateConditionValue(index, e.target.value)}
-                    placeholder="Valor da condição"
-                  />
-                </>
-              )}
-              
-              {condition.type === 'default' && (
-                <div className="text-xs text-muted-foreground italic">
-                  Esta condição será executada se nenhuma das condições acima for atendida.
-                </div>
-              )}
-            </div>
-          ))}
+          <div>
+            <label className="text-xs font-medium block mb-1">Variável</label>
+            <Input
+              value={variable}
+              onChange={handleVariableChange}
+              placeholder="Nome da variável"
+              className="h-8 text-sm"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Ex: nome, email, telefone, etc
+            </p>
+          </div>
+          
+          <div>
+            <label className="text-xs font-medium block mb-1">Operador</label>
+            <Select
+              value={operator}
+              onValueChange={handleOperatorChange}
+            >
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="equals">É igual a</SelectItem>
+                <SelectItem value="not_equals">Não é igual a</SelectItem>
+                <SelectItem value="contains">Contém</SelectItem>
+                <SelectItem value="not_contains">Não contém</SelectItem>
+                <SelectItem value="starts_with">Começa com</SelectItem>
+                <SelectItem value="ends_with">Termina com</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <label className="text-xs font-medium block mb-1">Valor</label>
+            <Input
+              value={value}
+              onChange={handleValueChange}
+              placeholder="Valor para comparação"
+              className="h-8 text-sm"
+            />
+          </div>
         </div>
+      </div>
+      
+      <Separator />
+      
+      <div>
+        <label className="text-sm font-medium block mb-2">Caminhos</label>
         
-        <Button 
-          variant="outline" 
-          size="sm" 
-          className="w-full mt-3" 
-          onClick={addCondition}
-        >
-          <Plus size={16} className="mr-1" /> Adicionar Condição
-        </Button>
+        <div className="space-y-3">
+          <div>
+            <div className="flex items-center mb-1">
+              <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+              <label className="text-xs font-medium">Se for verdadeiro</label>
+            </div>
+            <Select
+              value={trueTargetId || ''}
+              onValueChange={(value) => handleTrueTargetChange(value || null)}
+            >
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue placeholder="Selecione o próximo bloco" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Nenhum (finalizar)</SelectItem>
+                {availableNodes
+                  .filter(n => n.id !== node.id)
+                  .map(n => (
+                    <SelectItem key={n.id} value={n.id}>
+                      {n.data.label || `Bloco ${n.id.substring(0, 4)}`}
+                    </SelectItem>
+                  ))
+                }
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <div className="flex items-center mb-1">
+              <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+              <label className="text-xs font-medium">Se for falso</label>
+            </div>
+            <Select
+              value={falseTargetId || ''}
+              onValueChange={(value) => handleFalseTargetChange(value || null)}
+            >
+              <SelectTrigger className="h-8 text-sm">
+                <SelectValue placeholder="Selecione o próximo bloco" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Nenhum (finalizar)</SelectItem>
+                {availableNodes
+                  .filter(n => n.id !== node.id)
+                  .map(n => (
+                    <SelectItem key={n.id} value={n.id}>
+                      {n.data.label || `Bloco ${n.id.substring(0, 4)}`}
+                    </SelectItem>
+                  ))
+                }
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </div>
     </div>
   );

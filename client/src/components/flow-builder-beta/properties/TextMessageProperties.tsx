@@ -1,44 +1,11 @@
 
-import React from 'react';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-
-interface TextMessagePropertiesProps {
-  data: any;
-  onChange: (data: any) => void;
-}
-
-const TextMessageProperties: React.FC<TextMessagePropertiesProps> = ({ data, onChange }) => {
-  const handleMessageChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onChange({
-      ...data,
-      message: event.target.value,
-    });
-  };
-
-  return (
-    <div className="space-y-4">
-      <div>
-        <Label htmlFor="message">Mensagem</Label>
-        <Textarea
-          id="message"
-          value={data?.message || ''}
-          onChange={handleMessageChange}
-          placeholder="Digite a mensagem de texto aqui..."
-          className="mt-2"
-          rows={5}
-        />
-      </div>
-    </div>
-  );
-};
-
-export default TextMessageProperties;
 import React, { useState, useEffect } from 'react';
 import { Node } from 'reactflow';
 import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { Slider } from '@/components/ui/slider';
+import { Badge } from '@/components/ui/badge';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { Bold, Italic, Code } from 'lucide-react';
 
 interface TextMessagePropertiesProps {
   node: Node;
@@ -49,53 +16,117 @@ const TextMessageProperties: React.FC<TextMessagePropertiesProps> = ({
   node, 
   updateNodeData 
 }) => {
-  const [text, setText] = useState(node.data?.text || '');
-  const [waitForResponse, setWaitForResponse] = useState(node.data?.waitForResponse || false);
+  const [content, setContent] = useState(node.data.content || '');
+  const [delay, setDelay] = useState(node.data.delay || 0);
+  const [formatting, setFormatting] = useState(node.data.formatting || {
+    bold: false,
+    italic: false,
+    monospace: false
+  });
   
+  // Atualizar estado local quando o nó mudar
   useEffect(() => {
-    if (node.data) {
-      setText(node.data.text || '');
-      setWaitForResponse(node.data.waitForResponse || false);
-    }
-  }, [node.data]);
+    setContent(node.data.content || '');
+    setDelay(node.data.delay || 0);
+    setFormatting(node.data.formatting || {
+      bold: false,
+      italic: false,
+      monospace: false
+    });
+  }, [node]);
   
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
-    updateNodeData(node.id, { ...node.data, text: e.target.value });
+  // Atualizar dados do nó quando o conteúdo mudar
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newContent = e.target.value;
+    setContent(newContent);
+    updateNodeData(node.id, { content: newContent });
   };
   
-  const handleWaitChange = (checked: boolean) => {
-    setWaitForResponse(checked);
-    updateNodeData(node.id, { ...node.data, waitForResponse: checked });
+  // Atualizar dados do nó quando o delay mudar
+  const handleDelayChange = (value: number[]) => {
+    const newDelay = value[0];
+    setDelay(newDelay);
+    updateNodeData(node.id, { delay: newDelay });
   };
   
+  // Atualizar dados do nó quando a formatação mudar
+  const handleFormattingChange = (value: string[]) => {
+    const newFormatting = {
+      bold: value.includes('bold'),
+      italic: value.includes('italic'),
+      monospace: value.includes('monospace')
+    };
+    setFormatting(newFormatting);
+    updateNodeData(node.id, { formatting: newFormatting });
+  };
+  
+  const characterCount = content.length;
+  const isOverLimit = characterCount > 1024;
+
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Mensagem de Texto</label>
+        <div className="flex justify-between items-center mb-1">
+          <label className="text-sm font-medium">Mensagem</label>
+          <Badge variant={isOverLimit ? "destructive" : "secondary"}>
+            {characterCount}/1024
+          </Badge>
+        </div>
         <Textarea
-          value={text}
-          onChange={handleTextChange}
-          className="min-h-[120px] w-full"
-          placeholder="Digite sua mensagem..."
+          value={content}
+          onChange={handleContentChange}
+          className="min-h-[120px] text-sm resize-none"
+          placeholder="Digite sua mensagem aqui..."
         />
+        {isOverLimit && (
+          <p className="text-xs text-destructive mt-1">
+            A mensagem excede o limite de 1024 caracteres do WhatsApp
+          </p>
+        )}
+      </div>
+      
+      <div>
+        <label className="text-sm font-medium block mb-1">Formatação</label>
+        <ToggleGroup 
+          type="multiple" 
+          className="justify-start"
+          value={[
+            formatting.bold ? 'bold' : '',
+            formatting.italic ? 'italic' : '',
+            formatting.monospace ? 'monospace' : ''
+          ].filter(Boolean)}
+          onValueChange={handleFormattingChange}
+        >
+          <ToggleGroupItem value="bold" aria-label="Negrito">
+            <Bold className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="italic" aria-label="Itálico">
+            <Italic className="h-4 w-4" />
+          </ToggleGroupItem>
+          <ToggleGroupItem value="monospace" aria-label="Monospace">
+            <Code className="h-4 w-4" />
+          </ToggleGroupItem>
+        </ToggleGroup>
         <p className="text-xs text-muted-foreground mt-1">
-          Você pode usar variáveis com {{nome_da_variavel}}
+          Use *texto* para negrito, _texto_ para itálico e ```texto``` para monospace
         </p>
       </div>
       
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label htmlFor="wait-response">Aguardar resposta</Label>
-          <p className="text-xs text-muted-foreground">
-            O fluxo prossegue apenas após o usuário responder
-          </p>
+      <div>
+        <div className="flex justify-between items-center mb-1">
+          <label className="text-sm font-medium">Delay (segundos)</label>
+          <span className="text-xs">{delay}s</span>
         </div>
-        <Switch
-          id="wait-response"
-          checked={waitForResponse}
-          onCheckedChange={handleWaitChange}
+        <Slider
+          value={[delay]}
+          min={0}
+          max={10}
+          step={1}
+          onValueChange={handleDelayChange}
         />
+        <p className="text-xs text-muted-foreground mt-1">
+          Tempo de espera antes de enviar a próxima mensagem
+        </p>
       </div>
     </div>
   );

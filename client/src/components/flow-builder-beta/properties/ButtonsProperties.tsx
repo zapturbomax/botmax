@@ -1,183 +1,181 @@
 
-import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Plus, Trash } from 'lucide-react';
-
-interface ButtonsPropertiesProps {
-  data: any;
-  onChange: (data: any) => void;
-}
-
-const ButtonsProperties: React.FC<ButtonsPropertiesProps> = ({ data, onChange }) => {
-  const buttons = data?.buttons || [{ text: '' }, { text: '' }];
-
-  const handleButtonTextChange = (index: number, text: string) => {
-    const newButtons = [...buttons];
-    newButtons[index] = { ...newButtons[index], text };
-    onChange({ ...data, buttons: newButtons });
-  };
-
-  const addButton = () => {
-    onChange({ ...data, buttons: [...buttons, { text: '' }] });
-  };
-
-  const removeButton = (index: number) => {
-    const newButtons = [...buttons];
-    newButtons.splice(index, 1);
-    onChange({ ...data, buttons: newButtons });
-  };
-
-  return (
-    <div className="space-y-4">
-      <Label>Botões</Label>
-      
-      <div className="space-y-2">
-        {buttons.map((button, index) => (
-          <div key={index} className="flex items-center space-x-2">
-            <Input
-              value={button.text}
-              onChange={(e) => handleButtonTextChange(index, e.target.value)}
-              placeholder={`Botão ${index + 1}`}
-              className="flex-1"
-            />
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => removeButton(index)}
-              disabled={buttons.length <= 1}
-            >
-              <Trash className="h-4 w-4" />
-            </Button>
-          </div>
-        ))}
-      </div>
-      
-      <Button 
-        variant="outline" 
-        size="sm" 
-        onClick={addButton}
-        disabled={buttons.length >= 5}
-        className="w-full mt-2"
-      >
-        <Plus className="h-4 w-4 mr-2" /> Adicionar Botão
-      </Button>
-    </div>
-  );
-};
-
-export default ButtonsProperties;
 import React, { useState, useEffect } from 'react';
 import { Node } from 'reactflow';
+import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Plus, Trash2, AlertTriangle } from 'lucide-react';
 
 interface ButtonsPropertiesProps {
   node: Node;
   updateNodeData: (nodeId: string, data: any) => void;
+  availableNodes: Node[];
 }
 
 const ButtonsProperties: React.FC<ButtonsPropertiesProps> = ({ 
   node, 
-  updateNodeData 
+  updateNodeData,
+  availableNodes
 }) => {
-  const [text, setText] = useState(node.data?.text || 'Selecione uma opção:');
-  const [buttons, setButtons] = useState(
-    node.data?.buttons || [{ label: 'Opção 1', targetNodeId: null }]
-  );
+  const [text, setText] = useState(node.data.text || '');
+  const [buttons, setButtons] = useState(node.data.buttons || []);
   
+  // Atualizar estado local quando o nó mudar
   useEffect(() => {
-    if (node.data) {
-      setText(node.data.text || 'Selecione uma opção:');
-      setButtons(node.data.buttons || [{ label: 'Opção 1', targetNodeId: null }]);
-    }
-  }, [node.data]);
+    setText(node.data.text || '');
+    setButtons(node.data.buttons || []);
+  }, [node.id, node.data]);
   
-  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setText(e.target.value);
-    updateNodeData(node.id, { ...node.data, text: e.target.value });
+  // Atualizar dados do nó quando o texto mudar
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setText(newText);
+    updateNodeData(node.id, { text: newText });
   };
   
-  const handleButtonChange = (index: number, value: string) => {
-    const newButtons = [...buttons];
-    newButtons[index] = { ...newButtons[index], label: value };
-    setButtons(newButtons);
-    updateNodeData(node.id, { ...node.data, buttons: newButtons });
-  };
-  
+  // Adicionar um novo botão
   const addButton = () => {
     if (buttons.length >= 3) return;
     
-    const newButtons = [...buttons, { label: `Opção ${buttons.length + 1}`, targetNodeId: null }];
+    const newButton = { label: '', targetNodeId: null };
+    const newButtons = [...buttons, newButton];
     setButtons(newButtons);
-    updateNodeData(node.id, { ...node.data, buttons: newButtons });
+    updateNodeData(node.id, { buttons: newButtons });
   };
   
+  // Remover um botão
   const removeButton = (index: number) => {
-    if (buttons.length <= 1) return;
-    
     const newButtons = buttons.filter((_, i) => i !== index);
     setButtons(newButtons);
-    updateNodeData(node.id, { ...node.data, buttons: newButtons });
+    updateNodeData(node.id, { buttons: newButtons });
   };
   
+  // Atualizar o texto de um botão
+  const updateButtonLabel = (index: number, label: string) => {
+    const newButtons = [...buttons];
+    newButtons[index] = { ...newButtons[index], label };
+    setButtons(newButtons);
+    updateNodeData(node.id, { buttons: newButtons });
+  };
+  
+  // Atualizar o nó de destino de um botão
+  const updateButtonTarget = (index: number, targetNodeId: string | null) => {
+    const newButtons = [...buttons];
+    newButtons[index] = { ...newButtons[index], targetNodeId };
+    setButtons(newButtons);
+    updateNodeData(node.id, { buttons: newButtons });
+  };
+  
+  const textCharacterCount = text.length;
+  const isTextOverLimit = textCharacterCount > 1024;
+
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1">Texto da Mensagem</label>
-        <Input
+        <div className="flex justify-between items-center mb-1">
+          <label className="text-sm font-medium">Texto da Mensagem</label>
+          <Badge variant={isTextOverLimit ? "destructive" : "secondary"}>
+            {textCharacterCount}/1024
+          </Badge>
+        </div>
+        <Textarea
           value={text}
           onChange={handleTextChange}
-          className="w-full"
-          placeholder="Texto da mensagem"
+          className="min-h-[100px] text-sm resize-none"
+          placeholder="Digite o texto que aparecerá acima dos botões..."
         />
+        {isTextOverLimit && (
+          <p className="text-xs text-destructive mt-1">
+            O texto excede o limite de 1024 caracteres do WhatsApp
+          </p>
+        )}
       </div>
       
       <div>
         <div className="flex justify-between items-center mb-2">
-          <label className="block text-sm font-medium">Botões</label>
-          <Badge variant="outline">{buttons.length}/3</Badge>
-        </div>
-        
-        <div className="space-y-2">
-          {buttons.map((button, index) => (
-            <div key={index} className="flex items-center space-x-2">
-              <Input
-                value={button.label}
-                onChange={(e) => handleButtonChange(index, e.target.value)}
-                className="w-full"
-                maxLength={20}
-                placeholder={`Botão ${index + 1}`}
-              />
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => removeButton(index)}
-                disabled={buttons.length <= 1}
-              >
-                <Trash2 size={16} />
-              </Button>
-            </div>
-          ))}
-        </div>
-        
-        <div className="mt-2">
+          <label className="text-sm font-medium">Botões</label>
           <Button 
-            variant="outline" 
             size="sm" 
-            className="w-full" 
+            variant="outline" 
             onClick={addButton}
             disabled={buttons.length >= 3}
           >
-            <Plus size={16} className="mr-1" /> Adicionar Botão
+            <Plus className="h-4 w-4 mr-1" /> Adicionar
           </Button>
-          <p className="text-xs text-muted-foreground mt-1">
-            Máximo de 20 caracteres por botão
-          </p>
         </div>
+        
+        {buttons.length === 0 ? (
+          <Alert variant="default" className="bg-muted/50">
+            <AlertTriangle className="h-4 w-4 mr-2" />
+            <AlertDescription>
+              Adicione pelo menos um botão para este bloco
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <div className="space-y-3">
+            {buttons.map((button, index) => (
+              <div key={index} className="grid grid-cols-[1fr,auto] gap-2">
+                <div className="space-y-2">
+                  <div>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="text-xs font-medium">Texto do Botão</label>
+                      <Badge variant={button.label.length > 20 ? "destructive" : "secondary"} className="text-xs px-1.5 py-0">
+                        {button.label.length}/20
+                      </Badge>
+                    </div>
+                    <Input
+                      value={button.label}
+                      onChange={(e) => updateButtonLabel(index, e.target.value)}
+                      placeholder="Clique aqui"
+                      className="h-8 text-sm"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-xs font-medium block mb-1">Próximo Bloco</label>
+                    <Select
+                      value={button.targetNodeId || ''}
+                      onValueChange={(value) => updateButtonTarget(index, value || null)}
+                    >
+                      <SelectTrigger className="h-8 text-sm">
+                        <SelectValue placeholder="Selecione o próximo bloco" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Nenhum (finalizar)</SelectItem>
+                        {availableNodes
+                          .filter(n => n.id !== node.id)
+                          .map(n => (
+                            <SelectItem key={n.id} value={n.id}>
+                              {n.data.label || `Bloco ${n.id.substring(0, 4)}`}
+                            </SelectItem>
+                          ))
+                        }
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => removeButton(index)}
+                  className="h-8 w-8 mt-8 self-start"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {buttons.length >= 3 && (
+          <p className="text-xs text-muted-foreground mt-2">
+            Limite máximo de 3 botões atingido (limite do WhatsApp)
+          </p>
+        )}
       </div>
     </div>
   );

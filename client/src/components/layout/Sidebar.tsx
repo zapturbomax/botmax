@@ -74,6 +74,13 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               Construtor de Fluxo
             </NavLink>
             <NavLink 
+              href="/flow-builder-beta" 
+              icon={<ChartGantt size={18} />} 
+              isActive={location.startsWith("/flow-builder-beta")}
+            >
+              Construtor de Fluxo Beta
+            </NavLink>
+            <NavLink 
               href="/settings/whatsapp" 
               icon={<MessageSquare size={18} />} 
               isActive={location === "/settings/whatsapp"}
