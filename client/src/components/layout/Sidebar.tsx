@@ -74,7 +74,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
               Construtor de Fluxo
             </NavLink>
             <NavLink 
-              href="/flows-beta" 
+              href="/flows-beta/new" 
               icon={<ChartGantt size={18} />} 
               isActive={location.startsWith("/flow-builder-beta") || location.startsWith("/flows-beta")}
             >

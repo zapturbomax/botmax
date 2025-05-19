@@ -7,24 +7,40 @@ import { queryClient } from "./lib/queryClient";
 import { AuthProvider } from "./lib/auth";
 import { ProtectedRoute } from "./lib/protected-route";
 import { useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
+import React, { useEffect } from 'react';
 
 // Pages
-import NotFound from "@/pages/not-found";
-import Home from "@/pages/home";
-import Login from "@/pages/auth/login";
-import Register from "@/pages/auth/register";
-import ForgotPassword from "@/pages/auth/forgot-password";
-import Dashboard from "@/pages/dashboard";
-import FlowBuilderPage from './pages/flow-builder';
-import FlowBuilderBeta from './pages/flow-builder-beta';
-import Flows from "@/pages/flows/index";
-import NewFlow from "@/pages/flows/new";
-import NewBetaFlow from "@/pages/flows-beta/new";
-import GeneralSettings from "@/pages/settings/general";
-import AccountSettings from "@/pages/settings/account";
-import BillingSettings from "@/pages/settings/billing";
-import WhatsAppSettings from "@/pages/settings/whatsapp";
-import Chat from "@/pages/chat";
+import Home from '@/pages/home';
+import Login from '@/pages/auth/login';
+import Register from '@/pages/auth/register';
+import Dashboard from '@/pages/dashboard';
+import FlowBuilder from '@/pages/flow-builder';
+import Chat from '@/pages/chat';
+import ForgotPassword from '@/pages/auth/forgot-password';
+import NotFound from '@/pages/not-found';
+import Account from '@/pages/settings/account';
+import Billing from '@/pages/settings/billing';
+import WhatsApp from '@/pages/settings/whatsapp';
+import General from '@/pages/settings/general';
+import Flows from '@/pages/flows';
+import NewFlow from '@/pages/flows/new';
+import FlowBuilderBeta from '@/pages/flow-builder-beta';
+import NewFlowBeta from '@/pages/flows-beta/new';
+
+// Componente temporário para listar fluxos beta
+const FlowsBeta = () => {
+  const { user } = useAuth();
+  const [_, setLocation] = useLocation();
+
+  useEffect(() => {
+    if (!user) {
+      setLocation('/login');
+    }
+  }, [user, setLocation]);
+
+  return <Flows isBeta={true} />;
+};
 
 function Router() {
   return (
@@ -42,14 +58,19 @@ function Router() {
       <Route path="/flows/:id">
             {(params) => <FlowBuilderPage />}
           </Route>
-      <Route path="/flows-beta">
-            {() => <Flows isBeta={true} />}
-          </Route>
       <Route path="/flows-beta/new">
-            {() => <NewBetaFlow />}
+            {() => <React.Suspense fallback={<div>Carregando...</div>}>
+              <NewFlowBeta />
+            </React.Suspense>}
+          </Route>
+      <Route path="/flows-beta">
+            {() => <React.Suspense fallback={<div>Carregando...</div>}>
+              <FlowsBeta />
+            </React.Suspense>}
           </Route>
       <Route path="/flow-builder-beta/:id">
-            {(params) => <FlowBuilderBeta />}
+            {(params) => <React.Suspense fallback={<div>Carregando...</div>}>
+              <FlowBuilderBeta />}
           </Route>
       <ProtectedRoute path="/settings/general" component={GeneralSettings} />
       <ProtectedRoute path="/settings/account" component={AccountSettings} />

@@ -3,7 +3,7 @@ import { storage } from '../storage';
 import { insertFlowSchema, FlowNode, FlowEdge } from '@shared/schema';
 import { z } from 'zod';
 import { and, eq } from 'drizzle-orm';
-import { schema } from '../db/schema';
+import * as schema from '@shared/schema';
 
 // Validation schemas
 const updateFlowSchema = z.object({

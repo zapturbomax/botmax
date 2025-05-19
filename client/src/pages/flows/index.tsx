@@ -59,7 +59,11 @@ const flowSchema = z.object({
   description: z.string().optional(),
 });
 
-export default function Flows({ isBeta = false }) {
+interface FlowsProps {
+  isBeta?: boolean;
+}
+
+export default function Flows({ isBeta = false }: FlowsProps) {
   const { toast } = useToast();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,11 +119,12 @@ export default function Flows({ isBeta = false }) {
   // Delete flow mutation
   const deleteFlowMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await apiRequest('DELETE', `/api/flows/${id}`);
+      const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
+      const res = await apiRequest('DELETE', `${endpoint}/${id}`);
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/flows'] });
+      queryClient.invalidateQueries({ queryKey: [isBeta ? '/api/flows-beta' : '/api/flows'] });
       toast({
         title: 'Flow deleted',
         description: 'Flow has been deleted successfully.',
@@ -138,6 +143,7 @@ export default function Flows({ isBeta = false }) {
   // Duplicate flow mutation
   const duplicateFlowMutation = useMutation({
     mutationFn: async (id: number) => {
+      const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
       const flow = flows.find((f: any) => f.id === id);
       if (!flow) throw new Error('Flow not found');
 
@@ -147,11 +153,11 @@ export default function Flows({ isBeta = false }) {
         tenantId: flow.tenantId,
       };
 
-      const res = await apiRequest('POST', '/api/flows', newFlow);
+      const res = await apiRequest('POST', endpoint, newFlow);
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/flows'] });
+      queryClient.invalidateQueries({ queryKey: [isBeta ? '/api/flows-beta' : '/api/flows'] });
       toast({
         title: 'Flow duplicated',
         description: 'Flow has been duplicated successfully.',
@@ -170,11 +176,12 @@ export default function Flows({ isBeta = false }) {
   // Toggle flow status mutation
   const toggleFlowStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: 'draft' | 'published' }) => {
-      const res = await apiRequest('PUT', `/api/flows/${id}/status`, { status });
+      const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
+      const res = await apiRequest('PUT', `${endpoint}/${id}/status`, { status });
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/flows'] });
+      queryClient.invalidateQueries({ queryKey: [isBeta ? '/api/flows-beta' : '/api/flows'] });
       toast({
         title: 'Status updated',
         description: 'Flow status has been updated successfully.',
