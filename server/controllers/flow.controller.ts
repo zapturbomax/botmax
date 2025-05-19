@@ -379,8 +379,10 @@ export const getFlowsBeta1 = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "Unauthorized" });
     }
 
+    console.log("Fetching beta flows for tenant:", tenantId);
     // Usando a função existente no storage
     const flows = await storage.getFlows(tenantId, true);
+    console.log("Beta flows fetched:", flows);
     return res.json(flows);
   } catch (error: any) {
     console.error("Error fetching beta flows:", error);
