@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { storage } from '../storage';
 import { insertFlowSchema, FlowNode, FlowEdge } from '@shared/schema';
 import { z } from 'zod';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, or, sql } from 'drizzle-orm';
 import * as schema from '@shared/schema';
 
 // Validation schemas

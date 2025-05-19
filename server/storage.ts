@@ -561,7 +561,11 @@ export class DatabaseStorage implements IStorage {
         SELECT *
         FROM flows
         WHERE tenant_id = $1
-        AND is_beta = $2
+        AND (
+          CASE WHEN $2 = true THEN is_beta = true
+          ELSE (is_beta = false OR is_beta IS NULL)
+          END
+        )
         ORDER BY created_at DESC
       `;
 

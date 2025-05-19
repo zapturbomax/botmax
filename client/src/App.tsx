@@ -1,4 +1,4 @@
-import { Switch, Route, Redirect } from "wouter";
+import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
@@ -34,57 +34,6 @@ import FlowBuilderBeta from '@/pages/flow-builder-beta';
 import NewFlowBeta from '@/pages/flows-beta/new';
 import FlowsBeta from '@/pages/flows-beta';
 
-function Router() {
-  return (
-    <Switch>
-      {/* Public Routes */}
-      <Route path="/login" component={Login} />
-      <Route path="/register" component={Register} />
-      <Route path="/forgot-password" component={ForgotPassword} />
-      <Route path="/chat" component={Chat} />
-
-      {/* Protected Routes */}
-      <ProtectedRoute path="/dashboard" component={Dashboard} />
-
-      {/* Flows - Original */}
-      <ProtectedRoute path="/flows" component={Flows} />
-      <ProtectedRoute path="/flows/new" component={NewFlow} />
-      <Route path="/flows/:id">
-        {(params) => <FlowBuilder />}
-      </Route>
-
-      {/* Flows - Beta */}
-      <ProtectedRoute path="/flows-beta" component={FlowsBeta} />
-      <ProtectedRoute path="/flows-beta/new" component={NewFlowBeta} />
-      <Route path="/flow-builder-beta/:id">
-        {(params) => <FlowBuilderBeta />}
-      </Route>
-
-      {/* Settings */}
-      <ProtectedRoute path="/settings/general" component={GeneralSettings} />
-      <ProtectedRoute path="/settings/account" component={AccountSettings} />
-      <ProtectedRoute path="/settings/billing" component={BillingSettings} />
-      <ProtectedRoute path="/settings/whatsapp" component={WhatsAppSettings} />
-
-      {/* Dashboard Sections */}
-      <ProtectedRoute path="/all" component={Dashboard} />
-      <ProtectedRoute path="/assigned-to-me" component={Dashboard} />
-      <ProtectedRoute path="/unassigned" component={Dashboard} />
-      <ProtectedRoute path="/live-chat" component={Dashboard} />
-      <ProtectedRoute path="/blocked" component={Dashboard} />
-      <ProtectedRoute path="/trash" component={Dashboard} />
-
-      {/* Home Page / Redirect */}
-      <Route path="/">
-        {() => <Home />}
-      </Route>
-
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
 // Router component to manage routes
 function Router() {
   const { isLoading, user, token } = useAuth();
@@ -105,80 +54,104 @@ function Router() {
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
       <Route path="/forgot-password" component={ForgotPassword} />
-      
+
       {/* Protected routes */}
       <Route path="/dashboard">
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/flows">
-        <ProtectedRoute>
-          <Flows />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <Flows />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/flows/new">
-        <ProtectedRoute>
-          <NewFlow />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <NewFlow />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/flows-beta">
-        <ProtectedRoute>
-          <FlowsBeta />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <FlowsBeta />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/flows-beta/new">
-        <ProtectedRoute>
-          <NewFlowBeta />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <NewFlowBeta />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/flow-builder/:id">
-        <ProtectedRoute>
-          <FlowBuilder />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <FlowBuilder />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/flow-builder-beta/:id">
-        <ProtectedRoute>
-          <FlowBuilderBeta />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <FlowBuilderBeta />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/chat">
-        <ProtectedRoute>
-          <Chat />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <Chat />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/settings/general">
-        <ProtectedRoute>
-          <GeneralSettings />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <GeneralSettings />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/settings/account">
-        <ProtectedRoute>
-          <AccountSettings />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <AccountSettings />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/settings/billing">
-        <ProtectedRoute>
-          <BillingSettings />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <BillingSettings />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       <Route path="/settings/whatsapp">
-        <ProtectedRoute>
-          <WhatsAppSettings />
-        </ProtectedRoute>
+        {() => (
+          <ProtectedRoute>
+            <WhatsAppSettings />
+          </ProtectedRoute>
+        )}
       </Route>
-      
+
       {/* Fallback route */}
       <Route component={NotFound} />
     </Switch>
@@ -216,4 +189,4 @@ function App() {
   );
 }
 
-export default App;ult App;
+export default App;
