@@ -41,7 +41,10 @@ function Router() {
       <Route path="/flows/:id">
             {(params) => <FlowBuilderPage />}
           </Route>
-          <Route path="/flow-builder-beta/:id">
+      <Route path="/flows/:id/builder-beta">
+            {(params) => <FlowBuilderBeta />}
+          </Route>
+      <Route path="/flow-builder-beta/:id">
             {(params) => <FlowBuilderBeta />}
           </Route>
       <ProtectedRoute path="/settings/general" component={GeneralSettings} />
