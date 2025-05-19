@@ -16,6 +16,7 @@ import { canvasNodes } from './canvas';
 import { useFlowBuilder } from '@/hooks/use-flow-builder';
 import FlowControls from './FlowControls';
 import CanvasControls from './canvas/CanvasControls';
+import ModernDesignControls from './ModernDesignControls';
 import { ZoomIn, ZoomOut, Focus, Trash, Copy, Play } from 'lucide-react';
 
 interface FlowCanvasProps {
@@ -206,6 +207,11 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
           </Panel>
           
           <Background />
+          <Panel position="bottom-right" className="flex gap-2 mb-12">
+            <CanvasControls />
+            <ModernDesignControls />
+          </Panel>
+          
           <MiniMap 
             nodeStrokeWidth={3}
             className="bg-white rounded-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700"
