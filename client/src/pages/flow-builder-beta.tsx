@@ -31,6 +31,12 @@ export default function FlowBuilderBeta() {
     }
   }, [isLoading, error, setLocation]);
   
+  // Adiciona log para depuração
+  useEffect(() => {
+    console.log("FlowBuilderBeta: flowId =", id);
+    console.log("FlowBuilderBeta: flow data =", flow);
+  }, [id, flow]);
+  
   if (isAuthLoading || !user) {
     return null; // Don't render anything while checking auth
   }

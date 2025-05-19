@@ -41,9 +41,6 @@ function Router() {
       <Route path="/flows/:id">
             {(params) => <FlowBuilderPage />}
           </Route>
-      <Route path="/flows/:id/builder-beta">
-            {(params) => <FlowBuilderBeta />}
-          </Route>
       <Route path="/flow-builder-beta/:id">
             {(params) => <FlowBuilderBeta />}
           </Route>
