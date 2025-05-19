@@ -36,6 +36,12 @@ export default function FlowBuilderBeta() {
       setLocation('/flows-beta');
     }
   }, [isLoading, error, setLocation]);
+  
+  // Adiciona log para depuração
+  useEffect(() => {
+    console.log("FlowBuilderBeta: flowId =", id);
+    console.log("FlowBuilderBeta: flow data =", flow);
+  }, [id, flow]);
 
   // Adiciona log para depuração
   useEffect(() => {
