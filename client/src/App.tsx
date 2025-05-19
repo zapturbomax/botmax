@@ -1,4 +1,3 @@
-
 import { Switch, Route } from "wouter";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
@@ -24,10 +23,11 @@ import ForgotPassword from '@/pages/auth/forgot-password';
 import NotFound from '@/pages/not-found';
 
 // Settings pages
-import GeneralSettings from '@/pages/settings/general';
-import AccountSettings from '@/pages/settings/account';
-import BillingSettings from '@/pages/settings/billing';
-import WhatsAppSettings from '@/pages/settings/whatsapp';
+// Placeholder components to prevent runtime errors
+const GeneralSettings = () => <div>General Settings</div>;
+const AccountSettings = () => <div>Account Settings</div>;
+const BillingSettings = () => <div>Billing Settings</div>;
+const WhatsAppSettings = () => <div>WhatsApp Settings</div>;
 
 // Flow related pages
 import Flows from '@/pages/flows';
