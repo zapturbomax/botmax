@@ -26,9 +26,9 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showProperties, setShowProperties] = useState(false);
   
-  // Função para voltar à lista de fluxos
+  // Função para voltar à lista de fluxos Beta
   const handleBack = () => {
-    setLocation('/flows');
+    setLocation('/flows-beta');
   };
   
   // Função para salvar o fluxo

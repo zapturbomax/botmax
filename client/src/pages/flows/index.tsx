@@ -59,16 +59,17 @@ const flowSchema = z.object({
   description: z.string().optional(),
 });
 
-export default function Flows() {
+export default function Flows({ isBeta = false }) {
   const { toast } = useToast();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState<number | null>(null);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState<number | null>(null);
   
-  // Get flows
+  // Get flows (standard or beta)
+  const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
   const { data: flows, isLoading } = useQuery({
-    queryKey: ['/api/flows'],
+    queryKey: [endpoint],
   });
   
   // Get current plan
@@ -89,7 +90,8 @@ export default function Flows() {
   // Create flow mutation
   const createFlowMutation = useMutation({
     mutationFn: async (data: z.infer<typeof flowSchema>) => {
-      const res = await apiRequest('POST', '/api/flows', data);
+      const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
+      const res = await apiRequest('POST', endpoint, data);
       return res.json();
     },
     onSuccess: (data) => {
@@ -98,7 +100,8 @@ export default function Flows() {
         title: 'Flow created',
         description: 'New flow has been created successfully.',
       });
-      window.location.href = `/flows/${data.id}`;
+      // Redirecionar para o fluxo padrão ou fluxo Beta conforme necessário
+      window.location.href = isBeta ? `/flow-builder-beta/${data.id}` : `/flows/${data.id}`;
     },
     onError: (error) => {
       toast({

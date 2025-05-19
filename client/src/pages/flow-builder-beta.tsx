@@ -10,9 +10,9 @@ export default function FlowBuilderBeta() {
   const [location, setLocation] = useLocation();
   const { id } = useParams<{ id: string }>();
   
-  // Check flow exists and user has access
+  // Check flow exists and user has access (using Beta-specific endpoint)
   const { data: flow, isLoading, error } = useQuery({
-    queryKey: ['/api/flows', id],
+    queryKey: ['/api/flows-beta', id],
     enabled: !!id && !!user,
   });
   
