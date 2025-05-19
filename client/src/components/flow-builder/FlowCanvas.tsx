@@ -10,7 +10,8 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import { Button } from '@/components/ui/button';
 import { nodeComponents } from './FlowNodes';
-import { modernNodeComponents } from './modern-nodes';  
+import { modernNodeComponents } from './modern-nodes';
+import { modernNodesV2 } from './modern-nodes/index-v2';  
 import { useFlowBuilder } from '@/hooks/use-flow-builder';
 import FlowControls from './FlowControls';
 import { ZoomIn, ZoomOut, Focus, Trash, Copy, Play } from 'lucide-react';
@@ -143,7 +144,8 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
           onNodeClick={(_, node) => onNodeSelect(node)}
           nodeTypes={{
             ...nodeComponents,
-            ...modernNodeComponents  // Usando os novos componentes modernos
+            ...modernNodeComponents,
+            ...modernNodesV2  // Usando os componentes V2 com o design exato do dispara.ai
           }}
           className="canvas-bg"
           fitView

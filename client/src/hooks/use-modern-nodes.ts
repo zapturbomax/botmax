@@ -76,8 +76,37 @@ export function useModernNodes() {
     );
   }, [nodes, setNodes]);
 
+  /**
+   * Atualiza todos os nós para usarem a versão V2 com o design exato do dispara.ai
+   */
+  const updateAllNodesToV2 = useCallback(() => {
+    setNodes(
+      nodes.map(node => {
+        const getV2Type = (type: string | undefined) => {
+          if (!type) return 'textMessage'; // Fallback para um tipo padrão
+          
+          if (type === 'textMessage') {
+            return 'textMessage'; // Usar o tipo V2
+          }
+          
+          return type;
+        };
+
+        return {
+          ...node,
+          type: getV2Type(node.type),
+          data: {
+            ...node.data,
+            isV2: true
+          }
+        };
+      })
+    );
+  }, [nodes, setNodes]);
+
   return {
     updateNodeToModern,
     updateAllNodesToModern,
+    updateAllNodesToV2,
   };
 }
