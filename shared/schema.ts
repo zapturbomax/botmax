@@ -54,7 +54,6 @@ export const flows = pgTable("flows", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   nodes: json("nodes").$type<FlowNode[]>().default([]),
   edges: json("edges").$type<FlowEdge[]>().default([]),
-  isBeta: boolean('is_beta').default(false).notNull(),
 });
 
 // WhatsApp Integration schema

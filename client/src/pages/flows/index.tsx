@@ -59,29 +59,24 @@ const flowSchema = z.object({
   description: z.string().optional(),
 });
 
-interface FlowsProps {
-  isBeta?: boolean;
-}
-
-export default function Flows({ isBeta = false }: FlowsProps) {
+export default function Flows() {
   const { toast } = useToast();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState<number | null>(null);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState<number | null>(null);
-
-  // Get flows (standard or beta)
-  const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
+  
+  // Get flows
   const { data: flows, isLoading } = useQuery({
-    queryKey: [endpoint],
+    queryKey: ['/api/flows'],
   });
-
+  
   // Get current plan
   const { data: plan } = useQuery({
     queryKey: ['/api/subscription/current'],
     enabled: !!user,
   });
-
+  
   // Initialize form
   const form = useForm<z.infer<typeof flowSchema>>({
     resolver: zodResolver(flowSchema),
@@ -90,22 +85,20 @@ export default function Flows({ isBeta = false }: FlowsProps) {
       description: '',
     },
   });
-
+  
   // Create flow mutation
   const createFlowMutation = useMutation({
     mutationFn: async (data: z.infer<typeof flowSchema>) => {
-      const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
-      const res = await apiRequest('POST', endpoint, data);
+      const res = await apiRequest('POST', '/api/flows', data);
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [isBeta ? '/api/flows-beta' : '/api/flows'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/flows'] });
       toast({
         title: 'Flow created',
         description: 'New flow has been created successfully.',
       });
-      // Redirecionar para o fluxo padrão ou fluxo Beta conforme necessário
-      window.location.href = isBeta ? `/flow-builder-beta/${data.id}` : `/flows/${data.id}`;
+      window.location.href = `/flows/${data.id}`;
     },
     onError: (error) => {
       toast({
@@ -115,16 +108,15 @@ export default function Flows({ isBeta = false }: FlowsProps) {
       });
     },
   });
-
+  
   // Delete flow mutation
   const deleteFlowMutation = useMutation({
     mutationFn: async (id: number) => {
-      const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
-      const res = await apiRequest('DELETE', `${endpoint}/${id}`);
+      const res = await apiRequest('DELETE', `/api/flows/${id}`);
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [isBeta ? '/api/flows-beta' : '/api/flows'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/flows'] });
       toast({
         title: 'Flow deleted',
         description: 'Flow has been deleted successfully.',
@@ -139,25 +131,24 @@ export default function Flows({ isBeta = false }: FlowsProps) {
       });
     },
   });
-
+  
   // Duplicate flow mutation
   const duplicateFlowMutation = useMutation({
     mutationFn: async (id: number) => {
-      const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
       const flow = flows.find((f: any) => f.id === id);
       if (!flow) throw new Error('Flow not found');
-
+      
       const newFlow = {
         name: `${flow.name} (Copy)`,
         description: flow.description,
         tenantId: flow.tenantId,
       };
-
-      const res = await apiRequest('POST', endpoint, newFlow);
+      
+      const res = await apiRequest('POST', '/api/flows', newFlow);
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [isBeta ? '/api/flows-beta' : '/api/flows'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/flows'] });
       toast({
         title: 'Flow duplicated',
         description: 'Flow has been duplicated successfully.',
@@ -172,16 +163,15 @@ export default function Flows({ isBeta = false }: FlowsProps) {
       });
     },
   });
-
+  
   // Toggle flow status mutation
   const toggleFlowStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: 'draft' | 'published' }) => {
-      const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
-      const res = await apiRequest('PUT', `${endpoint}/${id}/status`, { status });
+      const res = await apiRequest('PUT', `/api/flows/${id}/status`, { status });
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [isBeta ? '/api/flows-beta' : '/api/flows'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/flows'] });
       toast({
         title: 'Status updated',
         description: 'Flow status has been updated successfully.',
@@ -195,12 +185,12 @@ export default function Flows({ isBeta = false }: FlowsProps) {
       });
     },
   });
-
+  
   // Submit handler
   const onSubmit = (data: z.infer<typeof flowSchema>) => {
     createFlowMutation.mutate(data);
   };
-
+  
   // Filter flows by search term
   const filteredFlows = flows
     ? flows.filter((flow: any) => 
@@ -208,13 +198,13 @@ export default function Flows({ isBeta = false }: FlowsProps) {
         (flow.description && flow.description.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     : [];
-
+  
   // Check if the user can create more flows
   const canCreateFlow = 
     !plan || 
     !flows || 
     flows.filter((f: any) => f.status === 'published').length < plan.maxFlows;
-
+  
   return (
     <AppLayout title="Fluxos">
       <div className="container mx-auto p-4 md:p-6">
@@ -267,7 +257,7 @@ export default function Flows({ isBeta = false }: FlowsProps) {
                         </FormItem>
                       )}
                     />
-
+                    
                     <FormField
                       control={form.control}
                       name="description"
@@ -301,7 +291,7 @@ export default function Flows({ isBeta = false }: FlowsProps) {
             </Dialog>
           </div>
         </div>
-
+        
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin w-8 h-8 border-4 border-t-transparent border-primary rounded-full"></div>
@@ -416,7 +406,7 @@ export default function Flows({ isBeta = false }: FlowsProps) {
                     </CardFooter>
                   </Card>
                 ))}
-
+                
                 {canCreateFlow && (
                   <Dialog>
                     <DialogTrigger asChild>
@@ -454,7 +444,7 @@ export default function Flows({ isBeta = false }: FlowsProps) {
                               </FormItem>
                             )}
                           />
-
+                          
                           <FormField
                             control={form.control}
                             name="description"
@@ -529,7 +519,7 @@ export default function Flows({ isBeta = false }: FlowsProps) {
                           </FormItem>
                         )}
                       />
-
+                      
                       <FormField
                         control={form.control}
                         name="description"
@@ -564,7 +554,7 @@ export default function Flows({ isBeta = false }: FlowsProps) {
             </CardContent>
           </Card>
         )}
-
+        
         {/* Plan Limit Warning */}
         {plan && flows && flows.filter((f: any) => f.status === 'published').length >= plan.maxFlows && (
           <div className="mt-6">
@@ -598,7 +588,7 @@ export default function Flows({ isBeta = false }: FlowsProps) {
           </div>
         )}
       </div>
-
+      
       {/* Delete Dialog */}
       <AlertDialog open={showDeleteDialog !== null} onOpenChange={(open) => !open && setShowDeleteDialog(null)}>
         <AlertDialogContent>
@@ -625,7 +615,7 @@ export default function Flows({ isBeta = false }: FlowsProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
+      
       {/* Duplicate Dialog */}
       <AlertDialog open={showDuplicateDialog !== null} onOpenChange={(open) => !open && setShowDuplicateDialog(null)}>
         <AlertDialogContent>

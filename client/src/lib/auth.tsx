@@ -1,152 +1,145 @@
+import { createContext, useState, useEffect, ReactNode } from 'react';
+import { useLocation } from 'wouter';
+import { queryClient } from './queryClient';
 
-import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
-
-export interface User {
-  id: string;
+// Types
+interface User {
+  id: number;
+  username: string;
   email: string;
-  name: string;
-  tenantId: string;
+  fullName?: string;
+  phone?: string;
+  avatar?: string;
   role: string;
+  planId?: number;
 }
 
-export interface AuthContextType {
+interface Tenant {
+  id: number;
+  userId: number;
+  name: string;
+  subdomain: string;
+}
+
+interface AuthContextType {
   user: User | null;
+  tenant: Tenant | null;
   token: string | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<any>;
-  register: (name: string, email: string, password: string) => Promise<any>;
+  login: (data: any) => void;
   logout: () => void;
-  forgotPassword: (email: string) => Promise<any>;
+  updateUser: (data: Partial<User>) => void;
+  updateTenant: (data: Partial<Tenant>) => void;
 }
 
+// Context
 export const AuthContext = createContext<AuthContextType>({
   user: null,
+  tenant: null,
   token: null,
   isLoading: true,
-  login: () => Promise.resolve(),
-  register: () => Promise.resolve(),
+  login: () => {},
   logout: () => {},
-  forgotPassword: () => Promise.resolve(),
+  updateUser: () => {},
+  updateTenant: () => {},
 });
 
-interface AuthProviderProps {
-  children: React.ReactNode;
-}
-
-export function AuthProvider({ children }: AuthProviderProps) {
+// Provider
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [tenant, setTenant] = useState<Tenant | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [_, setLocation] = useLocation();
 
-  // Verificar autenticação ao iniciar
+  // Load from local storage on mount
   useEffect(() => {
-    const checkAuth = async () => {
+    const loadAuthState = () => {
       try {
-        const storedToken = localStorage.getItem('flowbot_token');
-        if (!storedToken) {
-          throw new Error('No token found');
-        }
-
-        // Configurar o token nos cabeçalhos para as requisições
-        axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+        const savedUser = localStorage.getItem('flowbot_user');
+        const savedTenant = localStorage.getItem('flowbot_tenant');
+        const savedToken = localStorage.getItem('flowbot_token');
         
-        // Buscar informações do usuário
-        const response = await axios.get('/api/auth/me');
-        
-        if (response.data && response.data.user) {
-          setUser(response.data.user);
-          setToken(storedToken);
-          console.log("Usuário autenticado:", response.data.user.email);
-        } else {
-          throw new Error('Invalid response format');
+        if (savedUser && savedToken) {
+          setUser(JSON.parse(savedUser));
+          setToken(savedToken);
+          
+          if (savedTenant) {
+            setTenant(JSON.parse(savedTenant));
+          }
         }
       } catch (error) {
-        console.error("Erro ao verificar autenticação:", error);
-        // Remover token inválido
-        localStorage.removeItem('flowbot_token');
-        delete axios.defaults.headers.common['Authorization'];
-        setUser(null);
-        setToken(null);
+        console.error('Error loading auth state:', error);
       } finally {
         setIsLoading(false);
       }
     };
-
-    checkAuth();
+    
+    loadAuthState();
   }, []);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await axios.post('/api/auth/login', { email, password });
-      
-      const { user, token } = response.data;
-      
-      // Salvar token e configurar cabeçalhos
-      localStorage.setItem('flowbot_token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      setUser(user);
-      setToken(token);
-      
-      return response.data;
-    } catch (error) {
-      console.error("Erro ao fazer login:", error);
-      throw error;
+  // Login
+  const login = (data: any) => {
+    if (!data.user || !data.token) {
+      console.error('Invalid login data:', data);
+      return;
     }
-  };
-
-  const register = async (name: string, email: string, password: string) => {
-    try {
-      const response = await axios.post('/api/auth/register', { name, email, password });
-      
-      const { user, token } = response.data;
-      
-      // Salvar token e configurar cabeçalhos
-      localStorage.setItem('flowbot_token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
-      setUser(user);
-      setToken(token);
-      
-      return response.data;
-    } catch (error) {
-      console.error("Erro ao registrar:", error);
-      throw error;
-    }
-  };
-
-  const logout = () => {
-    // Remover token e limpar cabeçalhos
-    localStorage.removeItem('flowbot_token');
-    delete axios.defaults.headers.common['Authorization'];
     
-    setUser(null);
-    setToken(null);
+    setUser(data.user);
+    setToken(data.token);
+    
+    if (data.tenant) {
+      setTenant(data.tenant);
+      localStorage.setItem('flowbot_tenant', JSON.stringify(data.tenant));
+    }
+    
+    localStorage.setItem('flowbot_user', JSON.stringify(data.user));
+    localStorage.setItem('flowbot_token', data.token);
   };
 
-  const forgotPassword = async (email: string) => {
-    try {
-      const response = await axios.post('/api/auth/forgot-password', { email });
-      return response.data;
-    } catch (error) {
-      console.error("Erro no esqueci senha:", error);
-      throw error;
+  // Logout
+  const logout = () => {
+    setUser(null);
+    setTenant(null);
+    setToken(null);
+    localStorage.removeItem('flowbot_user');
+    localStorage.removeItem('flowbot_tenant');
+    localStorage.removeItem('flowbot_token');
+    queryClient.clear();
+    setLocation('/login');
+  };
+
+  // Update user
+  const updateUser = (data: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...data };
+      setUser(updatedUser);
+      localStorage.setItem('flowbot_user', JSON.stringify(updatedUser));
     }
   };
 
-  const value = {
+  // Update tenant
+  const updateTenant = (data: Partial<Tenant>) => {
+    if (tenant) {
+      const updatedTenant = { ...tenant, ...data };
+      setTenant(updatedTenant);
+      localStorage.setItem('flowbot_tenant', JSON.stringify(updatedTenant));
+    }
+  };
+
+  const contextValue = {
     user,
+    tenant,
     token,
     isLoading,
     login,
-    register,
     logout,
-    forgotPassword
+    updateUser,
+    updateTenant
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
