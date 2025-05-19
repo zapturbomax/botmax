@@ -583,19 +583,37 @@ export class DatabaseStorage implements IStorage {
 
   async getFlow(id: number, tenantId: number, isBeta: boolean = false): Promise<Flow | undefined> {
     try {
-      const [flow] = await db.select().from(flows)
-        .where(and(
+      console.log(`DatabaseStorage.getFlow: Buscando fluxo id=${id}, tenantId=${tenantId}, isBeta=${isBeta}`);
+      
+      // Adicionar condição mais explícita para o parâmetro isBeta
+      let query;
+      if (isBeta) {
+        // Para fluxos beta, verificamos explicitamente isBeta = true
+        query = and(
           eq(flows.id, id),
-          eq(flows.tenantId, tenantId)
-        ));
-
-      if (flow) {
-        // Converter para boolean para tratar possíveis valores undefined
-        const flowIsBeta = flow.isBeta === true;
-        if (flowIsBeta === isBeta) {
-          return flow;
-        }
+          eq(flows.tenantId, tenantId),
+          eq(flows.isBeta, true)
+        );
+      } else {
+        // Para fluxos regulares, podemos aceitar undefined ou false
+        query = and(
+          eq(flows.id, id),
+          eq(flows.tenantId, tenantId),
+          or(
+            eq(flows.isBeta, false),
+            isNull(flows.isBeta)
+          )
+        );
       }
+      
+      const [flow] = await db.select().from(flows).where(query);
+      
+      if (flow) {
+        console.log(`DatabaseStorage.getFlow: Fluxo encontrado, id=${flow.id}, nome=${flow.name}, isBeta=${flow.isBeta}`);
+        return flow;
+      }
+      
+      console.log(`DatabaseStorage.getFlow: Fluxo não encontrado para id=${id}, tenantId=${tenantId}, isBeta=${isBeta}`);
       return undefined;
     } catch (error) {
       console.error("Error getting flow:", error);
