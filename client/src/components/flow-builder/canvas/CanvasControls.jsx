@@ -1,47 +1,19 @@
 import React from 'react';
-import { useFlowBuilder } from '@/hooks/use-flow-builder';
 import { Button } from '@/components/ui/button';
-import { Palette, Sparkles, LayoutPanelTop } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { 
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { nodeTypeToCanvas, getCanvasNodeType } from './index';
+import { useCanvasNodes } from '@/hooks/use-canvas-nodes';
 
 /**
  * Controles para alternar para o novo design do Canvas
  */
-const CanvasControls = ({ onUpdateToCanvas }) => {
-  const { nodes, setNodes } = useFlowBuilder();
-
-  // Função para atualizar todos os nós para o novo design canvas
-  const updateAllNodesToCanvas = () => {
-    setNodes(
-      nodes.map(node => {
-        // Verifica se o tipo de nó tem uma versão canvas
-        const canSupport = nodeTypeToCanvas[node.type] !== undefined;
-        
-        if (canSupport) {
-          return {
-            ...node,
-            type: getCanvasNodeType(node.type),
-            data: {
-              ...node.data,
-              isCanvas: true
-            }
-          };
-        }
-        
-        return node;
-      })
-    );
-    
-    if (onUpdateToCanvas) {
-      onUpdateToCanvas();
-    }
-  };
+const CanvasControls = () => {
+  const { updateAllNodesToCanvas } = useCanvasNodes();
 
   return (
     <div className="flex items-center">

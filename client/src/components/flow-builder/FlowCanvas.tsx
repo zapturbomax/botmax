@@ -147,7 +147,8 @@ const FlowCanvasContent = ({ onSaveDraft, onPublish, onNodeSelect, isSaving = fa
           nodeTypes={{
             ...nodeComponents,
             ...modernNodeComponents,
-            ...modernNodesV2  // Usando os componentes V2 com o design exato do dispara.ai
+            ...modernNodesV2,  // Usando os componentes V2 com o design exato do dispara.ai
+            ...canvasNodes     // Usando os novos componentes canvas com design moderno e UX aprimorado
           }}
           className="canvas-bg"
           fitView
