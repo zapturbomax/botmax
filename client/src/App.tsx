@@ -9,6 +9,7 @@ import { ProtectedRoute } from "./lib/protected-route";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import React, { useEffect } from 'react';
+import axios from 'axios';
 
 // Pages
 import Home from '@/pages/home';
@@ -85,6 +86,22 @@ function Router() {
 }
 
 function App() {
+  // Check authentication state
+  const { isLoading, user, token } = useAuth();
+
+  // Verificar autenticação ao iniciar a aplicação
+  useEffect(() => {
+    if (!isLoading) {
+      if (user && token) {
+        console.log("Usuário autenticado:", user.email);
+        // Garantir que o token está configurado no Axios
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      } else {
+        console.log("Usuário não autenticado");
+        delete axios.defaults.headers.common['Authorization'];
+      }
+    }
+  }, [isLoading, user, token]);
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="light">

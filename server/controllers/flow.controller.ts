@@ -376,16 +376,26 @@ export const getFlowsBeta1 = async (req: Request, res: Response) => {
   try {
     const tenantId = req.user?.tenantId;
     if (!tenantId) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "Unauthorized: No tenant ID in token" });
     }
 
     console.log("Fetching beta flows for tenant:", tenantId);
-    // Usando a função existente no storage
-    const flows = await storage.getFlows(tenantId, true);
-    console.log("Beta flows fetched:", flows);
-    return res.json(flows);
+    
+    try {
+      // Usando a função existente no storage
+      const flows = await storage.getFlows(tenantId, true);
+      console.log("Beta flows fetched successfully:", flows.length, "flows found");
+      return res.json(flows);
+    } catch (dbError: any) {
+      console.error("Database error fetching beta flows:", dbError);
+      return res.status(500).json({ 
+        message: "Database error fetching flows", 
+        error: dbError.message, 
+        detail: dbError.detail || dbError.code
+      });
+    }
   } catch (error: any) {
-    console.error("Error fetching beta flows:", error);
+    console.error("Unexpected error in getFlowsBeta1:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

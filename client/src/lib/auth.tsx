@@ -59,11 +59,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const savedUser = localStorage.getItem('flowbot_user');
         const savedTenant = localStorage.getItem('flowbot_tenant');
         const savedToken = localStorage.getItem('flowbot_token');
-        
+
         if (savedUser && savedToken) {
           setUser(JSON.parse(savedUser));
           setToken(savedToken);
-          
+
           if (savedTenant) {
             setTenant(JSON.parse(savedTenant));
           }
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     };
-    
+
     loadAuthState();
   }, []);
 
@@ -84,15 +84,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error('Invalid login data:', data);
       return;
     }
-    
+
     setUser(data.user);
     setToken(data.token);
-    
+
     if (data.tenant) {
       setTenant(data.tenant);
       localStorage.setItem('flowbot_tenant', JSON.stringify(data.tenant));
     }
-    
+
     localStorage.setItem('flowbot_user', JSON.stringify(data.user));
     localStorage.setItem('flowbot_token', data.token);
   };
@@ -126,6 +126,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('flowbot_tenant', JSON.stringify(updatedTenant));
     }
   };
+
+  // Axios default headers
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      console.log("Token de autenticação configurado nos headers do axios");
+    } else {
+      delete axios.defaults.headers.common['Authorization'];
+      console.log("Token de autenticação removido dos headers do axios");
+    }
+  }, [token]);
 
   const contextValue = {
     user,

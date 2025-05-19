@@ -37,6 +37,18 @@ export default function NewFlowBeta() {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
+      // Verificar se o token está configurado
+      const authHeader = axios.defaults.headers.common['Authorization'];
+      if (!authHeader) {
+        console.log("Token não encontrado nos headers, reconfigurando...");
+        const token = localStorage.getItem('flowbot_token');
+        if (token) {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } else {
+          throw new Error("Sessão expirada. Por favor, faça login novamente.");
+        }
+      }
+      
       console.log("Enviando requisição para criar fluxo beta:", data);
       const response = await axios.post('/api/flows-beta', data);
       console.log("Resposta da criação de fluxo beta:", response.data);
@@ -53,9 +65,15 @@ export default function NewFlowBeta() {
       console.error("Erro ao criar fluxo beta:", error);
       let errorMessage = "Ocorreu um erro ao criar o fluxo.";
 
-      if (axios.isAxiosError(error) && error.response) {
-        errorMessage = error.response.data.message || errorMessage;
-        console.error("Detalhes do erro:", error.response.data);
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          errorMessage = error.response.data?.message || errorMessage;
+          console.error("Detalhes do erro:", error.response.data);
+        } else if (error.request) {
+          errorMessage = "Servidor não respondeu. Verifique sua conexão.";
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
       }
 
       toast({

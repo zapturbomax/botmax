@@ -555,19 +555,22 @@ export class DatabaseStorage implements IStorage {
   // Flow operations
   async getFlows(tenantId: number, isBeta: boolean = false): Promise<Flow[]> {
     try {
-      // Obter todos os fluxos do tenant
-      const flowsResult = await db.select().from(flows).where(
-        eq(flows.tenantId, tenantId)
-      );
+      console.log(`Getting flows for tenant ${tenantId}, isBeta=${isBeta}`);
+      // Obter fluxos do tenant com filtro direto na consulta SQL
+      const flowsResult = await db.select()
+        .from(flows)
+        .where(
+          and(
+            eq(flows.tenantId, tenantId),
+            // Usar SQL diretamente para lidar com valores nulos adequadamente
+            isBeta 
+              ? eq(flows.isBeta, true)
+              : or(eq(flows.isBeta, false), sql`${flows.isBeta} IS NULL`)
+          )
+        );
 
-      // Filtrar baseado na flag isBeta
-      const filteredFlows = flowsResult.filter(flow => {
-        // Converter para boolean para tratar possíveis valores undefined
-        const flowIsBeta = flow.isBeta === true;
-        return flowIsBeta === isBeta;
-      });
-
-      return filteredFlows;
+      console.log(`Found ${flowsResult.length} flows for tenant ${tenantId} with isBeta=${isBeta}`);
+      return flowsResult;
     } catch (error) {
       console.error("Error getting flows:", error);
       throw error;
