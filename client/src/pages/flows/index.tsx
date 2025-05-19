@@ -65,19 +65,19 @@ export default function Flows({ isBeta = false }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showDeleteDialog, setShowDeleteDialog] = useState<number | null>(null);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState<number | null>(null);
-  
+
   // Get flows (standard or beta)
   const endpoint = isBeta ? '/api/flows-beta' : '/api/flows';
   const { data: flows, isLoading } = useQuery({
     queryKey: [endpoint],
   });
-  
+
   // Get current plan
   const { data: plan } = useQuery({
     queryKey: ['/api/subscription/current'],
     enabled: !!user,
   });
-  
+
   // Initialize form
   const form = useForm<z.infer<typeof flowSchema>>({
     resolver: zodResolver(flowSchema),
@@ -86,7 +86,7 @@ export default function Flows({ isBeta = false }) {
       description: '',
     },
   });
-  
+
   // Create flow mutation
   const createFlowMutation = useMutation({
     mutationFn: async (data: z.infer<typeof flowSchema>) => {
@@ -111,7 +111,7 @@ export default function Flows({ isBeta = false }) {
       });
     },
   });
-  
+
   // Delete flow mutation
   const deleteFlowMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -134,19 +134,19 @@ export default function Flows({ isBeta = false }) {
       });
     },
   });
-  
+
   // Duplicate flow mutation
   const duplicateFlowMutation = useMutation({
     mutationFn: async (id: number) => {
       const flow = flows.find((f: any) => f.id === id);
       if (!flow) throw new Error('Flow not found');
-      
+
       const newFlow = {
         name: `${flow.name} (Copy)`,
         description: flow.description,
         tenantId: flow.tenantId,
       };
-      
+
       const res = await apiRequest('POST', '/api/flows', newFlow);
       return res.json();
     },
@@ -166,7 +166,7 @@ export default function Flows({ isBeta = false }) {
       });
     },
   });
-  
+
   // Toggle flow status mutation
   const toggleFlowStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: 'draft' | 'published' }) => {
@@ -188,12 +188,12 @@ export default function Flows({ isBeta = false }) {
       });
     },
   });
-  
+
   // Submit handler
   const onSubmit = (data: z.infer<typeof flowSchema>) => {
     createFlowMutation.mutate(data);
   };
-  
+
   // Filter flows by search term
   const filteredFlows = flows
     ? flows.filter((flow: any) => 
@@ -201,13 +201,13 @@ export default function Flows({ isBeta = false }) {
         (flow.description && flow.description.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     : [];
-  
+
   // Check if the user can create more flows
   const canCreateFlow = 
     !plan || 
     !flows || 
     flows.filter((f: any) => f.status === 'published').length < plan.maxFlows;
-  
+
   return (
     <AppLayout title="Fluxos">
       <div className="container mx-auto p-4 md:p-6">
@@ -260,7 +260,7 @@ export default function Flows({ isBeta = false }) {
                         </FormItem>
                       )}
                     />
-                    
+
                     <FormField
                       control={form.control}
                       name="description"
@@ -294,7 +294,7 @@ export default function Flows({ isBeta = false }) {
             </Dialog>
           </div>
         </div>
-        
+
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin w-8 h-8 border-4 border-t-transparent border-primary rounded-full"></div>
@@ -409,7 +409,7 @@ export default function Flows({ isBeta = false }) {
                     </CardFooter>
                   </Card>
                 ))}
-                
+
                 {canCreateFlow && (
                   <Dialog>
                     <DialogTrigger asChild>
@@ -447,7 +447,7 @@ export default function Flows({ isBeta = false }) {
                               </FormItem>
                             )}
                           />
-                          
+
                           <FormField
                             control={form.control}
                             name="description"
@@ -522,7 +522,7 @@ export default function Flows({ isBeta = false }) {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={form.control}
                         name="description"
@@ -557,7 +557,7 @@ export default function Flows({ isBeta = false }) {
             </CardContent>
           </Card>
         )}
-        
+
         {/* Plan Limit Warning */}
         {plan && flows && flows.filter((f: any) => f.status === 'published').length >= plan.maxFlows && (
           <div className="mt-6">
@@ -591,7 +591,7 @@ export default function Flows({ isBeta = false }) {
           </div>
         )}
       </div>
-      
+
       {/* Delete Dialog */}
       <AlertDialog open={showDeleteDialog !== null} onOpenChange={(open) => !open && setShowDeleteDialog(null)}>
         <AlertDialogContent>
@@ -618,7 +618,7 @@ export default function Flows({ isBeta = false }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      
+
       {/* Duplicate Dialog */}
       <AlertDialog open={showDuplicateDialog !== null} onOpenChange={(open) => !open && setShowDuplicateDialog(null)}>
         <AlertDialogContent>

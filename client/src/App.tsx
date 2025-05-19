@@ -19,6 +19,7 @@ import FlowBuilderPage from './pages/flow-builder';
 import FlowBuilderBeta from './pages/flow-builder-beta';
 import Flows from "@/pages/flows/index";
 import NewFlow from "@/pages/flows/new";
+import NewBetaFlow from "@/pages/flows-beta/new";
 import GeneralSettings from "@/pages/settings/general";
 import AccountSettings from "@/pages/settings/account";
 import BillingSettings from "@/pages/settings/billing";
@@ -43,6 +44,9 @@ function Router() {
           </Route>
       <Route path="/flows-beta">
             {() => <Flows isBeta={true} />}
+          </Route>
+      <Route path="/flows-beta/new">
+            {() => <NewBetaFlow />}
           </Route>
       <Route path="/flow-builder-beta/:id">
             {(params) => <FlowBuilderBeta />}
