@@ -7,25 +7,52 @@ import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import FlowCanvas from './FlowCanvas';
 import NodePalette from './NodePalette';
 import PropertiesPanel from './PropertiesPanel';
-import { Node } from 'reactflow';
+import { Node, Edge } from 'reactflow';
+import { useQueryClient } from '@tanstack/react-query';
+import { useFlowStore } from '@/hooks/use-flow-store';
+
+interface FlowData {
+  id: string;
+  name: string;
+  description?: string;
+  status?: string;
+  nodes: Node[];
+  edges: Edge[];
+  createdAt?: string;
+  updatedAt?: string;
+  isBeta?: boolean;
+  tenantId?: number;
+}
 
 interface FlowBuilderLayoutProps {
   flowId: string;
   flowName: string;
+  flow?: FlowData;
 }
 
 const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({ 
   flowId, 
-  flowName 
+  flowName,
+  flow
 }) => {
   const [_, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showProperties, setShowProperties] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const { getFlow, updateFlow } = useFlowStore();
+  
+  useEffect(() => {
+    // Sincronizar fluxo do backend com o estado local do fluxo
+    if (flow) {
+      console.log("Atualizando fluxo no layout com dados do backend:", flow);
+    }
+  }, [flow]);
   
   // Função para voltar à lista de fluxos
   const handleBack = () => {
@@ -35,10 +62,32 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
   // Função para salvar o fluxo
   const handleSave = async () => {
     try {
-      // Implemente a lógica de salvamento do fluxo aqui
-      await axios.post(`/api/flows-beta/${flowId}/save`, {
-        // Dados a serem enviados para o servidor
+      setIsSaving(true);
+      
+      // Obter o estado atual do fluxo do store Zustand
+      const currentFlowState = getFlow(flowId);
+      if (!currentFlowState) {
+        throw new Error("Fluxo não encontrado no estado local");
+      }
+      
+      console.log("Salvando fluxo...", {
+        id: flowId,
+        nodes: currentFlowState.nodes,
+        edges: currentFlowState.edges
       });
+      
+      // Enviar requisição para atualizar nós
+      await axios.post(`/api/flows-beta/${flowId}/nodes`, {
+        nodes: currentFlowState.nodes
+      });
+      
+      // Enviar requisição para atualizar arestas
+      await axios.post(`/api/flows-beta/${flowId}/edges`, {
+        edges: currentFlowState.edges
+      });
+      
+      // Invalidar o cache para forçar uma nova busca
+      queryClient.invalidateQueries({ queryKey: ['flows-beta', flowId] });
       
       toast({
         title: "Fluxo salvo",
@@ -48,9 +97,11 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
       console.error('Erro ao salvar o fluxo:', error);
       toast({
         title: "Erro ao salvar",
-        description: "Ocorreu um erro ao salvar o fluxo",
+        description: "Ocorreu um erro ao salvar o fluxo. Tente novamente.",
         variant: "destructive",
       });
+    } finally {
+      setIsSaving(false);
     }
   };
   
@@ -99,9 +150,14 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={handleSave}>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleSave}
+                  disabled={isSaving}
+                >
                   <Save className="h-4 w-4 mr-1" />
-                  Salvar
+                  {isSaving ? 'Salvando...' : 'Salvar'}
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -159,6 +215,8 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
           <FlowCanvas 
             flowId={flowId} 
             onNodeSelect={handleNodeSelect} 
+            initialNodes={flow?.nodes}
+            initialEdges={flow?.edges}
           />
         </div>
         
@@ -179,7 +237,8 @@ const FlowBuilderLayout: React.FC<FlowBuilderLayoutProps> = ({
               <Separator className="mb-4" />
               {selectedNode && (
                 <PropertiesPanel 
-                  node={selectedNode} 
+                  node={selectedNode}
+                  flowId={flowId}
                 />
               )}
             </div>
