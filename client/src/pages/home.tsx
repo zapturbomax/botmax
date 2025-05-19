@@ -44,6 +44,11 @@ export default function Home() {
             <Link href="/register">
               <Button>Get Started</Button>
             </Link>
+            <Link href="/new-canvas-demo">
+              <Button variant="outline" className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-none hover:from-purple-600 hover:to-indigo-600">
+                Novo Canvas Demo
+              </Button>
+            </Link>
           </div>
         </div>
       </header>

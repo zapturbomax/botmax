@@ -1,228 +1,86 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Handle, Position } from 'reactflow';
-import { motion } from 'framer-motion';
-import { ChevronRight, MoreHorizontal, HelpCircle, AlertCircle } from 'lucide-react';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
-/**
- * Componente principal para todos os nós do flow builder
- * Design moderno e elegante com foco em UX
- */
 const FlowNode = ({ 
-  id, 
+  id,
   data, 
-  selected,
-  icon: Icon, 
-  title = 'Nó',
-  subtitle = 'Ação',
-  color = '#4C9AFF',
-  secondaryColor = '#DEEBFF',
-  outputs = 1,
-  children 
+  selected = false, 
+  icon, 
+  title, 
+  subtitle, 
+  color = '#26C6B9',
+  children,
+  outputs = 1
 }) => {
-  const [isForwarded, setIsForwarded] = useState(data.isForwarded || false);
-  
-  // Manipulador para o checkbox de encaminhamento
-  const handleForwardedChange = (e) => {
-    const checked = e.target.checked;
-    setIsForwarded(checked);
-    if (data.onChange) {
-      data.onChange(id, { isForwarded: checked });
-    }
-  };
-  
-  // Função para duplicar o nó
-  const handleDuplicate = () => {
-    if (data.onDuplicate) {
-      data.onDuplicate(id);
-    } else if (window.duplicateNode) {
-      window.duplicateNode(id);
-    }
-  };
-  
-  // Função para remover o nó
-  const handleDelete = () => {
-    if (data.onDelete) {
-      data.onDelete(id);
-    } else if (window.deleteNode) {
-      window.deleteNode(id);
-    }
-  };
-  
-  // Estatísticas de execução
-  const executionCount = data.executionCount || 0;
-  const sentCount = data.sentCount || 0;
-  const hasError = data.hasError || false;
-  
   return (
-    <motion.div
-      className="relative flow-node" 
-      style={{ width: 360 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2 }}
-      whileHover={{ boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' }}
+    <div 
+      className={cn(
+        "relative bg-white shadow-md rounded-xl overflow-hidden border transition-all transform",
+        selected ? "border-2 border-primary shadow-primary/20" : "border border-gray-200",
+        selected ? "scale-[1.02]" : "scale-100"
+      )}
+      style={{ 
+        minWidth: '320px', 
+        maxWidth: '400px'
+      }}
     >
-      {/* Ponto de conexão de entrada */}
+      {/* Header */}
+      <div className="p-4 border-b border-gray-100 flex items-center space-x-3" style={{ backgroundColor: color + '10' }}>
+        <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: color }}>
+          <div className="text-white">
+            {icon}
+          </div>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-medium text-gray-900 truncate">{title}</h3>
+          <p className="text-xs text-gray-500 truncate">{subtitle}</p>
+        </div>
+        <div className="flex items-center space-x-1.5 text-xs text-gray-500">
+          <div className="flex items-center space-x-1 px-2 py-1 bg-gray-100 rounded-md">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15 17H9M21 10V8C21 6.89543 20.1046 6 19 6H16M3 10V8C3 6.89543 3.89543 6 5 6H8M8 6V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V6M8 6H16M19 21H5C3.89543 21 3 20.1046 3 19V15C3 13.8954 3.89543 13 5 13H19C20.1046 13 21 13.8954 21 15V19C21 20.1046 20.1046 21 19 21Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>0</span>
+          </div>
+          <div className="flex items-center space-x-1 px-2 py-1 bg-gray-100 rounded-md">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 11L12 14L22 4M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>0</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="p-4">
+        {children}
+      </div>
+      
+      {/* Input handle */}
       <Handle
         type="target"
         position={Position.Left}
-        className="connection-handle connection-handle-input"
-        style={{ 
-          width: 12,
-          height: 12,
-          background: 'white',
-          border: '2px solid #CBD5E0',
-          zIndex: 10,
-          left: -6
-        }}
+        id="in"
+        className="w-3 h-3 rounded-full border-2 border-white bg-gray-400"
+        style={{ left: -6 }}
       />
-      
-      {/* Container principal do nó */}
-      <div className={`node-container bg-white rounded-xl overflow-hidden shadow-lg border ${selected ? 'border-blue-400' : 'border-gray-100'}`}>
-        {/* Cabeçalho com estatísticas */}
-        <div 
-          className="node-header px-4 py-5 flex justify-between"
-          style={{ backgroundColor: color, color: 'white' }}
-        >
-          <div className="flex flex-col items-center justify-center flex-1">
-            <span className="text-5xl font-semibold">{executionCount}</span>
-            <div className="flex items-center mt-1 text-sm">
-              <span>Executando</span>
-              <HelpCircle className="ml-1 h-4 w-4 cursor-help" />
-            </div>
-          </div>
-          <div className="flex flex-col items-center justify-center flex-1">
-            <span className="text-5xl font-semibold">{sentCount}</span>
-            <div className="flex items-center mt-1 text-sm">
-              <span>Enviados</span>
-              <HelpCircle className="ml-1 h-4 w-4 cursor-help" />
-            </div>
-          </div>
-        </div>
-        
-        {/* Barra de status (sucesso/erro) */}
-        {hasError && (
-          <div className="bg-red-50 px-4 py-2 flex items-center text-red-600 text-sm">
-            <AlertCircle className="h-4 w-4 mr-2" />
-            <span>Ocorreu um erro neste nó. Verifique a configuração.</span>
-          </div>
-        )}
-        
-        {/* Conteúdo do nó com título e menu de ações */}
-        <div className="px-5 pt-5 pb-3 flex items-center">
-          <div 
-            className="icon-container h-14 w-14 rounded-full flex items-center justify-center text-white"
-            style={{ backgroundColor: color }}
-          >
-            {Icon ? <Icon className="h-6 w-6" /> : <div className="h-6 w-6" />}
-          </div>
-          
-          <div className="ml-4 flex-grow">
-            <h3 className="text-xl font-medium text-gray-800">{title}</h3>
-            <p className="text-sm font-medium" style={{ color }}>{subtitle}</p>
-          </div>
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="p-1.5 rounded-full hover:bg-gray-100">
-                <MoreHorizontal className="h-5 w-5 text-gray-500" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
-              <DropdownMenuItem onClick={handleDuplicate} className="flex items-center gap-2 cursor-pointer">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M16 4H18C18.5304 4 19.0391 4.21071 19.4142 4.58579C19.7893 4.96086 20 5.46957 20 6V20C20 20.5304 19.7893 21.0391 19.4142 21.4142C19.0391 21.7893 18.5304 22 18 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V6C4 5.46957 4.21071 4.96086 4.58579 4.58579C4.96086 4.21071 5.46957 4 6 4H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M15 2H9C8.44772 2 8 2.44772 8 3V5C8 5.55228 8.44772 6 9 6H15C15.5523 6 16 5.55228 16 5V3C16 2.44772 15.5523 2 15 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span>Duplicar</span>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleDelete} className="flex items-center gap-2 text-red-600 cursor-pointer">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span>Remover</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-        
-        {/* Área de conteúdo específica de cada tipo de nó */}
-        <div className="px-5 pb-4">
-          {children}
-        </div>
-        
-        {/* Rodapé do nó */}
-        <div className="px-5 py-4 flex justify-between items-center border-t border-gray-100">
-          <div className="flex items-center">
-            <input 
-              type="checkbox"
-              id={`forward-${id}`}
-              checked={isForwarded}
-              onChange={handleForwardedChange}
-              className="rounded text-blue-500 focus:ring-blue-500 h-4 w-4 mr-2"
-            />
-            <label htmlFor={`forward-${id}`} className="text-gray-600 text-sm cursor-pointer">
-              Marcar como encaminhada
-            </label>
-          </div>
-          
-          <button 
-            className="flex items-center text-sm font-medium transition-colors hover:opacity-90"
-            style={{ color }}
-          >
-            <span className="mr-1">Próximo passo</span>
-            <div className="flex items-center justify-center border rounded-full w-6 h-6" style={{ borderColor: color }}>
-              <ChevronRight className="h-3.5 w-3.5" style={{ color }} />
-            </div>
-          </button>
-        </div>
-      </div>
-      
-      {/* Ponto(s) de conexão de saída */}
-      {outputs === 1 ? (
+
+      {/* Output handles */}
+      {Array.from({ length: outputs }).map((_, index) => (
         <Handle
+          key={`out-${index}`}
           type="source"
           position={Position.Right}
-          className="connection-handle connection-handle-output"
+          id={`out-${index}`}
+          className="w-3 h-3 rounded-full border-2 border-white bg-gray-400"
           style={{ 
-            width: 12,
-            height: 12,
-            background: 'white',
-            border: '2px solid #CBD5E0',
-            zIndex: 10,
-            right: -6
+            right: -6, 
+            top: outputs === 1 ? '50%' : `calc(40% + ${index * 25}px)` 
           }}
         />
-      ) : (
-        Array.from({ length: outputs }).map((_, index) => (
-          <Handle
-            key={`output-${index}`}
-            type="source"
-            id={`output-${index}`}
-            position={Position.Right}
-            className="connection-handle connection-handle-output"
-            style={{ 
-              width: 12,
-              height: 12,
-              background: 'white',
-              border: '2px solid #CBD5E0',
-              zIndex: 10,
-              right: -6,
-              top: `${35 + (index * 30)}%`
-            }}
-          />
-        ))
-      )}
-    </motion.div>
+      ))}
+    </div>
   );
 };
 
