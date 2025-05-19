@@ -1,0 +1,63 @@
+# PROMPT PARA CANVAS BUILDER NOVO COM LAYOUT PERFEITO
+
+Crie um Canvas Builder completamente novo para o Flow Builder Beta com os blocos no layout perfeito que já implementamos, seguindo estas especificações:
+
+## 1. ESTRUTURA PRINCIPAL DO CANVAS
+
+- Implemente um Canvas em tela cheia sem barras laterais do sistema
+- Fundo com grid pontilhado sutil (como no dispara.ai)
+- Área de trabalho central com zoom e navegação
+- Barra superior com botões "Save Draft" e "Publish" (similar ao dispara.ai)
+- Controles de zoom no canto inferior direito
+
+## 2. BLOCOS JÁ IMPLEMENTADOS
+
+Implemente APENAS os seguintes blocos com o design pixel-perfect que já criamos:
+- Bloco de Mensagem de Texto (verde-água)
+- Bloco de Imagem/Mídia (roxo)
+- Bloco de Início do fluxo
+
+Cada bloco deve seguir EXATAMENTE o design já implementado, com:
+- Cabeçalho colorido com "Executando" e "Enviados"
+- Ícones e títulos corretos
+- Campos de entrada estilizados
+- Checkbox "Marcar como encaminhada"
+- Status digitando com seletor de segundos
+- Botão "Próximo passo"
+- Conectores para entrada e saída
+
+## 3. MENU DE CONEXÃO ENTRE BLOCOS
+
+Implemente o menu de conexão que aparece quando conectamos um bloco a outro:
+- Menu flutuante que aparece ao conectar dois blocos
+- Opções para adicionar os blocos disponíveis
+- Agrupamento por categorias (Mensagens, Lógica, etc.)
+- Design visual consistente com o resto da interface
+- Funcionalidade para selecionar e adicionar um novo bloco na conexão
+
+## 4. FUNCIONALIDADES ESSENCIAIS
+
+- Arrastar e soltar blocos no canvas
+- Conectar blocos entre si com linhas/setas
+- Selecionar blocos para edição
+- Zoom in/out no canvas
+- Salvar e publicar fluxos
+- Menu de conexão entre blocos funcional
+
+## 5. IMPLEMENTAÇÃO TÉCNICA
+
+- Use React Flow para o canvas principal
+- Implemente os blocos como nós personalizados do React Flow
+- Garanta que todas as interações sejam suaves e responsivas
+- Mantenha o código organizado e modular
+- Implemente o menu de conexão como um componente separado
+
+## 6. OBSERVAÇÕES IMPORTANTES
+
+- NÃO copie o logo do dispara.ai
+- Foque apenas nos blocos que já implementamos com o design perfeito
+- Os outros blocos serão adicionados posteriormente
+- Priorize a funcionalidade completa do canvas e dos blocos existentes
+- Garanta que o design seja pixel-perfect em relação às imagens de referência
+
+Crie tudo de maneira funcional, garantindo que o usuário possa criar fluxos reais com os blocos disponíveis e o menu de conexão entre eles.
